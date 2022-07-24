@@ -1,13 +1,18 @@
-import shutil
-from datetime import date
+# -*- coding: UTF-8 -*-
+from __future__ import annotations
 from pathlib import Path
+from typing import Any
+
+import shutil
+import json
+from datetime import date
 
 from watchdog.events import FileSystemEventHandler
 
-from desktop_cleaner.extensions import extension_paths
+from extensions import extension_paths
 
 
-def add_date_to_path(path: Path):
+def add_date_to_path(path: Path) -> Path:
     """
     Helper function that adds current year/month to destination path. If the path
     doesn't already exist, it is created.
@@ -19,7 +24,7 @@ def add_date_to_path(path: Path):
     return dated_path
 
 
-def rename_file(source: Path, destination_path: Path):
+def rename_file(source: Path, destination_path: Path) -> Path:
     """
     Helper function that renames file to reflect new path. If a file of the same
     name already exists in the destination folder, the file name is numbered and
@@ -42,11 +47,11 @@ def rename_file(source: Path, destination_path: Path):
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, watch_path: Path, destination_root: Path):
+    def __init__(self, watch_path: Path, destination_root: Path) -> None:
         self.watch_path = watch_path.resolve()
         self.destination_root = destination_root.resolve()
 
-    def on_modified(self, event):
+    def on_modified(self, event: Any) -> None:
         for child in self.watch_path.iterdir():
             # skips directories and non-specified extensions
             if child.is_file() and child.suffix.lower() in extension_paths:
