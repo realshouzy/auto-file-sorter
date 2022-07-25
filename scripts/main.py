@@ -10,8 +10,8 @@ from watchdog.observers import Observer
 from event_handler import EventHandler
 
 def main() -> None:
-    watch_path = Path.home() / 'Desktop'
-    destination_root = Path.home() / 'Desktop/holder of things'
+    watch_path = Path('C:/Users/yanni/Downloads/downloaded')
+    destination_root = Path('C:/Users/yanni/Downloads')
     event_handler = EventHandler(watch_path=watch_path, destination_root=destination_root)
 
     observer = Observer()

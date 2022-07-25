@@ -1,15 +1,28 @@
 # -*- coding: UTF-8 -*-
 from __future__ import annotations
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import shutil
 import json
+import functools
+import logging
 from datetime import date
 
 from watchdog.events import FileSystemEventHandler
 
 from extensions import extension_paths
+
+
+CompsoableFunction = Callable[[Path], Path]
+
+def compose(*functions: CompsoableFunction) -> CompsoableFunction:
+    """
+    Helper function that composes multiple functions.
+    
+    :param tuple[CompsoableFunction, ...] functions: functions to be composed
+    """
+    return functools.reduce(lambda f, g: lambda x: g(f(x)), functions)
 
 
 def add_date_to_path(path: Path) -> Path:
@@ -33,17 +46,21 @@ def rename_file(source: Path, destination_path: Path) -> Path:
     :param Path source: source of file to be moved
     :param Path destination_path: path to destination directory
     """
-    if Path(destination_path / source.name).exists():
+    if Path(destination_path/source.name).exists():
         increment = 0
 
         while True:
             increment += 1
-            new_name = destination_path / f'{source.stem}_{increment}{source.suffix}'
+            new_name = destination_path / f'{source.stem} ({increment}){source.suffix}'
 
             if not new_name.exists():
                 return new_name
     else:
         return destination_path / source.name
+
+
+def get_file_destination(file_extension: str) -> Path:
+    ...
 
 
 class EventHandler(FileSystemEventHandler):
@@ -59,3 +76,4 @@ class EventHandler(FileSystemEventHandler):
                 destination_path = add_date_to_path(path=destination_path)
                 destination_path = rename_file(source=child, destination_path=destination_path)
                 shutil.move(src=child, dst=destination_path)
+                print(f'Moved {child} to {destination_path}')
