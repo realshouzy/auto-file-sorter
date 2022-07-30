@@ -1,28 +1,14 @@
 # -*- coding: UTF-8 -*-
 from __future__ import annotations
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import shutil
 import json
-import functools
 import logging
 from datetime import date
 
 from watchdog.events import FileSystemEventHandler
-
-from extensions import extension_paths
-
-
-CompsoableFunction = Callable[[Path], Path]
-
-def compose(*functions: CompsoableFunction) -> CompsoableFunction:
-    """
-    Helper function that composes multiple functions.
-    
-    :param tuple[CompsoableFunction, ...] functions: functions to be composed
-    """
-    return functools.reduce(lambda f, g: lambda x: g(f(x)), functions)
 
 
 def add_date_to_path(path: Path) -> Path:
@@ -32,12 +18,12 @@ def add_date_to_path(path: Path) -> Path:
 
     :param Path path: destination root to append subdirectories based on date
     """
-    dated_path = path / f'{date.today().year}' / f'{date.today().month:02d}'
+    dated_path = path/Path(f'{date.today().strftime("%Y")}')/Path(f'{date.today().strftime("%b")}')
     dated_path.mkdir(parents=True, exist_ok=True)
     return dated_path
 
 
-def rename_file(source: Path, destination_path: Path) -> Path:
+def rename_file(destination_path: Path, source: Path) -> Path:
     """
     Helper function that renames file to reflect new path. If a file of the same
     name already exists in the destination folder, the file name is numbered and
@@ -48,31 +34,38 @@ def rename_file(source: Path, destination_path: Path) -> Path:
     """
     if Path(destination_path/source.name).exists():
         increment = 0
-
         while True:
             increment += 1
-            new_name = destination_path / f'{source.stem} ({increment}){source.suffix}'
+            new_name = destination_path/f'{source.stem} ({increment}){source.suffix}'
 
             if not new_name.exists():
                 return new_name
     else:
-        return destination_path / source.name
+        return destination_path/source.name
 
 
-def get_file_destination(file_extension: str) -> Path:
-    ...
+def get_settings(option: str) -> dict[str, Path|bool]:
+    """
+    Helper functions that returns an options dict from the settings json file.
+
+    :param str option: option in the settings json file
+    """
+    with open('scripts/settings.json', 'r') as f:
+        settings = json.load(f)
+    return settings[option]
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, watch_path: Path, destination_root: Path) -> None:
-        self.watch_path = watch_path.resolve()
-        self.destination_root = destination_root.resolve()
+    def __init__(self, watch_path: Path, logging_flag: bool) -> None:
+        self.watch_path: Path = watch_path.resolve()
+        self.extension_paths: dict[str, Path] = get_settings('extension')
+        self.logging_flag: bool = logging_flag
 
     def on_modified(self, event: Any) -> None:
         for child in self.watch_path.iterdir():
             # skips directories and non-specified extensions
-            if child.is_file() and child.suffix.lower() in extension_paths:
-                destination_path = self.destination_root / extension_paths[child.suffix.lower()]
+            if child.is_file() and child.suffix.lower() in self.extension_paths:
+                destination_path = self.extension_paths[child.suffix.lower()]
                 destination_path = add_date_to_path(path=destination_path)
                 destination_path = rename_file(source=child, destination_path=destination_path)
                 shutil.move(src=child, dst=destination_path)
