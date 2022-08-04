@@ -1,11 +1,11 @@
 {
     "general": {
-        "tracked_path": "C:/Users/yanni/Downloads/downloaded",
-        "logging": true
+        "trackedPath": "C:/Users/yanni/Downloads/downloaded",
+        "loggingLevel": 10
     },
 
     "extension": {
-        ".aif":    "C:/Users/yanni/Downloads/C:/Users/yanni/Downloads/media/audio",
+        ".aif":    "C:/Users/yanni/Downloads/media/audio",
         ".cda":    "C:/Users/yanni/Downloads/media/audio",
         ".mid":    "C:/Users/yanni/Downloads/media/audio",
         ".midi":   "C:/Users/yanni/Downloads/media/audio",

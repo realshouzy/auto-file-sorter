@@ -4,17 +4,18 @@ from __future__ import annotations
 from pathlib import Path
 
 from time import sleep
-import PySimpleGUI as sg
-import logging
 from watchdog.observers import Observer
 
 from event_handler import EventHandler, get_settings
 
 
 def main() -> None:
-    WATCH_PATH = Path(get_settings('general')['tracked_path'])
-    LOGGING_FLAG = get_settings('general')['logging']
-    event_handler = EventHandler(watch_path=WATCH_PATH, logging_flag=LOGGING_FLAG)
+    WATCH_PATH = Path(get_settings('general')['trackedPath'])
+    LOGGING_LEVEL = get_settings('general')['loggingLevel']
+    LOG_FORMAT = '%(levelname)s %(asctime)s - %(message)s'
+    event_handler = EventHandler(watch_path=WATCH_PATH, 
+                                               logging_level=LOGGING_LEVEL, 
+                                               log_format=LOG_FORMAT)
 
     observer = Observer()
     observer.schedule(event_handler, f'{WATCH_PATH}', recursive=True)
@@ -24,11 +25,7 @@ def main() -> None:
         while True:
             sleep(60)
     except KeyboardInterrupt:
-        print('\nstopped')
         observer.stop()
-    # except Exception as x:
-    #     sg.PopupError('Unexpected error')
-    #     observer.stop()
     observer.join()
 
 

@@ -56,17 +56,29 @@ def get_settings(option: str) -> dict[str, Path|bool]:
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, watch_path: Path, logging_flag: bool) -> None:
+    def __init__(self, watch_path: Path, logging_level: int, log_format: str) -> None:
         self.watch_path: Path = watch_path.resolve()
         self.extension_paths: dict[str, Path] = get_settings('extension')
-        self.logging_flag: bool = logging_flag
+
+        logging.basicConfig(filename='log.log', 
+                            level=logging_level, 
+                            format=log_format, 
+                            filemode='w')
+        self.logger: logging.Logger = logging.getLogger()
 
     def on_modified(self, event: Any) -> None:
-        for child in self.watch_path.iterdir():
-            # skips directories and non-specified extensions
-            if child.is_file() and child.suffix.lower() in self.extension_paths:
-                destination_path = self.extension_paths[child.suffix.lower()]
-                destination_path = add_date_to_path(path=destination_path)
-                destination_path = rename_file(source=child, destination_path=destination_path)
-                shutil.move(src=child, dst=destination_path)
-                print(f'Moved {child} to {destination_path}')
+        try:
+            self.logger.debug(event)
+            for child in self.watch_path.iterdir():
+                # skips directories and non-specified extensions
+                if child.is_file() and child.suffix.lower() in self.extension_paths:
+                    destination_path = self.extension_paths[child.suffix.lower()]
+                    self.logger.debug('Got extension paths')
+                    destination_path = add_date_to_path(path=destination_path)
+                    self.logger.debug('Ran date check')
+                    destination_path = rename_file(source=child, destination_path=destination_path)
+                    self.logger.debug('Ran rename check')
+                    shutil.move(src=child, dst=destination_path)
+                    self.logger.info(f'Moved {child} to {destination_path}')
+        except Exception as x:
+            self.logger.exception(f'{type(x).__name__}: {x}')
