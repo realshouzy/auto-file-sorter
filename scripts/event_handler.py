@@ -58,7 +58,7 @@ def get_settings(option: str) -> dict[str, Path|bool]:
 class EventHandler(FileSystemEventHandler):
     def __init__(self, watch_path: Path, logging_level: int, log_format: str) -> None:
         self.watch_path: Path = watch_path.resolve()
-        self.extension_paths: dict[str, Path] = get_settings('extension')
+        self.extension_paths: dict[str, Path] = get_settings('extensions')
 
         logging.basicConfig(filename='log.log', 
                             level=logging_level, 

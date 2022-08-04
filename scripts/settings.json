@@ -4,7 +4,7 @@
         "loggingLevel": 10
     },
 
-    "extension": {
+    "extensions": {
         ".aif":    "C:/Users/yanni/Downloads/media/audio",
         ".cda":    "C:/Users/yanni/Downloads/media/audio",
         ".mid":    "C:/Users/yanni/Downloads/media/audio",
