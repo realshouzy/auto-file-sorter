@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+"""
+Module that contains the class and helper functions needed to move a file to the correct path.
+"""
 from __future__ import annotations
 from pathlib import Path
 from typing import Any
@@ -44,7 +47,7 @@ def rename_file(destination_path: Path, source: Path) -> Path:
         return destination_path/source.name
 
 
-def get_settings(option: str) -> dict[str, Path|bool]:
+def get_settings(option: str) -> dict[str, Path | int]:
     """
     Helper functions that returns an options dict from the settings json file.
 
