@@ -56,7 +56,7 @@ def get_settings(option: str) -> dict[str, Path | int | str]:
     :param str option: option in the settings json file
     :rtype: dict[str, Path | str]
     """
-    with open('scripts/settings.json', 'r') as f:
+    with open('settings.json', 'r') as f:
         settings = json.load(f)
     return settings[option]
 
