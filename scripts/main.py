@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: UTF-8 -*-
 """
-Main module
+Main module.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -17,8 +17,8 @@ def main() -> None:
     Runs the program.
     """
     WATCH_PATH = Path(get_settings('general')['trackedPath'])
-    LOGGING_LEVEL = get_settings('general')['loggingLevel']
-    LOG_FORMAT = '%(levelname)s %(asctime)s - %(message)s'
+    LOGGING_LEVEL = int(get_settings('general')['loggingLevel'])
+    LOG_FORMAT = str(get_settings('general')['loggingFormat'])
     event_handler = EventHandler(watch_path=WATCH_PATH, 
                                                logging_level=LOGGING_LEVEL, 
                                                log_format=LOG_FORMAT)

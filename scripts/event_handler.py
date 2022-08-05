@@ -20,6 +20,7 @@ def add_date_to_path(path: Path) -> Path:
     doesn't already exist, it is created.
 
     :param Path path: destination root to append subdirectories based on date
+    :rtype: Path
     """
     dated_path = path/Path(f'{date.today().strftime("%Y")}')/Path(f'{date.today().strftime("%b")}')
     dated_path.mkdir(parents=True, exist_ok=True)
@@ -34,6 +35,7 @@ def rename_file(destination_path: Path, source: Path) -> Path:
 
     :param Path source: source of file to be moved
     :param Path destination_path: path to destination directory
+    :rtype: Path
     """
     if Path(destination_path/source.name).exists():
         increment = 0
@@ -47,11 +49,12 @@ def rename_file(destination_path: Path, source: Path) -> Path:
         return destination_path/source.name
 
 
-def get_settings(option: str) -> dict[str, Path | int]:
+def get_settings(option: str) -> dict[str, Path | int | str]:
     """
     Helper functions that returns an options dict from the settings json file.
 
     :param str option: option in the settings json file
+    :rtype: dict[str, Path | str]
     """
     with open('scripts/settings.json', 'r') as f:
         settings = json.load(f)
@@ -60,6 +63,13 @@ def get_settings(option: str) -> dict[str, Path | int]:
 
 class EventHandler(FileSystemEventHandler):
     def __init__(self, watch_path: Path, logging_level: int, log_format: str) -> None:
+        """
+        Initializes EventHandler instance.
+
+        :param Path watch_path: path wich will be tracked
+        :param int logging_level: logging level (0: NOTSET, 10: DEBUG, 20: INFO, 30: WARNING, 40: ERROR, 50: CRITICAL)
+        :param str log_format: format string for the logger
+        """
         self.watch_path: Path = watch_path.resolve()
         self.extension_paths: dict[str, Path] = get_settings('extensions')
 
@@ -68,6 +78,7 @@ class EventHandler(FileSystemEventHandler):
                             format=log_format, 
                             filemode='w')
         self.logger: logging.Logger = logging.getLogger()
+        self.logger.debug('Handler initialized')
 
     def on_modified(self, event: Any) -> None:
         try:
@@ -84,4 +95,4 @@ class EventHandler(FileSystemEventHandler):
                     shutil.move(src=child, dst=destination_path)
                     self.logger.info(f'Moved {child} to {destination_path}')
         except Exception as x:
-            self.logger.exception(f'{type(x).__name__}: {x}')
+            self.logger.exception(f'Unexpected {type(x).__name__}: {x}')
