@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-...
+Context manager for settings handling.
 """
 from __future__ import annotations
 from typing import Any, Generator
@@ -12,6 +12,11 @@ import PySimpleGUI as sg
 
 @contextmanager
 def open_settings() -> Generator[Any, None, None]:
+    """
+    Function that creates context manager for easy access to the settings json file and exception handling.
+
+    :rtype: Generator[Any, None, None]
+    """
     try:
         file = open('settings.json', 'r')
         yield json.load(file)
