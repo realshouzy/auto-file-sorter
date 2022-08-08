@@ -1,8 +1,8 @@
 {
     "general": {
         "trackedPath": "C:/Users/yanni/Downloads/downloaded",
-        "loggingLevel": 10,
-        "loggingFormat": "%(levelname)s %(asctime)s - %(message)s"
+        "dloggingLevel": 20,
+        "loggingFormat": "%(name)s %(levelname)s %(asctime)s - %(message)s"
     },
 
     "extensions": {

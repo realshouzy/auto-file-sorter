@@ -1,0 +1,25 @@
+# -*- coding: UTF-8 -*-
+"""
+...
+"""
+from __future__ import annotations
+from typing import Any, Generator
+
+from contextlib import contextmanager
+import json
+import PySimpleGUI as sg
+
+
+@contextmanager
+def open_settings() -> Generator[Any, None, None]:
+    try:
+        file = open('settings.json', 'r')
+        yield json.load(file)
+    except FileNotFoundError:
+        sg.PopupError(f'{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.', title='FileSorter')
+        exit()
+    except KeyError:
+        sg.PopupError(f'{__file__}:\nSettings json file is not correctly configured.', title='FileSorter')
+        file.close()
+        exit()
+    file.close()
