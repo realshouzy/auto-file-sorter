@@ -25,6 +25,7 @@ def open_settings() -> Generator[Any, None, None]:
         exit()
     except KeyError:
         sg.PopupError(f'{__file__}:\nSettings json file is not correctly configured.', title='FileSorter')
-        file.close()
         exit()
-    file.close()
+    finally:
+        if file:
+            file.close()
