@@ -20,12 +20,11 @@ def open_settings() -> Generator[Any, None, None]:
     try:
         file = open('settings.json', 'r')
         yield json.load(file)
+        file.close()
     except FileNotFoundError:
         sg.PopupError(f'{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.', title='FileSorter')
-        exit()
+        exit(1)
     except KeyError:
         sg.PopupError(f'{__file__}:\nSettings json file is not correctly configured.', title='FileSorter')
-        exit()
-    finally:
-        if file:
-            file.close()
+        file.close()
+        exit(1)
