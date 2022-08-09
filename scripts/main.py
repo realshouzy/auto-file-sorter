@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: UTF-8 -*-
-"""
-Main module.
-"""
+"""Main module."""
 from __future__ import annotations
 from typing import Any
 from pathlib import Path
@@ -16,9 +14,7 @@ from utils.settings_handler import open_settings
 
 
 def main(*args: Any, **kwargs: Any) -> None:
-    """
-    Runs the program.
-    """
+    """Runs the program."""
     with open_settings() as settings:
         WATCH_PATH = Path(settings['general']['trackedPath'])
         EXTENSION_PATHS = dict(settings['extensions'])

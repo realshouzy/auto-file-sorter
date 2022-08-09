@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-"""
-Module that contains all helper functions needed to successfully move a file to the correct path.
-"""
+"""Module that contains all helper functions needed to successfully move a file to the correct path."""
 from __future__ import annotations
 from pathlib import Path
 

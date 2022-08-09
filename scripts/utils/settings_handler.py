@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-"""
-Context manager for settings handling.
-"""
+"""Context manager for settings handling."""
 from __future__ import annotations
 from typing import Any, Generator
 
