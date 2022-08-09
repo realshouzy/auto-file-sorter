@@ -22,12 +22,11 @@ def main(*args: Any, **kwargs: Any) -> None:
         LOG_FORMAT = str(settings['general']['loggingFormat'])
 
     logging.basicConfig(filename='log.log',
-                            level=LOGGING_LEVEL, 
-                            format=LOG_FORMAT, 
-                            filemode='w')
+                        level=LOGGING_LEVEL, 
+                        format=LOG_FORMAT, 
+                        filemode='w')
     main_logger = logging.getLogger('Main logger')
-    event_handler = EventHandler(watch_path=WATCH_PATH,
-                                               extension_paths=EXTENSION_PATHS)
+    event_handler = EventHandler(watch_path=WATCH_PATH, extension_paths=EXTENSION_PATHS)
 
     observer = Observer()
     observer.schedule(event_handler, f'{WATCH_PATH}', recursive=True)
