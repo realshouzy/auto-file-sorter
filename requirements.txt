@@ -1,2 +1,2 @@
-watchdog==2.1.9
 PySimpleGUI==4.60.3
+watchdog==2.1.9
