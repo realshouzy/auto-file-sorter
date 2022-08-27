@@ -1,19 +1,21 @@
 # -*- coding: UTF-8 -*-
 """Context manager for settings handling."""
 from __future__ import annotations
-from typing import Any, Generator
+from typing import Iterator, TypeAlias
+from pathlib import Path
 
 from contextlib import contextmanager
 import json
 import PySimpleGUI as sg
 
+Settings: TypeAlias = dict[str, dict[str, Path | int | str]]
 
 @contextmanager
-def open_settings() -> Generator[Any, None, None]:
+def open_settings() -> Iterator[Settings]:
     """
-    Function that creates context manager for easy access to the settings json file and exception handling.
+    Function that creates context manager for easy access to the settings json file with exception handling.
 
-    :rtype: Generator[Any, None, None]
+    :rtype: Iterator[dict[str, dict[str, Path | int | str]]]
     """
     try:
         file = open('settings.json', 'r')

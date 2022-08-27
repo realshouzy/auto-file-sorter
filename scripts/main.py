@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 """Main module."""
 from __future__ import annotations
-from typing import Any
 from pathlib import Path
 
 from time import sleep
@@ -13,7 +12,7 @@ from utils.event_handler import EventHandler
 from utils.settings_handler import open_settings
 
 
-def main(*args: Any, **kwargs: Any) -> None:
+def main() -> None:
     """Runs the program."""
     with open_settings() as settings:
         WATCH_PATH = Path(settings['general']['trackedPath'])
@@ -22,8 +21,8 @@ def main(*args: Any, **kwargs: Any) -> None:
         LOG_FORMAT = str(settings['general']['loggingFormat'])
 
     logging.basicConfig(filename='log.log',
-                        level=LOGGING_LEVEL, 
-                        format=LOG_FORMAT, 
+                        level=LOGGING_LEVEL,
+                        format=LOG_FORMAT,
                         filemode='w')
     main_logger = logging.getLogger('Main logger')
     event_handler = EventHandler(watch_path=WATCH_PATH, extension_paths=EXTENSION_PATHS)

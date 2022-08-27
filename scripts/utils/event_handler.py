@@ -1,13 +1,12 @@
 # -*- coding: UTF-8 -*-
 """Module that contains the class and helper functions needed to move a file to the correct path."""
 from __future__ import annotations
-from typing import Any
 from pathlib import Path
 
 import shutil
 import logging
 
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from .helper_funcs import add_date_to_path, rename_file
 
 
@@ -27,7 +26,7 @@ class EventHandler(FileSystemEventHandler):
         self.logger.debug('Handler initialized')
 
 
-    def on_modified(self, event: Any) -> None:
+    def on_modified(self, event: FileSystemEvent) -> None:
         try:
             self.logger.debug(event)
             for child in self.watch_path.iterdir():
