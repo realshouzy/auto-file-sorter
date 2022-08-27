@@ -5,6 +5,7 @@ from typing import Iterator, TypeAlias
 from pathlib import Path
 
 from contextlib import contextmanager
+import sys
 import json
 import PySimpleGUI as sg
 
@@ -23,8 +24,8 @@ def open_settings() -> Iterator[Settings]:
         file.close()
     except FileNotFoundError:
         sg.PopupError(f'{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.', title='FileSorter')
-        exit(1)
+        sys.exit(1)
     except KeyError:
         sg.PopupError(f'{__file__}:\nSettings json file is not correctly configured.', title='FileSorter')
         file.close()
-        exit(1)
+        sys.exit(1)
