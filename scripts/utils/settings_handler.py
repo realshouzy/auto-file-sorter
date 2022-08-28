@@ -31,3 +31,4 @@ def open_settings() -> Iterator[Settings]:
         sys.exit(1)
     except Exception as x:
         sg.PopupError(f'Unexpected {type(x).__name__} -> check log for more info.')
+        sys.exit(1)
