@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 """Main module."""
 from __future__ import annotations
 from pathlib import Path
 
+import logging
 from time import sleep
 from watchdog.observers import Observer
-import logging
 
 from utils.event_handler import EventHandler
 from utils.settings_handler import open_settings

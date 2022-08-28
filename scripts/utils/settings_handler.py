@@ -29,3 +29,5 @@ def open_settings() -> Iterator[Settings]:
         sg.PopupError(f'{__file__}:\nSettings json file is not correctly configured.', title='FileSorter')
         file.close()
         sys.exit(1)
+    except Exception as x:
+        sg.PopupError(f'Unexpected {type(x).__name__} -> check log for more info.')

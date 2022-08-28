@@ -3,16 +3,17 @@
 from __future__ import annotations
 from pathlib import Path
 
+import sys
 import shutil
 import logging
 import PySimpleGUI as sg
-import sys
 
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from .helper_funcs import add_date_to_path, rename_file
 
 
 class EventHandler(FileSystemEventHandler):
+    """Class to handle file system events."""
     def __init__(self, watch_path: Path, extension_paths: dict[str, Path]) -> None:
         """
         Initializes EventHandler instance.
@@ -42,8 +43,8 @@ class EventHandler(FileSystemEventHandler):
                     self.logger.debug('Ran rename check')
                     shutil.move(src=child, dst=destination_path)
                     self.logger.info(f'Moved {child} to {destination_path}')
-        except PermissionError as px:
-            self.logger.critical(f'{px} -> please check your OS or Anti-Virus settings')
+        except PermissionError as pe:
+            self.logger.critical(f'{pe} -> please check your OS or Anti-Virus settings')
             sg.PopupError('Permission denied, check log for more info', title='FileSorter')
             sys.exit(1)
         except Exception as x:
