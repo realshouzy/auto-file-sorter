@@ -21,14 +21,15 @@ def open_settings() -> Iterator[Settings] | NoReturn:
     try:
         file = open('settings.json', 'r', encoding='UTF-8')
         yield json.load(file)
-        file.close()
     except FileNotFoundError:
         sg.PopupError(f'{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.', title='FileSorter')
-        sys.exit(1)
     except KeyError:
         sg.PopupError(f'{__file__}:\nSettings json file is not correctly configured.', title='FileSorter')
-        file.close()
         sys.exit(1)
-    except Exception as x:
-        sg.PopupError(f'Unexpected {type(x).__name__} -> check log for more info.')
-        sys.exit(1)
+    except Exception as ex:
+        sg.PopupError(f'Unexpected {type(ex).__name__} -> check log for more info.')
+    finally:
+        if 'file' in locals(): # avoid UnboundLocalError if file never was opend
+            file.close()
+        else:
+            sys.exit(1)

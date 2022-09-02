@@ -48,5 +48,5 @@ class EventHandler(FileSystemEventHandler):
             self.logger.critical(f'{pe} -> please check your OS or Anti-Virus settings')
             sg.PopupError('Permission denied, check log for more info', title='FileSorter')
             sys.exit(1)
-        except Exception as x:
-            self.logger.exception(f'Unexpected {type(x).__name__}: {x}')
+        except Exception as ex:
+            self.logger.exception(f'Unexpected {type(ex).__name__}: {ex}')
