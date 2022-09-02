@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 """Module that contains the class and helper functions needed to move a file to the correct path."""
 from __future__ import annotations
-from typing import NoReturn
+from typing import NoReturn, Optional
 from pathlib import Path
 
 import sys
@@ -30,7 +30,7 @@ class EventHandler(FileSystemEventHandler):
         self.logger.debug('Handler initialized')
 
 
-    def on_modified(self, event: FileSystemEvent) -> None | NoReturn:
+    def on_modified(self, event: FileSystemEvent) -> Optional[NoReturn]:
         try:
             self.logger.debug(event)
             for child in self.watch_path.iterdir():
