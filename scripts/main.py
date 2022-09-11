@@ -15,31 +15,30 @@ from utils.settings_handler import open_settings
 def main() -> None:
     """Runs the program."""
     with open_settings() as settings:
-        WATCH_PATH = Path(settings['general']['trackedPath'])
-        EXTENSION_PATHS = dict(settings['extensions'])
-        LOGGING_LEVEL = int(settings['general']['loggingLevel'])
-        LOG_FORMAT = str(settings['general']['loggingFormat'])
+        watch_path: Path = Path(settings["general"]["trackedPath"])
+        extension_paths: dict[str, Path] = dict(settings["extensions"])
+        logging_level: int = int(settings["general"]["loggingLevel"])
+        log_format: str = str(settings["general"]["loggingFormat"])
 
-    logging.basicConfig(filename='log.log',
-                        level=LOGGING_LEVEL,
-                        format=LOG_FORMAT,
-                        filemode='w')
-    main_logger = logging.getLogger('Main logger')
-    event_handler = EventHandler(watch_path=WATCH_PATH, extension_paths=EXTENSION_PATHS)
+    logging.basicConfig(
+        filename="log.log", level=logging_level, format=log_format, filemode="w"
+    )
+    main_logger = logging.getLogger("Main logger")
+    event_handler = EventHandler(watch_path=watch_path, extension_paths=extension_paths)
 
     observer = Observer()
-    observer.schedule(event_handler, f'{WATCH_PATH}', recursive=True)
+    observer.schedule(event_handler, f"{watch_path}", recursive=True)
     observer.start()
-    main_logger.info('Started observer')
+    main_logger.info("Started observer")
 
     try:
         while True:
             sleep(60)
     except KeyboardInterrupt:
         observer.stop()
-        main_logger.info('Stopped observer')
+        main_logger.info("Stopped observer")
     observer.join()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

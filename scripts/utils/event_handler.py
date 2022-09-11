@@ -15,6 +15,7 @@ from .helper_funcs import add_date_to_path, rename_file
 
 class EventHandler(FileSystemEventHandler):
     """Class to handle file system events."""
+
     def __init__(self, watch_path: Path, extension_paths: dict[str, Path]) -> None:
         """
         Initializes EventHandler instance.
@@ -26,9 +27,8 @@ class EventHandler(FileSystemEventHandler):
         self.watch_path: Path = watch_path.resolve()
         self.extension_paths: dict[str, Path] = extension_paths
 
-        self.logger: logging.Logger = logging.getLogger('EventHandler logger')
-        self.logger.debug('Handler initialized')
-
+        self.logger: logging.Logger = logging.getLogger("EventHandler logger")
+        self.logger.debug("Handler initialized")
 
     def on_modified(self, event: FileSystemEvent) -> Optional[NoReturn]:
         try:
@@ -37,16 +37,20 @@ class EventHandler(FileSystemEventHandler):
                 # skips directories and non-specified extensions
                 if child.is_file() and child.suffix.lower() in self.extension_paths:
                     destination_path = self.extension_paths[child.suffix.lower()]
-                    self.logger.debug('Got extension paths')
+                    self.logger.debug("Got extension paths")
                     destination_path = add_date_to_path(path=destination_path)
-                    self.logger.debug('Ran date check')
-                    destination_path = rename_file(source=child, destination_path=destination_path)
-                    self.logger.debug('Ran rename check')
+                    self.logger.debug("Ran date check")
+                    destination_path = rename_file(
+                        source=child, destination_path=destination_path
+                    )
+                    self.logger.debug("Ran rename check")
                     shutil.move(src=child, dst=destination_path)
-                    self.logger.info(f'Moved {child} to {destination_path}')
+                    self.logger.info(f"Moved {child} to {destination_path}")
         except PermissionError as pe:
-            self.logger.critical(f'{pe} -> please check your OS or Anti-Virus settings')
-            sg.PopupError('Permission denied, check log for more info', title='FileSorter')
+            self.logger.critical(f"{pe} -> please check your OS or Anti-Virus settings")
+            sg.PopupError(
+                "Permission denied, check log for more info", title="FileSorter"
+            )
             sys.exit(1)
         except Exception as ex:
-            self.logger.exception(f'Unexpected {type(ex).__name__}: {ex}')
+            self.logger.exception(f"Unexpected {type(ex).__name__}: {ex}")
