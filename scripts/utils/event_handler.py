@@ -30,27 +30,29 @@ class EventHandler(FileSystemEventHandler):
         self.logger: logging.Logger = logging.getLogger("EventHandler logger")
         self.logger.debug("Handler initialized")
 
-    def on_modified(self, event: FileSystemEvent) -> Optional[NoReturn]:
+    def on_modified(self, event: FileSystemEvent) -> Optional[NoReturn]:  # type: ignore
         try:
             self.logger.debug(event)
             for child in self.watch_path.iterdir():
                 # skips directories and non-specified extensions
                 if child.is_file() and child.suffix.lower() in self.extension_paths:
-                    destination_path = self.extension_paths[child.suffix.lower()]
+                    destination_path: Path = self.extension_paths[child.suffix.lower()]
                     self.logger.debug("Got extension paths")
-                    destination_path = add_date_to_path(path=destination_path)
+                    destination_path = add_date_to_path(destination_path)
                     self.logger.debug("Ran date check")
                     destination_path = rename_file(
-                        source=child, destination_path=destination_path
+                        source=child, destination=destination_path
                     )
                     self.logger.debug("Ran rename check")
                     shutil.move(src=child, dst=destination_path)
                     self.logger.info(f"Moved {child} to {destination_path}")
-        except PermissionError as pe:
-            self.logger.critical(f"{pe} -> please check your OS or Anti-Virus settings")
+        except PermissionError as perm_exce:
+            self.logger.critical(
+                f"{perm_exce} -> please check your OS or Anti-Virus settings"
+            )
             sg.PopupError(
                 "Permission denied, check log for more info", title="FileSorter"
             )
             sys.exit(1)
-        except Exception as ex:
-            self.logger.exception(f"Unexpected {type(ex).__name__}: {ex}")
+        except Exception as exce:
+            self.logger.exception(f"Unexpected {exce.__class__.__name__}: {exce}")

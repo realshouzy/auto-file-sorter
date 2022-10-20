@@ -20,23 +20,21 @@ def open_settings() -> Iterator[Settings] | NoReturn:
     :rtype: Iterator[dict[str, dict[str, Path | int | str]]]
     """
     try:
-        file = open("settings.json", "r", encoding="UTF-8")
-        yield json.load(file)
+        with open("settings.json", "r", encoding="UTF-8") as f:
+            yield json.load(f)
     except FileNotFoundError:
         sg.PopupError(
             f"{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.",
             title="FileSorter",
         )
+        sys.exit(1)
     except KeyError:
         sg.PopupError(
             f"{__file__}:\nSettings json file is not correctly configured.",
             title="FileSorter",
         )
         sys.exit(1)
-    except Exception as ex:
-        sg.PopupError(f"Unexpected {type(ex).__name__} -> check log for more info.")
-    finally:
-        if "file" in locals():  # avoid UnboundLocalError if file never was opend
-            file.close()
-        else:
-            sys.exit(1)
+    except Exception as exce:
+        sg.PopupError(
+            f"Unexpected {exce.__class__.__name__} -> check log for more info."
+        )

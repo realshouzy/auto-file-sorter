@@ -14,14 +14,12 @@ def add_date_to_path(path: Path) -> Path:
     :param Path path: destination root to append subdirectories based on date
     :rtype: Path
     """
-    dated_path = (
-        path / Path(f'{date.today().strftime("%Y")}') / Path(f'{date.today().strftime("%b")}')
-    )
+    dated_path: Path = path / Path(f"{date.today():%Y/%b}")
     dated_path.mkdir(parents=True, exist_ok=True)
     return dated_path
 
 
-def rename_file(destination_path: Path, source: Path) -> Path:
+def rename_file(destination: Path, source: Path) -> Path:
     """
     Helper function that renames file to reflect new path. If a file of the same
     name already exists in the destination folder, the file name is numbered and
@@ -31,13 +29,13 @@ def rename_file(destination_path: Path, source: Path) -> Path:
     :param Path destination_path: path to destination directory
     :rtype: Path
     """
-    if Path(destination_path / source.name).exists():
-        increment = 0
-        while True:
-            increment += 1
-            new_path = destination_path / f"{source.stem} ({increment}){source.suffix}"
+    if not Path(destination / source.name).exists():
+        return destination / source.name
 
-            if not new_path.exists():
-                return new_path
-    else:
-        return destination_path / source.name
+    increment: int = 0
+    while True:
+        increment += 1
+        new_path: Path = destination / f"{source.stem} ({increment}){source.suffix}"
+
+        if not new_path.exists():
+            return new_path

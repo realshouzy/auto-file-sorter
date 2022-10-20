@@ -15,29 +15,31 @@ from utils.settings_handler import open_settings
 def main() -> None:
     """Runs the program."""
     with open_settings() as settings:
-        watch_path: Path = Path(settings["general"]["trackedPath"])
-        extension_paths: dict[str, Path] = dict(settings["extensions"])
-        logging_level: int = int(settings["general"]["loggingLevel"])
-        log_format: str = str(settings["general"]["loggingFormat"])
+        watch_path: Path = Path(settings["general"]["trackedPath"])  # type: ignore
+        extension_paths: dict[str, Path] = settings["extensions"]  # type: ignore
+        logging_level: int = settings["general"]["loggingLevel"]  # type: ignore
+        log_format: str = settings["general"]["loggingFormat"]  # type: ignore
 
     logging.basicConfig(
         filename="log.log", level=logging_level, format=log_format, filemode="w"
     )
-    main_logger = logging.getLogger("Main logger")
-    event_handler = EventHandler(watch_path=watch_path, extension_paths=extension_paths)
+    main_logger: logging.Logger = logging.getLogger("Main logger")
+    event_handler: EventHandler = EventHandler(
+        watch_path=watch_path, extension_paths=extension_paths
+    )
 
-    observer = Observer()
+    observer: Observer = Observer()
     observer.schedule(event_handler, f"{watch_path}", recursive=True)
     observer.start()
     main_logger.info("Started observer")
 
     try:
         while True:
-            sleep(60)
-    except KeyboardInterrupt:
+            sleep(1)
+    finally:
         observer.stop()
+        observer.join()
         main_logger.info("Stopped observer")
-    observer.join()
 
 
 if __name__ == "__main__":
