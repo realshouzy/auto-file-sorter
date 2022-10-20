@@ -6,8 +6,8 @@ from pathlib import Path
 
 import logging
 from time import sleep
-from watchdog.observers import Observer
 
+from watchdog.observers import Observer
 from utils.event_handler import EventHandler
 from utils.settings_handler import open_settings
 

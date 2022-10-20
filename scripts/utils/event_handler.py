@@ -7,8 +7,8 @@ from pathlib import Path
 import sys
 import shutil
 import logging
-import PySimpleGUI as sg
 
+import PySimpleGUI as sg
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from .helper_funcs import add_date_to_path, rename_file
 
