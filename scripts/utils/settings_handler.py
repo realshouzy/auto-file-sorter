@@ -14,8 +14,7 @@ Settings: TypeAlias = dict[str, dict[str, Path | int | str]]
 
 @contextmanager
 def open_settings() -> Iterator[Settings] | NoReturn:
-    """
-    Function that creates context manager for easy access to the settings json file with exception handling.
+    """Function that creates context manager for easy access to the settings json file with exception handling.
 
     :rtype: Iterator[dict[str, dict[str, Path | int | str]]]
     """

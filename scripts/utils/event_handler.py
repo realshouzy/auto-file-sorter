@@ -17,8 +17,7 @@ class EventHandler(FileSystemEventHandler):
     """Class to handle file system events."""
 
     def __init__(self, watch_path: Path, extension_paths: dict[str, Path]) -> None:
-        """
-        Initializes EventHandler instance.
+        """Initializes EventHandler instance.
 
         :param Path watch_path: path wich will be tracked
         :param int logging_level: logging level (0: NOTSET, 10: DEBUG, 20: INFO, 30: WARNING, 40: ERROR, 50: CRITICAL)

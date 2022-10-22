@@ -6,8 +6,7 @@ from datetime import date
 
 
 def add_date_to_path(path: Path) -> Path:
-    """
-    Helper function that adds current year/month to destination path. If the path
+    """Helper function that adds current year/month to destination path. If the path
     doesn't already exist, it is created.
 
     :param Path path: destination root to append subdirectories based on date
@@ -19,8 +18,7 @@ def add_date_to_path(path: Path) -> Path:
 
 
 def rename_file(destination: Path, source: Path) -> Path:
-    """
-    Helper function that renames file to reflect new path. If a file of the same
+    """Helper function that renames file to reflect new path. If a file of the same
     name already exists in the destination folder, the file name is numbered and
     incremented until the filename is unique (prevents overwriting files). Prevents FileExists exception.
 

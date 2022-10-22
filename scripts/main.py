@@ -29,7 +29,7 @@ def main() -> None:
     )
 
     observer: Observer = Observer()
-    observer.schedule(event_handler, f"{watch_path}", recursive=True)
+    observer.schedule(event_handler, watch_path, recursive=True)
     observer.start()
     main_logger.info("Started observer")
 
