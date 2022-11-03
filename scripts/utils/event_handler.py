@@ -44,14 +44,14 @@ class EventHandler(FileSystemEventHandler):
                     )
                     self.logger.debug("Ran rename check")
                     shutil.move(src=child, dst=destination_path)
-                    self.logger.info(f"Moved {child} to {destination_path}")
+                    self.logger.info("Moved %s to %s", child, destination_path)
         except PermissionError as perm_exce:
             self.logger.critical(
-                f"{perm_exce} -> please check your OS or Anti-Virus settings"
+                "%s -> please check your OS or Anti-Virus settings", str(perm_exce)
             )
             sg.PopupError(
                 "Permission denied, check log for more info", title="FileSorter"
             )
             sys.exit(1)
         except Exception as exce:
-            self.logger.exception(f"Unexpected {exce.__class__.__name__}: {exce}")
+            self.logger.exception("Unexpected %s: %s", exce.__class__.__name__, exce)
