@@ -20,8 +20,7 @@ class EventHandler(FileSystemEventHandler):
         """Initializes EventHandler instance.
 
         :param Path watch_path: path wich will be tracked
-        :param int logging_level: logging level (0: NOTSET, 10: DEBUG, 20: INFO, 30: WARNING, 40: ERROR, 50: CRITICAL)
-        :param str log_format: format string for the logger
+        :param dict[str, Path] extension_paths: dictionary mapping extension to their paths
         """
         self.watch_path: Path = watch_path.resolve()
         self.extension_paths: dict[str, Path] = extension_paths
@@ -47,7 +46,7 @@ class EventHandler(FileSystemEventHandler):
                     self.logger.info("Moved %s to %s", child, destination_path)
         except PermissionError as perm_exce:
             self.logger.critical(
-                "%s -> please check your OS or Anti-Virus settings", str(perm_exce)
+                "%s -> please check your OS or Anti-Virus settings", perm_exce
             )
             sg.PopupError(
                 "Permission denied, check log for more info", title="FileSorter"
