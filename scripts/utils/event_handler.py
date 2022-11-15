@@ -9,7 +9,7 @@ import shutil
 import logging
 
 import PySimpleGUI as sg
-from watchdog.events import FileSystemEventHandler, FileSystemEvent
+from watchdog.events import FileSystemEventHandler, FileModifiedEvent, DirModifiedEvent
 from .helper_funcs import add_date_to_path, rename_file
 
 
@@ -28,7 +28,7 @@ class EventHandler(FileSystemEventHandler):
         self.logger: logging.Logger = logging.getLogger("EventHandler logger")
         self.logger.debug("Handler initialized")
 
-    def on_modified(self, event: FileSystemEvent) -> Optional[NoReturn]:  # type: ignore
+    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> Optional[NoReturn]:  # type: ignore
         try:
             self.logger.debug(event)
             for child in self.watch_path.iterdir():
@@ -53,4 +53,4 @@ class EventHandler(FileSystemEventHandler):
             )
             sys.exit(1)
         except Exception as exce:
-            self.logger.exception("Unexpected %s: %s", exce.__class__.__name__, exce)
+            self.logger.exception("Unexpected %s", exce.__class__.__name__)
