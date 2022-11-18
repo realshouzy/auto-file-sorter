@@ -35,7 +35,7 @@ def main() -> None:
 
     try:
         while True:
-            sleep(1)
+            sleep(60)
     finally:
         observer.stop()
         observer.join()
