@@ -1,16 +1,19 @@
 # -*- coding: UTF-8 -*-
 """Module that contains the class and helper functions needed to move a file to the correct path."""
 from __future__ import annotations
-from typing import NoReturn, Optional
-from pathlib import Path
 
-import sys
-import shutil
 import logging
+import shutil
+import sys
+from typing import TYPE_CHECKING, NoReturn, Optional
 
 import PySimpleGUI as sg
-from watchdog.events import FileSystemEventHandler, FileModifiedEvent, DirModifiedEvent
+from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
+
 from .helper_funcs import add_date_to_path, rename_file
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class EventHandler(FileSystemEventHandler):
@@ -39,17 +42,20 @@ class EventHandler(FileSystemEventHandler):
                     destination_path = add_date_to_path(destination_path)
                     self.logger.debug("Ran date check")
                     destination_path = rename_file(
-                        source=child, destination=destination_path
+                        source=child,
+                        destination=destination_path,
                     )
                     self.logger.debug("Ran rename check")
                     shutil.move(src=child, dst=destination_path)
                     self.logger.info("Moved %s to %s", child, destination_path)
         except PermissionError as perm_exce:
             self.logger.critical(
-                "%s -> please check your OS or Anti-Virus settings", perm_exce
+                "%s -> please check your OS or Anti-Virus settings",
+                perm_exce,
             )
             sg.PopupError(
-                "Permission denied, check log for more info", title="FileSorter"
+                "Permission denied, check log for more info",
+                title="FileSorter",
             )
             sys.exit(1)
         except Exception as exce:

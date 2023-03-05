@@ -163,3 +163,5 @@ settings.json
 releases/
 temp/
 *.log
+deactivate
+.ruff_cache

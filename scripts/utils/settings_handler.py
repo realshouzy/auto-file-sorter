@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 """Context manager for settings handling."""
 from __future__ import annotations
-from typing import Iterator, NoReturn, TypeAlias
-from pathlib import Path
 
-from contextlib import contextmanager
-import sys
 import json
+import sys
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Iterator, NoReturn, TypeAlias
+
 import PySimpleGUI as sg
 
 Settings: TypeAlias = dict[str, dict[str, Path | int | str]]
@@ -33,7 +34,7 @@ def open_settings() -> Iterator[Settings] | NoReturn:
             title="FileSorter",
         )
         sys.exit(1)
-    except Exception as exce:
-        sg.PopupError(
-            f"Unexpected {exce.__class__.__name__} -> check log for more info."
-        )
+    # except Exception as exce:
+    #     sg.PopupError(
+    #         f"Unexpected {exce.__class__.__name__} -> check log for more info.",
+    #     )
