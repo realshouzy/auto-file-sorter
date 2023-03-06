@@ -20,7 +20,7 @@ def open_settings() -> Iterator[Settings] | NoReturn:
     :rtype: Iterator[dict[str, dict[str, Path | int | str]]]
     """
     try:
-        with open("settings.json", "r", encoding="UTF-8") as f:
+        with open("settings.json", "r", encoding="utf-8") as f:
             yield json.load(f)
     except FileNotFoundError:
         sg.PopupError(
@@ -34,7 +34,7 @@ def open_settings() -> Iterator[Settings] | NoReturn:
             title="FileSorter",
         )
         sys.exit(1)
-    # except Exception as exce:
-    #     sg.PopupError(
-    #         f"Unexpected {exce.__class__.__name__} -> check log for more info.",
-    #     )
+    except Exception as exce:
+        sg.PopupError(
+            f"Unexpected {exce.__class__.__name__} -> check log for more info.",
+        )
