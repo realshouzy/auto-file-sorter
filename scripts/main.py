@@ -7,14 +7,9 @@ import logging
 from pathlib import Path
 from time import sleep
 
+from utils.event_handler import EventHandler
+from utils.settings_handler import open_settings
 from watchdog.observers import Observer
-
-try:
-    from .utils.event_handler import EventHandler
-    from .utils.settings_handler import open_settings
-except ImportError:
-    from utils.event_handler import EventHandler  # type: ignore
-    from utils.settings_handler import open_settings  # type: ignore
 
 
 def main() -> None:
