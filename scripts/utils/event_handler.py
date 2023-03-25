@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import shutil
 import sys
+import threading
 from typing import TYPE_CHECKING, NoReturn, Optional
 
 import PySimpleGUI as sg
@@ -14,6 +15,8 @@ from .helper_funcs import add_date_to_path, rename_file
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+__all__: list[str] = ["EventHandler"]
 
 
 class EventHandler(FileSystemEventHandler):
@@ -30,6 +33,7 @@ class EventHandler(FileSystemEventHandler):
 
         self.logger: logging.Logger = logging.getLogger("EventHandler logger")
         self.logger.debug("Handler initialized")
+        self.lock: threading.Lock = threading.Lock()
 
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> Optional[NoReturn]:  # type: ignore
         try:
@@ -37,17 +41,9 @@ class EventHandler(FileSystemEventHandler):
             for child in self.watch_path.iterdir():
                 # skips directories and non-specified extensions
                 if child.is_file() and child.suffix.lower() in self.extension_paths:
-                    destination_path: Path = self.extension_paths[child.suffix.lower()]
-                    self.logger.debug("Got extension paths")
-                    destination_path = add_date_to_path(destination_path)
-                    self.logger.debug("Ran date check")
-                    destination_path = rename_file(
-                        source=child,
-                        destination=destination_path,
-                    )
-                    self.logger.debug("Ran rename check")
-                    shutil.move(src=child, dst=destination_path)
-                    self.logger.info("Moved %s to %s", child, destination_path)
+                    with self.lock:
+                        threading.Thread(target=self.move_file, args=(child,)).start()
+
         except PermissionError as perm_exce:
             self.logger.critical(
                 "%s -> please check your OS or Anti-Virus settings",
@@ -60,3 +56,18 @@ class EventHandler(FileSystemEventHandler):
             sys.exit(1)
         except Exception as exce:
             self.logger.exception("Unexpected %s", exce.__class__.__name__)
+
+    def move_file(self, child: Path) -> None:
+        "Moves the file to its destination path."
+        if child.is_file() and child.suffix.lower() in self.extension_paths:
+            destination_path: Path = self.extension_paths[child.suffix.lower()]
+            self.logger.debug("Got extension paths")
+            destination_path = add_date_to_path(destination_path)
+            self.logger.debug("Ran date check")
+            destination_path = rename_file(
+                source=child,
+                destination=destination_path,
+            )
+            self.logger.debug("Ran rename check")
+            shutil.move(src=child, dst=destination_path)
+            self.logger.info("Moved %s to %s", child, destination_path)

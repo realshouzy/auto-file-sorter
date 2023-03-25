@@ -32,7 +32,7 @@ def main() -> None:
         extension_paths=extension_paths,
     )
 
-    observer: Observer = Observer()
+    observer = Observer()
     observer.schedule(event_handler, watch_path, recursive=True)
     observer.start()
     main_logger.info("Started observer")

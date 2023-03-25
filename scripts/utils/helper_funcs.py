@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
+__all__: list[str] = ["add_date_to_path", "rename_file"]
+
 
 def add_date_to_path(path: Path) -> Path:
     """Helper function that adds current year/month to destination path. If the path
@@ -27,13 +29,14 @@ def rename_file(destination: Path, source: Path) -> Path:
     :param Path destination_path: path to destination directory
     :rtype: Path
     """
-    if not Path(destination / source.name).exists():
-        return destination / source.name
+    new_path: Path = destination / source.name
+    if not new_path.exists():
+        return new_path
 
     increment: int = 0
     while True:
         increment += 1
-        new_path: Path = destination / f"{source.stem} ({increment}){source.suffix}"
+        new_path = destination / f"{source.stem} ({increment}){source.suffix}"
 
         if not new_path.exists():
             return new_path

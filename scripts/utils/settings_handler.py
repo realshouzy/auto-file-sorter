@@ -10,6 +10,8 @@ from typing import Iterator, NoReturn, TypeAlias
 
 import PySimpleGUI as sg
 
+__all__: list[str] = ["open_settings", "Settings"]
+
 Settings: TypeAlias = dict[str, dict[str, Path | int | str]]
 
 
@@ -31,6 +33,12 @@ def open_settings() -> Iterator[Settings] | NoReturn:
     except KeyError:
         sg.PopupError(
             f"{__file__}:\nSettings json file is not correctly configured.",
+            title="FileSorter",
+        )
+        sys.exit(1)
+    except json.JSONDecodeError:
+        sg.PopupError(
+            f"{__file__}:\nSettings json file is not correctly formatted.",
             title="FileSorter",
         )
         sys.exit(1)
