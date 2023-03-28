@@ -57,17 +57,16 @@ class EventHandler(FileSystemEventHandler):
         except Exception as exce:
             self.logger.exception("Unexpected %s", exce.__class__.__name__)
 
-    def move_file(self, child: Path) -> None:
+    def move_file(self, file: Path) -> None:
         "Moves the file to its destination path."
-        if child.is_file() and child.suffix.lower() in self.extension_paths:
-            destination_path: Path = self.extension_paths[child.suffix.lower()]
-            self.logger.debug("Got extension paths")
-            destination_path = add_date_to_path(destination_path)
-            self.logger.debug("Ran date check")
-            destination_path = rename_file(
-                source=child,
-                destination=destination_path,
-            )
-            self.logger.debug("Ran rename check")
-            shutil.move(src=child, dst=destination_path)
-            self.logger.info("Moved %s to %s", child, destination_path)
+        destination_path: Path = self.extension_paths[file.suffix.lower()]
+        self.logger.debug("Got extension paths")
+        destination_path = add_date_to_path(destination_path)
+        self.logger.debug("Ran date check")
+        destination_path = rename_file(
+            source=file,
+            destination=destination_path,
+        )
+        self.logger.debug("Ran rename check")
+        shutil.move(src=file, dst=destination_path)
+        self.logger.info("Moved %s to %s", file, destination_path)
