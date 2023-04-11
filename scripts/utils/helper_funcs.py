@@ -1,9 +1,13 @@
+# !/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 """Module that contains all helper functions needed to successfully move a file to the correct path."""
 from __future__ import annotations
 
 from datetime import date
-from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 __all__: list[str] = ["add_date_to_path", "rename_file"]
 
@@ -15,7 +19,7 @@ def add_date_to_path(path: Path) -> Path:
     :param Path path: destination root to append subdirectories based on date
     :rtype: Path
     """
-    dated_path: Path = path / Path(f"{date.today():%Y/%b}")
+    dated_path: Path = path / f"{date.today():%Y/%b}"
     dated_path.mkdir(parents=True, exist_ok=True)
     return dated_path
 
@@ -33,10 +37,9 @@ def rename_file(destination: Path, source: Path) -> Path:
     if not new_path.exists():
         return new_path
 
-    increment: int = 0
-    while True:
-        increment += 1
+    increment: int = 1
+    while new_path.exists():
         new_path = destination / f"{source.stem} ({increment}){source.suffix}"
+        increment += 1
 
-        if not new_path.exists():
-            return new_path
+    return new_path

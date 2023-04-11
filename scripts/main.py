@@ -16,7 +16,7 @@ def main() -> None:
     """Runs the program."""
     with open_settings() as settings:
         watch_path: Path = Path(settings["general"]["trackedPath"])  # type: ignore
-        extension_paths: dict[str, Path] = settings["extensions"]  # type: ignore
+        extension_paths: dict[str, str] = settings["extensions"]  # type: ignore
         logging_level: int = settings["general"]["loggingLevel"]  # type: ignore
         log_format: str = settings["general"]["loggingFormat"]  # type: ignore
 
