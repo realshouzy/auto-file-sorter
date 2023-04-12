@@ -7,7 +7,7 @@ This is a python automation that watches a folder and sorts the files into their
 
 ## Installation
 
-Make sure you have python (^3.11) installed, and then install all the required libraries by typing the following command on the root of the project:
+Make sure you have python (^3.11) installed, and then install all the required libraries by typing the following command in the root of the project:
 
 ```bash
 pip install -r requierments.txt
@@ -35,7 +35,7 @@ import watchdog
 Add the following command to the ``Automator`` app. You can find a tutorial [here](https://youtu.be/LfxZMofHs_U?t=658).
 
 ```bash
-python /path/to/the/script/main.py
+python3 /path/to/the/script/main.py
 ```
 
 and add any needed extensions and configurations to the [settings.json file](/scripts/settings.json). Finally restart your computer.
@@ -54,4 +54,4 @@ Perhabs I'll add an executable in the future.
 
 ## Usage
 
-Throw stuff into the tracked folder, and it will be automatically sorted for you.
+Throw stuff into the tracked folder and it will be automatically sorted for you.
