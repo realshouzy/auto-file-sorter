@@ -42,10 +42,10 @@ and add any needed extensions and configurations to the [settings.json file](/sc
 
 ## Windows Installation
 
-Create a ``.bat`` file in ``C://Users/{user here}/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup`` with the following content:
+Create a ``.bat`` file in ``C:\Users\{user here}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`` with the following content:
 
 ```bash
-start /b python C://path/to/the/script/main.py
+start /b python C:\path\to\the\script}\main.py
 ```
 
 and add any needed extensions and configurations to the [settings.json file](/scripts/settings.json). Finally restart your computer.
