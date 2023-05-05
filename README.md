@@ -3,6 +3,8 @@
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+# !!! This README is outdated, it will be updated soon
+
 This is a python automation that watches a folder and sorts the files into their respective folders.
 
 ## Installation
