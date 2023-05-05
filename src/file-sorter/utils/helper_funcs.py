@@ -3,13 +3,20 @@
 """Module that contains all helper functions needed to successfully move a file to the correct path."""
 from __future__ import annotations
 
+import os
 from datetime import date
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-__all__: list[str] = ["add_date_to_path", "rename_file"]
+__all__: list[str] = ["add_date_to_path", "rename_file", "get_file_path"]
+
+
+def get_file_path(file_name: str) -> str:
+    """Returns the path of the given file name in the current script dirctory."""
+    current_script_dir: str = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_script_dir, "..", file_name)
 
 
 def add_date_to_path(path: Path) -> Path:

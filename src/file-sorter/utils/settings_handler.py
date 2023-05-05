@@ -16,13 +16,15 @@ Settings: TypeAlias = dict[str, dict[str, int | str]]
 
 
 @contextmanager
-def open_settings() -> Iterator[Settings]:
+def open_settings(
+    path_to_settings: str,
+) -> Iterator[Settings]:
     """Wrapper Function that creates context manager for easy access to the settings json file with exception handling.
 
     :rtype: Iterator[dict[str, dict[str, int | str]]]
     """
     try:
-        with open("settings.json", "r", encoding="utf-8") as settings:
+        with open(path_to_settings, "r", encoding="utf-8") as settings:
             yield json.load(settings)
     except FileNotFoundError:
         sg.PopupError(

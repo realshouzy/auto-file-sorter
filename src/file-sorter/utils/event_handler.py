@@ -31,13 +31,13 @@ class EventHandler(FileSystemEventHandler):
             extension: Path(path) for extension, path in extension_paths.items()
         }
 
-        self.logger: logging.Logger = logging.getLogger("EventHandler logger")
+        self.logger: logging.Logger = logging.getLogger(self.__class__.__name__)
         self.logger.debug("Handler initialized")
 
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         try:
             self.logger.debug(event)
-            with ThreadPool() as pool:
+            with ThreadPool() as pool:  # type: ignore
                 for child in self.watch_path.iterdir():
                     if child.is_file() and child.suffix.lower() in self.extension_paths:
                         self.logger.debug("Processing file: %s", child)

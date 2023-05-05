@@ -1,3 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel", "watchdog", "PySimpleGUI"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "file-sorter"
+version = "1.0"
+description = "a file sorting automation"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "realshouzy" }]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython"
+]
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
 [tool.mypy]
 strict = false
 check_untyped_defs = true
@@ -8,21 +30,21 @@ warn_redundant_casts = true
 
 [tool.ruff]
 extend-select = [
-    "F", 
-    "A", 
-    "B", 
-    "INP", 
-    "I", 
-    "PYI", 
-    "RSE", 
-    "RET", 
-    "Q", 
-    "SLF", 
-    "SIM", 
-    "TID", 
-    "TCH", 
-    "ARG", 
-    "PL", 
+    "F",
+    "A",
+    "B",
+    "INP",
+    "I",
+    "PYI",
+    "RSE",
+    "RET",
+    "Q",
+    "SLF",
+    "SIM",
+    "TID",
+    "TCH",
+    "ARG",
+    "PL",
     "RUF",
     "C4",
     "G",
@@ -30,7 +52,11 @@ extend-select = [
     "BLE",
     "FBT"
 ]
-ignore = ["E501", "BLE001", "INP001"]
+ignore = [
+    "E501",
+    "BLE001",
+    "INP001"
+]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 show-fixes = true
