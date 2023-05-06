@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-import sys
 from contextlib import contextmanager
 from typing import Iterator, TypeAlias
 
@@ -26,24 +25,24 @@ def open_settings(
     try:
         with open(path_to_settings, "r", encoding="utf-8") as settings:
             yield json.load(settings)
-    except FileNotFoundError:
+    except FileNotFoundError as no_file_exce:
         sg.PopupError(
             f"{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.",
             title="FileSorter",
         )
-        sys.exit(1)
-    except KeyError:
+        raise SystemExit(1) from no_file_exce
+    except KeyError as key_exce:
         sg.PopupError(
             f"{__file__}:\nSettings json file is not correctly configured.",
             title="FileSorter",
         )
-        sys.exit(1)
-    except json.JSONDecodeError:
+        raise SystemExit(1) from key_exce
+    except json.JSONDecodeError as json_decode_exce:
         sg.PopupError(
             f"{__file__}:\nSettings json file is not correctly formatted.",
             title="FileSorter",
         )
-        sys.exit(1)
+        raise SystemExit(1) from json_decode_exce
     except Exception as exce:  # pylint: disable=broad-exception-caught
         sg.PopupError(
             f"Unexpected {exce.__class__.__name__}",

@@ -3,12 +3,17 @@
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# !!! This README is outdated, it will be updated soon
+# !!! This README is not up to dated, it will be updated soon
 
 This is a python automation that watches a folder and sorts the files into their respective folders.
 
 ## Installation
 
+```bash
+pip install https://github.com/realshouzy/auto-file-sorter.git
+```
+
+Or clone the repo:
 Make sure you have python (^3.11) installed, and then install all the required libraries by typing the following command in the root of the project:
 
 ```bash
@@ -32,7 +37,7 @@ import PySimpleGUI
 import watchdog
 ```
 
-### macOS Installation
+### macOS Setup
 
 Add the following command to the ``Automator`` app. You can find a tutorial [here](https://youtu.be/LfxZMofHs_U?t=658).
 
@@ -42,7 +47,7 @@ python3 /path/to/the/script/main.py
 
 and add any needed extensions and configurations to the [settings.json file](/scripts/settings.json). Finally restart your computer.
 
-## Windows Installation
+## Windows Setup
 
 Create a ``.bat`` file in ``C:\Users\{user here}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`` with the following content:
 

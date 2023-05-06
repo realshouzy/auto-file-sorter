@@ -59,10 +59,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         while True:
             sleep(60)
-    finally:
+    except KeyboardInterrupt:
         observer.stop()
-        observer.join()
         main_logger.info("Stopped observer: %s", observer)
+        observer.join()
+        return 0
+    finally:
+        if observer.is_alive():
+            observer.stop()
+            main_logger.info("Stopped observer: %s", observer)
+        observer.join()
 
 
 if __name__ == "__main__":
