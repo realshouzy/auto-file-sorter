@@ -62,7 +62,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     except KeyboardInterrupt:
         observer.stop()
         main_logger.info("Stopped observer: %s", observer)
-        observer.join()
         return 0
     finally:
         if observer.is_alive():
