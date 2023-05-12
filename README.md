@@ -17,6 +17,7 @@ pip install https://github.com/realshouzy/auto-file-sorter.git
 Or clone the repo and then install all the required libraries by typing the following command in the root of the project:
 
 ```bash
+git clone https://github.com/realshouzy/auto-file-sorter.git
 pip install -r requierments.txt
 ```
 
@@ -24,15 +25,16 @@ The used packages are:
 
 ```python
 # standard library
-import os
-import json
-import sys
-import contextlib
 import argparse
-import typing
+import contextlib
 import datetime
+import json
 import logging
+import multiprocessing.pool
+import os
+import pathlib
 import shutil
+import typing
 
 # third party
 import PySimpleGUI
@@ -58,10 +60,10 @@ python3 -m path.to.the.src.auto-file-sorter
 In case both do not work:
 
 ```bash
-python3 /path/to/the/script/main.py
+python3 /path/to/the/src/__main__.py
 ```
 
-and add any needed extensions and configurations to the [settings.json file](/scripts/settings.json). Finally restart your computer.
+and add any needed extensions and configurations to the [settings.json](/src/auto-file-sorter/settings.json) file. Finally restart your computer.
 
 ### Windows Setup
 
@@ -70,25 +72,45 @@ Create a ``.bat`` file in ``C:\Users\{user here}\AppData\Roaming\Microsoft\Windo
 If installed via ``pip``:
 
 ```bash
-start /b python3 -m auto-file-sorter
+start /b python -m auto-file-sorter
 ```
 
 Else:
 
 ```bash
-start /b python3 -m path.to.the.src.auto-file-sorter
+start /b python -m path.to.the.src.auto-file-sorter
 ```
 
 In case both do not work:
 
 ```bash
-start /b python C:\path\to\the\script\main.py
+start /b python C:\path\to\src\__main__.py
 ```
 
-and add any needed extensions and configurations to the [settings.json file](/scripts/settings.json). Finally restart your computer.
+and add any needed extensions and configurations to the [settings.json](/src/auto-file-sorter/settings.json) file. Finally restart your computer.
 
 Perhabs I'll add an executable in the future.
 
 ## Usage
 
 Throw stuff into the tracked folder and it will be automatically sorted for you.
+
+You can add to optional flags to the startup:
+
+``--settings``/``-s`` to add the path to the specific [settings.json](/src/auto-file-sorter/settings.json) file
+
+```bash
+python -m auto-file-sorter --settings "C:\path\to\settings.json"
+python -m auto-file-sorter -s "C:\path\to\settings.json"
+```
+
+If not given, the programm will first search its directory and subdirectory for said file and if not found will throw an error.
+
+And ``--log``/``-l`` to add the path to an already existing ``log.log`` file.
+
+```bash
+python -m auto-file-sorter --log "C:\path\to\log.log"
+python -m auto-file-sorter -l "C:\path\to\log.log"
+```
+
+If not given, the programm will first search its directory and subdirectory for said file and if not found create a new file in its directory.
