@@ -1,7 +1,7 @@
 {
     "general": {
         "trackedPath": "C:/Users/user/Downloads/downloaded",
-        "loggingLevel": 10,
+        "loggingLevel": 20,
         "loggingFormat": "%(name)s %(levelname)s %(asctime)s - %(message)s"
     },
     "extensions": {
