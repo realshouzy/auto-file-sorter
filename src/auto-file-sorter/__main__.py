@@ -7,13 +7,16 @@ import argparse
 import logging
 from pathlib import Path
 from time import sleep
-from typing import Optional, Sequence
+from typing import TYPE_CHECKING, Optional, Sequence
 
 from watchdog.observers import Observer
 
 from .utils.event_handler import EventHandler
 from .utils.helper_funcs import get_file_path
 from .utils.settings_handler import open_settings
+
+if TYPE_CHECKING:
+    from watchdog.observers.api import BaseObserver
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -31,7 +34,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         default=get_file_path("log.log"),
         help="path to log.log file",
     )
-    args = parser.parse_args(argv)
+    args: argparse.Namespace = parser.parse_args(argv)
 
     with open_settings(args.settings) as settings:
         watch_path: Path = Path(settings["general"]["trackedPath"])  # type: ignore
@@ -51,7 +54,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         extension_paths=extension_paths,
     )
 
-    observer = Observer()
+    observer: BaseObserver = Observer()
     observer.schedule(event_handler, watch_path, recursive=True)
     observer.start()
     main_logger.info("Started observer: %s", observer)
