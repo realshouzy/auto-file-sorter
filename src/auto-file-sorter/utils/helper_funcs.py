@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 """Module that contains all helper functions needed to successfully move a file to the correct path."""
 from __future__ import annotations

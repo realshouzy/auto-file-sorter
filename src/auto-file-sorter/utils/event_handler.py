@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 """Module that contains the class and helper functions needed to move a file to the correct path."""
 from __future__ import annotations
@@ -7,11 +7,15 @@ import logging
 import shutil
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import PySimpleGUI as sg
-from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler
 
 from .helper_funcs import add_date_to_path, rename_file
+
+if TYPE_CHECKING:
+    from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
 __all__: list[str] = ["EventHandler"]
 
