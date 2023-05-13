@@ -1,7 +1,7 @@
-# File Sorter
+# auto-fiel-sorter
 
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
 
 This is a python automation that watches a folder and sorts the files into their respective folders.
 
@@ -100,8 +100,8 @@ You can add to optional flags to the startup:
 ``--settings``/``-s`` to add the path to the specific [settings.json](/src/auto-file-sorter/settings.json) file
 
 ```bash
-python -m auto-file-sorter --settings "C:\path\to\settings.json"
-python -m auto-file-sorter -s "C:\path\to\settings.json"
+python -m auto-file-sorter --settings "C:\path\to\the\settings.json"
+python -m auto-file-sorter -s "C:\path\to\the\settings.json"
 ```
 
 If not given, the programm will first search its directory and subdirectory for said file and if not found will throw an error.
