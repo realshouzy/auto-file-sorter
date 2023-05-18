@@ -15,9 +15,7 @@ Settings: TypeAlias = dict[str, dict[str, int | str]]
 
 
 @contextmanager
-def open_settings(
-    path_to_settings: str,
-) -> Iterator[Settings]:
+def open_settings(path_to_settings: str) -> Iterator[Settings]:
     """Wrapper Function that creates context manager for easy access to the settings json file with exception handling.
 
     :rtype: Iterator[dict[str, dict[str, int | str]]]
@@ -28,22 +26,23 @@ def open_settings(
     except FileNotFoundError as no_file_exce:
         sg.PopupError(
             f"{__file__}:\nSettings json file not found. Must be located in the same directory as the executable.",
-            title="FileSorter",
+            title="auto-file-sorter",
         )
         raise SystemExit(1) from no_file_exce
     except KeyError as key_exce:
         sg.PopupError(
             f"{__file__}:\nSettings json file is not correctly configured.",
-            title="FileSorter",
+            title="auto-file-sorter",
         )
         raise SystemExit(1) from key_exce
     except json.JSONDecodeError as json_decode_exce:
         sg.PopupError(
             f"{__file__}:\nSettings json file is not correctly formatted.",
-            title="FileSorter",
+            title="auto-file-sorter",
         )
         raise SystemExit(1) from json_decode_exce
     except Exception as exce:  # pylint: disable=broad-exception-caught
         sg.PopupError(
             f"Unexpected {exce.__class__.__name__}",
         )
+        raise SystemExit(1) from exce
