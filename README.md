@@ -26,11 +26,11 @@ The used packages are:
 ```python
 # standard library
 import argparse
+import concurrent.futures
 import contextlib
 import datetime
 import json
 import logging
-import multiprocessing.pool
 import os
 import pathlib
 import shutil
