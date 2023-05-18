@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Optional, Sequence
 
 from watchdog.observers import Observer
 
-from .utils.event_handler import EventHandler
+from .utils.event_handler import FileModifiedEventHandler
 from .utils.helper_funcs import get_file_path
 from .utils.settings_handler import open_settings
 
@@ -48,8 +48,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         format=log_format,
         filemode="w",
     )
-    main_logger: logging.Logger = logging.getLogger(__name__)
-    event_handler: EventHandler = EventHandler(
+    main_logger: logging.Logger = logging.getLogger(main.__name__)
+    event_handler: FileModifiedEventHandler = FileModifiedEventHandler(
         watch_path=watch_path,
         extension_paths=extension_paths,
     )

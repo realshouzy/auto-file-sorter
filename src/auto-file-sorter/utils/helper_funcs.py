@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
-__all__: list[str] = ["add_date_to_path", "rename_file", "get_file_path"]
+__all__: list[str] = ["add_date_to_path", "increment_file_name", "get_file_path"]
 
 
 def get_file_path(file_name: str) -> str:
@@ -31,7 +31,7 @@ def add_date_to_path(path: Path) -> Path:
     return dated_path
 
 
-def rename_file(destination: Path, source: Path) -> Path:
+def increment_file_name(destination: Path, source: Path) -> Path:
     """Helper function that renames file to reflect new path. If a file of the same
     name already exists in the destination folder, the file name is numbered and
     incremented until the filename is unique (prevents overwriting files). Prevents FileExists exception.

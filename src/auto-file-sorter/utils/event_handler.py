@@ -12,23 +12,18 @@ from typing import TYPE_CHECKING
 import PySimpleGUI as sg
 from watchdog.events import FileSystemEventHandler
 
-from .helper_funcs import add_date_to_path, rename_file
+from .helper_funcs import add_date_to_path, increment_file_name
 
 if TYPE_CHECKING:
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
-__all__: list[str] = ["EventHandler"]
+__all__: list[str] = ["FileModifiedEventHandler"]
 
 
-class EventHandler(FileSystemEventHandler):
+class FileModifiedEventHandler(FileSystemEventHandler):
     """Class to handle file system events."""
 
     def __init__(self, watch_path: Path, extension_paths: dict[str, str]) -> None:
-        """Initializes EventHandler instance.
-
-        :param Path watch_path: path wich will be tracked
-        :param dict[str, str] extension_paths: dictionary mapping extension to their paths
-        """
         self.watch_path: Path = watch_path.resolve()
         self.extension_paths: dict[str, str] = extension_paths
 
@@ -59,12 +54,12 @@ class EventHandler(FileSystemEventHandler):
             self.logger.exception("Unexpected %s", exce.__class__.__name__)
 
     def move_file(self, file: Path) -> None:
-        "Moves the file to its destination path."
+        """Moves the file to its destination path."""
         destination_path: Path = Path(self.extension_paths[file.suffix.lower()])
         self.logger.debug("Got extension path for %s", file)
         destination_path = add_date_to_path(destination_path)
         self.logger.debug("Ran date check for %s", destination_path)
-        destination_path = rename_file(
+        destination_path = increment_file_name(
             source=file,
             destination=destination_path,
         )
