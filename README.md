@@ -1,4 +1,4 @@
-# auto-fiel-sorter
+# auto-file-sorter
 
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
