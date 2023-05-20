@@ -28,7 +28,7 @@ line-length = 88
 profile = "black"
 
 [tool.mypy]
-strict = false
+strict = true
 check_untyped_defs = true
 disallow_any_generics = true
 disallow_incomplete_defs = true
