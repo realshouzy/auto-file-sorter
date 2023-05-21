@@ -12,7 +12,7 @@ Make sure you have python (^3.11).
 You can install it via ``pip``:
 
 ```bash
-pip install https://github.com/realshouzy/auto-file-sorter.git
+pip install git+https://github.com/realshouzy/auto-file-sorter.git
 ```
 
 Or clone the repo and then install all the required libraries by typing the following command in the root of the project:
