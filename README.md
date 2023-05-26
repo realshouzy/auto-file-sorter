@@ -1,3 +1,7 @@
+# This a feature branch with an extented cli (still in work)
+
+## README not uptodate
+
 # auto-file-sorter
 
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
