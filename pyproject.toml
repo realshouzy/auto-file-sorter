@@ -28,6 +28,7 @@ line-length = 88
 profile = "black"
 
 [tool.mypy]
+mypy_path = "stubs"
 strict = true
 check_untyped_defs = true
 disallow_any_generics = true
