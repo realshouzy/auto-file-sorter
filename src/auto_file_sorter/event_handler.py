@@ -7,30 +7,37 @@ import logging
 import shutil
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
-from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from watchdog.events import FileSystemEventHandler
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
 __all__: list[str] = ["FileModifiedEventHandler"]
 
 
 class FileModifiedEventHandler(FileSystemEventHandler):
-    """Handler file system events."""
+    """Handler for file-modified system events."""
 
-    def __init__(self, tracked_path: Path, extension_paths: dict[str, str]) -> None:
+    def __init__(self, tracked_path: Path, extension_paths: dict[str, Path]) -> None:
         self.logger: logging.Logger = logging.getLogger(self.__class__.__name__)
 
-        self.tracked_path: Path = tracked_path.resolve()
-        self.extension_paths: dict[str, Path] = {
-            key: Path(path).resolve() for key, path in extension_paths.items()
-        }
-        self.logger.debug("Resolved all given paths")
+        self.tracked_path: Path = tracked_path
+        self.extension_paths: dict[str, Path] = extension_paths
 
         self.logger.info("Initialized handler: %s", self)
+
+    def __str__(self) -> str:
+        return ""
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(tracked_path={self.tracked_path!r}, extension_paths={self.extension_paths!r})"
+
+    def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
+        return self.__class__, (self.tracked_path, self.extension_paths)
 
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         try:
@@ -39,24 +46,24 @@ class FileModifiedEventHandler(FileSystemEventHandler):
                 for child in self.tracked_path.iterdir():
                     if child.is_file() and child.suffix.lower() in self.extension_paths:
                         self.logger.debug("Processing %s", child)
-                        executor.submit(self.move_file, child)
+                        executor.submit(self._move_file, child)
                     else:
                         self.logger.debug("Skipping %s", child)
-        except PermissionError as perm_exce:
+        except PermissionError as perm_err:
             self.logger.critical(
                 "%s -> please check your OS or Anti-Virus settings",
-                perm_exce,
+                perm_err,
             )
-            raise SystemExit(1) from perm_exce
-        except OSError as os_exce:
+            raise SystemExit(1) from perm_err
+        except OSError as os_err:
             self.logger.critical(
                 "%s -> error while moving file",
-                os_exce,
+                os_err,
             )
-        except Exception as exce:  # pylint: disable=broad-exception-caught
-            self.logger.exception("Unexpected %s", exce.__class__.__name__)
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            self.logger.exception("Unexpected %s", err.__class__.__name__)
 
-    def move_file(self, file: Path) -> None:
+    def _move_file(self, file: Path) -> None:
         """Moves the file to its destination path."""
         destination_path: Path = self.extension_paths[file.suffix.lower()]
         self.logger.debug("Got extension path for %s", file)

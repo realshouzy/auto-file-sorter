@@ -12,10 +12,18 @@ from typing import TYPE_CHECKING, Optional, Sequence
 from watchdog.observers import Observer
 
 from .event_handler import FileModifiedEventHandler
-from .json_handler import open_json
+from .json_reader import read_from_json
 
 if TYPE_CHECKING:
     from watchdog.observers.api import BaseObserver
+
+
+__all__: list[str] = ["main"]
+
+
+def _resolved_path(path: str) -> Path:
+    """Returns the absolute path given a string of a path."""
+    return Path(path).resolve()
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -25,56 +33,40 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "-p",
         "--path",
         "--tracked-path",
-        type=Path,
-        help="path to be tracked",
+        type=_resolved_path,
+        help="sets path to be tracked",
         required=True,
     )
     parser.add_argument(
         "-e",
         "--extensions",
         "--extension-paths",
-        type=Path,
-        help="path to extensions.json file",
+        type=_resolved_path,
+        help="set path to extensions.json file",
         required=True,
     )
-    # TODO: Make logging optional for the user
-    # parser.add_argument(
-    #     "-l",
-    #     "--log",
-    #     "--logging",
-    #     action="store_true",
-    #     help="enable logging",
-    # )
-    # parser.add_argument(
-    #     "-nl",
-    #     "--no-log",
-    #     "--no-logging",
-    #     action="store_false",
-    #     help="disable logging",
-    #     dest="logging",
-    # )
     parser.add_argument(
         "-lf",
         "--log-format",
         "--logging-format",
         default=r"%(name)s %(levelname)s %(asctime)s - %(message)s",
         type=str,
-        help="logging format",
+        help="set logging format",
     )
     parser.add_argument(
         "-ll",
         "--log-level",
         "--logging-level",
-        default=20,
+        default=logging.INFO,  # 20
         type=int,
-        help="logging level",
+        help="set logging level",
     )
     parser.add_argument(
         "-d",
         "--debug",
         "--debugging",
         action="store_const",
-        const=10,
+        const=logging.DEBUG,  # 10
         dest="log_level",
         help="set logging level to debugging (10)",
     )
@@ -88,11 +80,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         filemode="w",
     )
     main_logger: logging.Logger = logging.getLogger(main.__name__)
-    main_logger.info("Started automation")
+    main_logger.debug("Got %s", args)
+    main_logger.info(
+        "Started logging with format '%s' and level %s",
+        args.log_format,
+        args.log_level,
+    )
 
     main_logger.info("Getting extension paths from %s", args.extensions)
-    with open_json(args.extensions) as json_file:
-        extension_paths: dict[str, str] = json_file
+    extension_paths: dict[str, Path] = {
+        extension: _resolved_path(path)
+        for extension, path in read_from_json(args.extensions).items()
+    }
 
     event_handler: FileModifiedEventHandler = FileModifiedEventHandler(
         args.path,
@@ -105,7 +104,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     observer.schedule(event_handler, args.path, recursive=True)
     main_logger.debug("Starting observer: %s", observer)
     observer.start()
-    main_logger.info("Started observer: %s", observer)
+    main_logger.info("Started observer: %s", observer.name)
 
     try:
         while True:
@@ -116,7 +115,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     finally:
         if observer.is_alive():
             observer.stop()
-            main_logger.info("Stopped observer: %s", observer)
+            main_logger.info("Stopped observer: %s", observer.name)
         observer.join()
         main_logger.debug("Joined observer: %s", observer)
 
