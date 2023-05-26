@@ -87,11 +87,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         args.log_level,
     )
 
-    main_logger.info("Getting extension paths from %s", args.extensions)
     extension_paths: dict[str, Path] = {
         extension: _resolved_path(path)
         for extension, path in read_from_json(args.extensions).items()
     }
+    main_logger.info("Got extension paths from %s", args.extensions)
 
     event_handler: FileModifiedEventHandler = FileModifiedEventHandler(
         args.path,
@@ -104,7 +104,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     observer.schedule(event_handler, args.path, recursive=True)
     main_logger.debug("Starting observer: %s", observer)
     observer.start()
-    main_logger.info("Started observer: %s", observer.name)
+    main_logger.info("Started observer: '%s'", observer.name)
 
     try:
         while True:

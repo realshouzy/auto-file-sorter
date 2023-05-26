@@ -28,10 +28,10 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         self.tracked_path: Path = tracked_path
         self.extension_paths: dict[str, Path] = extension_paths
 
-        self.logger.info("Initialized handler: %s", self)
+        self.logger.info("Initialized %s", self)
 
     def __str__(self) -> str:
-        return ""
+        return f"{self.__class__.__name__}({self.tracked_path})"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(tracked_path={self.tracked_path!r}, extension_paths={self.extension_paths!r})"
