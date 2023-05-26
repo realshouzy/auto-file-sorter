@@ -38,7 +38,6 @@ import shutil
 import typing
 
 # third party
-import PySimpleGUI
 import watchdog
 ```
 
