@@ -2,13 +2,11 @@
 # -*- coding: UTF-8 -*-
 from __future__ import annotations
 
-import threading
 from pathlib import Path
 from typing import Protocol
 
 from watchdog.events import FileSystemEventHandler
-
-class BaseThread(threading.Thread): ...
+from watchdog.utils import BaseThread
 
 class EventDispatcher(BaseThread):
     def stop(self) -> None: ...
