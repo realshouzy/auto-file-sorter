@@ -11,41 +11,61 @@ from typing import TYPE_CHECKING, Optional, Sequence
 
 from watchdog.observers import Observer
 
+from . import __version__
 from .event_handler import FileModifiedEventHandler
 from .json_reader import read_from_json
 
 if TYPE_CHECKING:
     from watchdog.observers.api import BaseObserver
 
-
 __all__: list[str] = ["main"]
 
 
-def _resolved_path(path: str) -> Path:
+def _resolved_path_from_str(raw_path: str) -> Path:
     """Returns the absolute path given a string of a path."""
-    return Path(path).resolve()
+    return Path(raw_path).resolve()
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     """Runs the program."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
+
     parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"auto-file-sorter {__version__}",
+        help="version of auto-file-sorter",
+    )
+
+    # "run" subcommand
+    subparsers: argparse._SubParsersAction[  # noqa: SLF001
+        argparse.ArgumentParser
+    ] = parser.add_subparsers(title="subcommands", required=True)
+
+    start_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "start",
+        aliases=["run"],
+        help="start the automation",
+    )
+
+    start_parser.add_argument(
         "-p",
         "--path",
         "--tracked-path",
-        type=_resolved_path,
+        type=_resolved_path_from_str,
         help="sets path to be tracked",
         required=True,
     )
-    parser.add_argument(
+    start_parser.add_argument(
         "-e",
         "--extensions",
         "--extension-paths",
-        type=_resolved_path,
-        help="set path to extensions.json file",
+        type=_resolved_path_from_str,
+        help="set path to JSON file",
         required=True,
     )
-    parser.add_argument(
+    start_parser.add_argument(
         "-lf",
         "--log-format",
         "--logging-format",
@@ -53,7 +73,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         type=str,
         help="set logging format",
     )
-    parser.add_argument(
+    start_parser.add_argument(
         "-ll",
         "--log-level",
         "--logging-level",
@@ -61,7 +81,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         type=int,
         help="set logging level",
     )
-    parser.add_argument(
+    start_parser.add_argument(
         "-d",
         "--debug",
         "--debugging",
@@ -70,7 +90,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         dest="log_level",
         help="set logging level to debugging (10)",
     )
-    # TODO: Add ``auto`` sub command for adding the automation to the startups folder
+    # TODO: Add ``auto-start`` sub command for adding the automation to the startups folder
+
     args: argparse.Namespace = parser.parse_args(argv)
 
     logging.basicConfig(
@@ -88,8 +109,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
 
     extension_paths: dict[str, Path] = {
-        extension: _resolved_path(path)
-        for extension, path in read_from_json(args.extensions).items()
+        extension: _resolved_path_from_str(raw_path)
+        for extension, raw_path in read_from_json(args.extensions).items()
     }
     main_logger.info("Got extension paths from %s", args.extensions)
 
@@ -111,13 +132,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             sleep(60)
     except KeyboardInterrupt:
         main_logger.debug("User stopped/interrupted program")
-        return 0
     finally:
         if observer.is_alive():
             observer.stop()
             main_logger.info("Stopped observer: %s", observer.name)
         observer.join()
         main_logger.debug("Joined observer: %s", observer)
+    return 0
 
 
 if __name__ == "__main__":
