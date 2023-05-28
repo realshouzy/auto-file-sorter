@@ -163,4 +163,3 @@ temp/
 *.log
 deactivate/
 .ruff_cache/
-.vscode/
