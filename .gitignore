@@ -164,3 +164,5 @@ temp/
 deactivate/
 .ruff_cache/
 .vscode/
+testenv/
+*.json
