@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import logging
 from typing import Optional, Sequence
 
 from . import __version__
