@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
+import signal
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from typing import TYPE_CHECKING, Self
@@ -22,7 +24,11 @@ __all__: list[str] = ["FileModifiedEventHandler"]
 class FileModifiedEventHandler(FileSystemEventHandler):
     """Handler for file-modified system events."""
 
-    def __init__(self, tracked_path: Path, extension_paths: dict[str, Path]) -> None:
+    def __init__(
+        self,
+        tracked_path: Path,
+        extension_paths: dict[str, Path],
+    ) -> None:
         self.logger: logging.Logger = logging.getLogger(self.__class__.__name__)
 
         self.tracked_path: Path = tracked_path
@@ -31,7 +37,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         self.logger.info("Initialized %s", self)
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}({self.tracked_path})"
+        return f"{self.__class__.__name__}('{self.tracked_path}')"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(tracked_path={self.tracked_path!r}, extension_paths={self.extension_paths!r})"
@@ -39,7 +45,10 @@ class FileModifiedEventHandler(FileSystemEventHandler):
     def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
         return self.__class__, (self.tracked_path, self.extension_paths)
 
-    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
+    def on_modified(  # overriding method from FileSystemEventHandler
+        self,
+        event: DirModifiedEvent | FileModifiedEvent,
+    ) -> None:
         try:
             self.logger.debug(event)
             with ThreadPoolExecutor() as executor:
@@ -49,30 +58,45 @@ class FileModifiedEventHandler(FileSystemEventHandler):
                         executor.submit(self._move_file, child)
                     else:
                         self.logger.debug("Skipping %s", child)
+        # os.kill instead of SystemExit because of threading
         except PermissionError as perm_err:
+            pid: int = os.getpid()
             self.logger.critical(
-                "%s -> please check your OS or Anti-Virus settings",
+                "Permission denied in process %s, please check your OS or antivirus: %s",
+                pid,
                 perm_err,
             )
-            raise SystemExit(1) from perm_err
+            os.kill(pid, signal.SIGINT)
         except OSError as os_err:
+            pid: int = os.getpid()  # type: ignore[no-redef]
             self.logger.critical(
-                "%s -> error while moving file",
+                "Error in process %s while moving file: %s",
+                pid,
                 os_err,
             )
+            os.kill(pid, signal.SIGINT)
         except Exception as err:  # pylint: disable=broad-exception-caught
-            self.logger.exception("Unexpected %s", err.__class__.__name__)
+            pid: int = os.getpid()  # type: ignore[no-redef]
+            self.logger.exception(
+                "Unexpected %s in process %s",
+                err.__class__.__name__,
+                pid,
+            )
+            os.kill(pid, signal.SIGINT)
 
-    def _move_file(self, file: Path) -> None:
+    def _move_file(self, file_name: Path) -> None:
         """Moves the file to its destination path."""
-        destination_path: Path = self.extension_paths[file.suffix.lower()]
-        self.logger.debug("Got extension path for %s", file)
-        destination_path = self.add_date_to_path(destination_path)
+        destination_path: Path = self.extension_paths[file_name.suffix.lower()]
+        self.logger.debug("Got extension path for %s", file_name)
+        dated_destination_path: Path = self.add_date_to_path(destination_path)
         self.logger.debug("Added date to %s", destination_path)
-        destination_path = self.increment_file_name(destination_path, file)
-        self.logger.debug("Processed optional incrementation for %s", file)
-        shutil.move(file, destination_path)
-        self.logger.info("Moved %s to %s", file, destination_path)
+        final_destination_path: Path = self.increment_file_name(
+            dated_destination_path,
+            file_name,
+        )
+        self.logger.debug("Processed optional incrementation for %s", file_name)
+        shutil.move(file_name, final_destination_path)
+        self.logger.log(60, "Moved %s to %s", file_name, final_destination_path)
 
     @staticmethod
     def add_date_to_path(path: Path) -> Path:
