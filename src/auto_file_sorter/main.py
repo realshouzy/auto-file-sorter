@@ -33,7 +33,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "start",
         help="Start the automation",
     )
-    start_parser.set_defaults(handler=handle_start)
+    start_parser.set_defaults(handle=handle_start)
     start_parser.add_argument(
         "-p",
         "--path",
@@ -64,7 +64,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="Configure the program",
     )
     config_parser.set_defaults(
-        handler=handle_config,
+        handle=handle_config,
     )
     config_parser.add_argument(
         "-f",
@@ -112,7 +112,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
-    args.handler(args)
+    args.handle(args)
 
     return 0
 

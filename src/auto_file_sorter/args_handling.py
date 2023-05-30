@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from watchdog.observers.api import BaseObserver
 
-__all__: list[str] = ["handle_config", "handle_start", "resolved_path_from_str"]
+__all__: list[str] = ["handle_config", "handle_start"]
 
 _verbose_output_levels: dict[int, int] = {
     1: logging.ERROR,
