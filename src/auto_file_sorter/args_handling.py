@@ -78,7 +78,7 @@ def handle_start(args: argparse.Namespace) -> None:
         handlers.append(stream_handler)
 
     logging.basicConfig(
-        level=configs.level,
+        level=configs.level if not args.debugging else logging.DEBUG,
         format=configs.format,
         handlers=handlers,
     )

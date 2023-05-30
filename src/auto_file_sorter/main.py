@@ -45,10 +45,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     start_parser.add_argument(
         "-d",
         "--debug",
-        action="store_const",
-        const=logging.DEBUG,  # 10
-        dest="level",
-        help="Set logging level to debugging (10)",
+        action="store_true",
+        dest="debugging",
+        help="Enable debugging by setting logging level to 10",
     )
     start_parser.add_argument(
         "-v",
