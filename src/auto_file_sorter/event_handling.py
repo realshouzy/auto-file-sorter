@@ -87,9 +87,13 @@ class FileModifiedEventHandler(FileSystemEventHandler):
     def _move_file(self, file_name: Path) -> None:
         """Moves the file to its destination path."""
         destination_path: Path = self.extension_paths[file_name.suffix.lower()]
-        self.logger.debug("Got extension path for %s", file_name)
+        self.logger.debug(
+            "Got '%s' extension path for '%s'",
+            destination_path,
+            file_name,
+        )
         dated_destination_path: Path = self.add_date_to_path(destination_path)
-        self.logger.debug("Added date to %s", destination_path)
+        self.logger.debug("Added date to %s", dated_destination_path)
         final_destination_path: Path = self.increment_file_name(
             dated_destination_path,
             file_name,
