@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import logging
 
-from .constants import CONFIGS_LOCATION, DEFAULT_CONFIGS
+from .constants import CONFIGS_LOCATION
 
 __all__: list[str] = ["read_from_configs", "write_to_configs"]
 
@@ -27,7 +27,7 @@ def read_from_configs() -> dict[str, str]:
         reading_logger.info(
             "Unable to find 'configs.json', falling back to an empty configuration",
         )
-        config_dict = DEFAULT_CONFIGS
+        config_dict = {}
         write_to_configs(config_dict)
         raise SystemExit(1) from no_file_err
     except json.JSONDecodeError as json_decode_err:
