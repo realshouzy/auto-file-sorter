@@ -31,7 +31,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="Show version of auto-file-sorter",
     )
     parser.add_argument(
-        "-d",
+        "-D",
         "--debug",
         action="store_true",
         dest="debugging",
@@ -45,17 +45,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="Show output",
     )
 
-    subparsers: argparse._SubParsersAction[  # noqa: SLF001
+    subparsers: argparse._SubParsersAction[  # noqa: SLF001 # type: ignore
         argparse.ArgumentParser
     ] = parser.add_subparsers(title="subcommands", required=True)
 
     # "start" subcommand
-    start_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "start",
-        help="Start the automation",
+    track_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "track",
+        help="Track a directory",
     )
-    start_parser.set_defaults(handle=handle_start_args)
-    start_parser.add_argument(
+    track_parser.set_defaults(handle=handle_start_args)
+    track_parser.add_argument(
         type=resolved_path_from_str,
         dest="tracked_path",
         help="Set path to be tracked",
@@ -64,24 +64,24 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     # "config" subcommand
     config_parser: argparse.ArgumentParser = subparsers.add_parser(
         "config",
-        help="Configure the program",
+        help="Configure the extension paths",
     )
     config_parser.set_defaults(
         handle=handle_config_args,
     )
     config_parser.add_argument(
-        "-A",
+        "-a",
         "--add",
         dest="new_config",
         type=str,
-        help="Add path for extension",
+        help="Add path for an extension",
     )
     config_parser.add_argument(
-        "-D",
+        "-d",
         "--delete",
         dest="config_to_be_deleted",
         type=str,
-        help="Add path for extension",
+        help="Add path for an extension",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
@@ -120,7 +120,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         log_level,
     )
 
-    return args.handle(args)
+    return args.handle(args)  # type: ignore[no-any-return]
 
 
 if __name__ == "__main__":

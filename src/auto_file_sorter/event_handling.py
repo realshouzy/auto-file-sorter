@@ -40,7 +40,10 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         return f"{self.__class__.__name__}('{self.tracked_path}')"
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(tracked_path={self.tracked_path!r}, extension_paths={self.extension_paths!r})"
+        return (
+            f"{self.__class__.__name__}(tracked_path={self.tracked_path!r}, "
+            f"extension_paths={self.extension_paths!r})"
+        )
 
     def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
         return self.__class__, (self.tracked_path, self.extension_paths)

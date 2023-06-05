@@ -15,7 +15,7 @@ __all__: list[str] = ["read_from_configs", "write_to_configs"]
 
 
 def read_from_configs() -> dict[str, str]:
-    """Function wrapping ``open`` for reading from ``configs.json`` with exception handling and logging."""
+    """Function wrapping ``open`` for reading from ``configs.json``."""
     reading_logger: logging.Logger = logging.getLogger(read_from_configs.__name__)
     try:
         reading_logger.debug("Opening %s", CONFIGS_LOCATION)
@@ -43,7 +43,7 @@ def read_from_configs() -> dict[str, str]:
 
 
 def write_to_configs(new_configs: dict[str, str]) -> None:
-    """Function wrapping ``open`` for writing to ``configs.json`` with exception handling and logging."""
+    """Function wrapping ``open`` for writing to ``configs.json``."""
     writing_logger: logging.Logger = logging.getLogger(write_to_configs.__name__)
     try:
         writing_logger.debug("Opening 'extension.json'")
