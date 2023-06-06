@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import argparse
 import logging
+import sys
 from typing import Optional, Sequence, TextIO
 
 from . import __version__
-from .args_handling import handle_config_args, handle_start_args, resolved_path_from_str
-from .constants import LOG_FORMAT, LOG_LOCATION
+from .args_handling import handle_config_args, handle_track_args, resolved_path_from_str
+from .constants import LOG_FORMAT, LOG_LOCATION, MAX_VERBOSITY_LEVEL
 
 __all__: list[str] = ["main"]
 
@@ -22,12 +23,15 @@ _verbose_output_levels: dict[int, int] = {
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     """Runs the program."""
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(prog="auto-file-sorter")
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+        prog="auto-file-sorter",
+        description="Automatically sorts files in a directory based on their extension.",
+    )
     parser.add_argument(
         "-V",
         "--version",
         action="version",
-        version=f"{parser.prog} {__version__}",
+        version=f"%(prog)s {__version__}",
         help="Show version of auto-file-sorter",
     )
     parser.add_argument(
@@ -35,30 +39,37 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "--debug",
         action="store_true",
         dest="debugging",
-        help="Enable debugging by setting logging level to 10",
+        help="Enable debugging by setting logging level to DEBUG",
     )
     parser.add_argument(
         "-v",
         "--verbose",
         action="count",
         default=0,
-        help="Show output",
+        help="Increase output verbosity (up to 3 levels; third requires debugging)",
     )
 
     subparsers: argparse._SubParsersAction[  # noqa: SLF001 # type: ignore
         argparse.ArgumentParser
-    ] = parser.add_subparsers(title="subcommands", required=True)
+    ] = parser.add_subparsers(
+        title="subcommands",
+        description="Track a directory or configure the extension paths",
+        required=True,
+    )
 
-    # "start" subcommand
+    # "track" subcommand
     track_parser: argparse.ArgumentParser = subparsers.add_parser(
         "track",
         help="Track a directory",
     )
-    track_parser.set_defaults(handle=handle_start_args)
+    track_parser.set_defaults(handle=handle_track_args)
     track_parser.add_argument(
         type=resolved_path_from_str,
         dest="tracked_path",
-        help="Set path to be tracked",
+        nargs="?",
+        default=".",
+        metavar="PATH",
+        help="Path to the directory to be tracked (default: current directory)",
     )
 
     # "config" subcommand
@@ -81,7 +92,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "--delete",
         dest="config_to_be_deleted",
         type=str,
-        help="Add path for an extension",
+        help="Delete a extension and its path from the configs",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
@@ -99,9 +110,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     handlers: list[logging.Handler] = [file_handler]
 
-    if 1 <= args.verbose <= 3:  # noqa: PLR2004
+    if 1 <= args.verbose <= MAX_VERBOSITY_LEVEL:
         stream_handler: logging.StreamHandler[TextIO] = logging.StreamHandler()
         stream_handler.setLevel(_verbose_output_levels[args.verbose])
+        stream_handler.setFormatter(logging.Formatter("%(message)s"))
+        handlers.append(stream_handler)
+    elif args.verbose > MAX_VERBOSITY_LEVEL:
+        print(
+            "Maximum verbosity level exceeded. Using maximum level of 3.",
+            file=sys.stderr,
+        )
+        stream_handler: logging.StreamHandler[TextIO] = logging.StreamHandler()
+        stream_handler.setLevel(MAX_VERBOSITY_LEVEL)
         stream_handler.setFormatter(logging.Formatter("%(message)s"))
         handlers.append(stream_handler)
 
