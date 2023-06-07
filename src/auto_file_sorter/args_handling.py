@@ -6,12 +6,17 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from watchdog.observers import Observer
 
 from .configs_handling import read_from_configs, write_to_configs
-from .constants import CONFIGS_LOCATION
+from .constants import (
+    CONFIGS_LOCATION,
+    CONFIGURATION_LOG_LEVEL,
+    EXIT_FAILURE,
+    EXIT_SUCCESS,
+)
 from .event_handling import FileModifiedEventHandler
 
 if TYPE_CHECKING:
@@ -27,7 +32,7 @@ def resolved_path_from_str(raw_path: str) -> Path:
     return Path(raw_path.strip()).resolve()
 
 
-def handle_config_args(args: argparse.Namespace) -> int:
+def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
     """Function handling the for ``config`` subcommand."""
     config_handle_logger: logging.Logger = logging.getLogger(
         handle_config_args.__name__,
@@ -40,9 +45,9 @@ def handle_config_args(args: argparse.Namespace) -> int:
             config_handle_logger.debug("Splitting %s", new_config)
             new_extension, new_path = new_config.split(",")
             config_handle_logger.debug("Got '%s': '%s'", new_extension, new_path)
-            configs[new_extension] = new_path
+            configs[new_extension] = new_path  # adding extension
             config_handle_logger.log(
-                70,
+                CONFIGURATION_LOG_LEVEL,
                 "Updated '%s': '%s' from %s",
                 new_extension,
                 new_path,
@@ -52,9 +57,9 @@ def handle_config_args(args: argparse.Namespace) -> int:
         if args.config_to_be_deleted is not None:
             config_to_be_deleted: str = args.config_to_be_deleted.strip()
             config_handle_logger.debug("Deleting '%s'", config_to_be_deleted)
-            del configs[config_to_be_deleted]
+            del configs[config_to_be_deleted]  # deleting extension
             config_handle_logger.log(
-                70,
+                CONFIGURATION_LOG_LEVEL,
                 "Deleted '%s' from '%s'",
                 config_to_be_deleted,
                 CONFIGS_LOCATION,
@@ -64,16 +69,16 @@ def handle_config_args(args: argparse.Namespace) -> int:
             "Given JSON file is not correctly configured: %s",
             CONFIGS_LOCATION,
         )
-        return 1
-    except Exception as err:  # pylint: disable=broad-exception-caught
+        return EXIT_FAILURE
+    except Exception as err:
         config_handle_logger.exception("Unexpected %s", err.__class__.__name__)
-        return 1
+        return EXIT_FAILURE
 
     write_to_configs(configs)
-    return 0
+    return EXIT_SUCCESS
 
 
-def handle_track_args(args: argparse.Namespace) -> int:
+def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     """Function handling the for ``start`` subcommand."""
     track_handle_logger: logging.Logger = logging.getLogger(handle_track_args.__name__)
 
@@ -87,7 +92,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
             "No paths for extensions defined in '%s'",
             CONFIGS_LOCATION,
         )
-        return 1
+        return EXIT_FAILURE
 
     track_handle_logger.debug("Resolving extension paths")
     extension_paths: dict[str, Path] = {
@@ -123,4 +128,4 @@ def handle_track_args(args: argparse.Namespace) -> int:
             track_handle_logger.info("Stopped observer: %s", observer.name)
         observer.join()
         track_handle_logger.debug("Joined observer: %s", observer)
-    return 0
+    return EXIT_SUCCESS

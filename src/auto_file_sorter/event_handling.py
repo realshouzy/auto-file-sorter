@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING, Self
 
 from watchdog.events import FileSystemEventHandler
 
+from .constants import MOVEMENT_LOG_LEVEL
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -71,15 +73,15 @@ class FileModifiedEventHandler(FileSystemEventHandler):
             )
             os.kill(pid, signal.SIGINT)
         except OSError as os_err:
-            pid: int = os.getpid()  # type: ignore[no-redef]
+            pid: int = os.getpid()
             self.logger.critical(
                 "Error in process %s while moving file: %s",
                 pid,
                 os_err,
             )
             os.kill(pid, signal.SIGINT)
-        except Exception as err:  # pylint: disable=broad-exception-caught
-            pid: int = os.getpid()  # type: ignore[no-redef]
+        except Exception as err:
+            pid: int = os.getpid()
             self.logger.exception(
                 "Unexpected %s in process %s",
                 err.__class__.__name__,
@@ -95,18 +97,23 @@ class FileModifiedEventHandler(FileSystemEventHandler):
             destination_path,
             file_name,
         )
-        dated_destination_path: Path = self.add_date_to_path(destination_path)
+        dated_destination_path: Path = self._add_date_to_path(destination_path)
         self.logger.debug("Added date to %s", dated_destination_path)
-        final_destination_path: Path = self.increment_file_name(
+        final_destination_path: Path = self._increment_file_name(
             dated_destination_path,
             file_name,
         )
         self.logger.debug("Processed optional incrementation for %s", file_name)
         shutil.move(file_name, final_destination_path)
-        self.logger.log(60, "Moved %s to %s", file_name, final_destination_path)
+        self.logger.log(
+            MOVEMENT_LOG_LEVEL,
+            "Moved %s to %s",
+            file_name,
+            final_destination_path,
+        )
 
     @staticmethod
-    def add_date_to_path(path: Path) -> Path:
+    def _add_date_to_path(path: Path) -> Path:
         """Adds current year/month to destination path. If the path
         doesn't already exist, it is created.
         """
@@ -115,7 +122,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         return dated_path
 
     @staticmethod
-    def increment_file_name(destination: Path, source: Path) -> Path:
+    def _increment_file_name(destination: Path, source: Path) -> Path:
         """If a file of the same name already exists in the destination folder,
         the file name is numbered and incremented until the filename is unique.
         Prevents FileExists exception and overwriting other files.
