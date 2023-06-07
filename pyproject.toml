@@ -13,7 +13,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11 :: Only",
-    "Programming Language :: Python :: Implementation :: CPython"
+    "Programming Language :: Python :: Implementation :: CPython",
 ]
 requires-python = ">=3.11"
 dependencies = ["watchdog"]
@@ -38,7 +38,6 @@ disallow_any_generics = true
 disallow_incomplete_defs = true
 disallow_untyped_defs = true
 warn_redundant_casts = true
-ignore_missing_imports = true
 show_error_codes = true
 disallow_subclassing_any = true
 disallow_untyped_decorators = true
@@ -47,6 +46,7 @@ strict_equality = true
 no_implicit_reexport = true
 no_implicit_optional = true
 warn_unused_ignores = true
+disable_error_code = ["no-redef"]
 
 [tool.ruff]
 extend-select = [
@@ -70,12 +70,12 @@ extend-select = [
     "G",
     "COM",
     "BLE",
-    "FBT"
+    "FBT",
 ]
 ignore = [
     "E501",
     "BLE001",
-    "INP001"
+    "INP001",
 ]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -84,3 +84,6 @@ target-version = "py311"
 
 [tool.ruff.pydocstyle]
 convention = "pep257"
+
+[tool.pylint.messages_control]
+disable = "broad-exception-caught"

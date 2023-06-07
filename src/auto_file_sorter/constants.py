@@ -3,6 +3,7 @@
 """Module defining and containing global constants."""
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Final, Literal
 
@@ -11,12 +12,27 @@ __all__: list[str] = [
     "CONFIGS_LOCATION",
     "LOG_LOCATION",
     "LOG_FORMAT",
+    "MOVEMENT_LOG_LEVEL",
+    "CONFIGURATION_LOG_LEVEL",
+    "STREAM_HANDLER_FORMATTER",
     "MAX_VERBOSITY_LEVEL",
+    "EXIT_SUCCESS",
+    "EXIT_FAILURE",
 ]
 
 PROGRAM_LOCATION: Final[Path] = Path(__file__).resolve().parent
 CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath("configs.json")
 LOG_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath("auto-file-sorter.log")
 
-LOG_FORMAT: Final[str] = "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
+LOG_FORMAT: Final[
+    Literal["%(name)s [%(levelname)s] %(asctime)s - %(message)s"]
+] = "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
+MOVEMENT_LOG_LEVEL: Final[Literal[60]] = 60
+CONFIGURATION_LOG_LEVEL: Final[Literal[70]] = 70
+STREAM_HANDLER_FORMATTER: Final[logging.Formatter] = logging.Formatter(
+    "[%(levelname)s] %(message)s",
+)
 MAX_VERBOSITY_LEVEL: Final[Literal[3]] = 3
+
+EXIT_SUCCESS: Final[Literal[0]] = 0
+EXIT_FAILURE: Final[Literal[1]] = 1
