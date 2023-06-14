@@ -3,6 +3,8 @@
 """Module that contains the event handler class to move a file to the correct path."""
 from __future__ import annotations
 
+__all__: list[str] = ["FileModifiedEventHandler"]
+
 import logging
 import os
 import shutil
@@ -13,14 +15,12 @@ from typing import TYPE_CHECKING, Self
 
 from watchdog.events import FileSystemEventHandler
 
-from .constants import MOVEMENT_LOG_LEVEL
+from auto_file_sorter.constants import MOVEMENT_LOG_LEVEL
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
-
-__all__: list[str] = ["FileModifiedEventHandler"]
 
 
 class FileModifiedEventHandler(FileSystemEventHandler):
@@ -31,7 +31,9 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         tracked_path: Path,
         extension_paths: dict[str, Path],
     ) -> None:
-        self.logger: logging.Logger = logging.getLogger(self.__class__.__name__)
+        self.logger: logging.Logger = logging.getLogger(
+            self.__class__.__name__,
+        )
 
         self.tracked_path: Path = tracked_path
         self.extension_paths: dict[str, Path] = extension_paths
@@ -48,17 +50,18 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         )
 
     def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
-        return self.__class__, (self.tracked_path, self.extension_paths)
+        return type(self), (self.tracked_path, self.extension_paths)
 
-    def on_modified(  # overriding method from FileSystemEventHandler
-        self,
-        event: DirModifiedEvent | FileModifiedEvent,
-    ) -> None:
+    # overriding method from FileSystemEventHandler
+    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         try:
             self.logger.debug(event)
             with ThreadPoolExecutor() as executor:
                 for child in self.tracked_path.iterdir():
-                    if child.is_file() and child.suffix.lower() in self.extension_paths:
+                    if (
+                        child.is_file()
+                        and child.suffix.lower() in self.extension_paths
+                    ):
                         self.logger.debug("Processing %s", child)
                         executor.submit(self._move_file, child)
                     else:
@@ -103,7 +106,10 @@ class FileModifiedEventHandler(FileSystemEventHandler):
             dated_destination_path,
             file_name,
         )
-        self.logger.debug("Processed optional incrementation for %s", file_name)
+        self.logger.debug(
+            "Processed optional incrementation for %s",
+            file_name,
+        )
         shutil.move(file_name, final_destination_path)
         self.logger.log(
             MOVEMENT_LOG_LEVEL,
@@ -133,7 +139,9 @@ class FileModifiedEventHandler(FileSystemEventHandler):
 
         increment: int = 1
         while new_path.exists():
-            new_path = destination / f"{source.stem} ({increment}){source.suffix}"
+            new_path = (
+                destination / f"{source.stem} ({increment}){source.suffix}"
+            )
             increment += 1
 
         return new_path

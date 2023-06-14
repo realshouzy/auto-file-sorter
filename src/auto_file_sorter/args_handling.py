@@ -3,6 +3,8 @@
 """Module responsible for handling the args."""
 from __future__ import annotations
 
+__all__: list[str] = ["handle_config_args", "handle_track_args"]
+
 import logging
 from pathlib import Path
 from time import sleep
@@ -10,26 +12,27 @@ from typing import TYPE_CHECKING, Literal
 
 from watchdog.observers import Observer
 
-from .configs_handling import read_from_configs, write_to_configs
-from .constants import (
+from auto_file_sorter.configs_handling import (
+    read_from_configs,
+    write_to_configs,
+)
+from auto_file_sorter.constants import (
     CONFIGS_LOCATION,
     CONFIGURATION_LOG_LEVEL,
     EXIT_FAILURE,
     EXIT_SUCCESS,
 )
-from .event_handling import FileModifiedEventHandler
+from auto_file_sorter.event_handling import FileModifiedEventHandler
 
 if TYPE_CHECKING:
     import argparse
 
     from watchdog.observers.api import BaseObserver
 
-__all__: list[str] = ["handle_config_args", "handle_track_args"]
-
 
 def resolved_path_from_str(raw_path: str) -> Path:
     """Returns the absolute path given a string of a path."""
-    return Path(raw_path.strip()).resolve()
+    return Path(raw_path).resolve()
 
 
 def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
@@ -39,13 +42,37 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
     )
     config_handle_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
+
     try:
         if args.new_config is not None:
-            new_config: str = args.new_config.strip()
-            config_handle_logger.debug("Splitting %s", new_config)
-            new_extension, new_path = new_config.split(",")
-            config_handle_logger.debug("Got '%s': '%s'", new_extension, new_path)
-            configs[new_extension] = new_path  # adding extension
+            config_handle_logger.debug("new_config=%s", repr(args.new_config))
+
+            new_raw_extension, new_raw_path = args.new_config
+
+            new_extension, new_path = (
+                new_raw_extension.strip(),
+                new_raw_path.strip(),
+            )
+
+            if not new_extension or not new_path:
+                config_handle_logger.critical(
+                    "No extension ('%s') or path ('%s')",
+                    new_extension,
+                    new_path,
+                )
+                return EXIT_FAILURE
+
+            if not new_extension.startswith("."):
+                new_extension: str = f".{new_extension}"
+
+            new_path = str(resolved_path_from_str(new_path))
+
+            config_handle_logger.debug(
+                "Got '%s': '%s'",
+                new_extension,
+                new_path,
+            )
+            configs[new_extension] = new_path
             config_handle_logger.log(
                 CONFIGURATION_LOG_LEVEL,
                 "Updated '%s': '%s' from %s",
@@ -54,16 +81,38 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                 CONFIGS_LOCATION,
             )
 
-        if args.config_to_be_deleted is not None:
-            config_to_be_deleted: str = args.config_to_be_deleted.strip()
-            config_handle_logger.debug("Deleting '%s'", config_to_be_deleted)
-            del configs[config_to_be_deleted]  # deleting extension
-            config_handle_logger.log(
-                CONFIGURATION_LOG_LEVEL,
-                "Deleted '%s' from '%s'",
-                config_to_be_deleted,
-                CONFIGS_LOCATION,
+        if args.configs_to_be_deleted is not None:
+            config_handle_logger.debug(
+                "configs_to_be_deleted=%s",
+                repr(args.configs_to_be_deleted),
             )
+
+            for config in args.configs_to_be_deleted:
+                config_handle_logger.debug("Normalizing '%s'", config)
+                extension: str = config.strip()
+                config_handle_logger.debug("Stripped '%s", extension)
+
+                if not extension.startswith("."):
+                    extension: str = f".{extension}"
+
+                config_handle_logger.debug(
+                    "Normalized '%s' to '%s'",
+                    config,
+                    extension,
+                )
+
+                # skip if the extension is not in the configs or the user provided an empty string
+                if extension not in configs.keys() or extension == ".":
+                    config_handle_logger.debug("Skipping '%s'", extension)
+                    continue
+
+                config_handle_logger.debug("Deleting '%s'", extension)
+                del configs[extension]
+                config_handle_logger.log(
+                    CONFIGURATION_LOG_LEVEL,
+                    "Deleted '%s'",
+                    extension,
+                )
     except KeyError:
         config_handle_logger.critical(
             "Given JSON file is not correctly configured: %s",
@@ -80,7 +129,9 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
 
 def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     """Function handling the for ``start`` subcommand."""
-    track_handle_logger: logging.Logger = logging.getLogger(handle_track_args.__name__)
+    track_handle_logger: logging.Logger = logging.getLogger(
+        handle_track_args.__name__,
+    )
 
     tracked_path: Path = args.tracked_path
 
@@ -117,6 +168,7 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     track_handle_logger.debug("Starting observer: %s", observer)
     observer.start()
     track_handle_logger.info("Started observer: '%s'", observer.name)
+
     try:
         while True:
             sleep(60)

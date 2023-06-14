@@ -25,7 +25,7 @@ auto-file-sorter = "auto_file_sorter.main:main"
 where = ["src"]
 
 [tool.black]
-line-length = 88
+line-length = 79
 
 [tool.isort]
 profile = "black"

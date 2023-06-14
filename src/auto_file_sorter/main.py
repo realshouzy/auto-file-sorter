@@ -3,14 +3,20 @@
 """Main module."""
 from __future__ import annotations
 
+__all__: list[str] = ["main"]
+
 import argparse
 import logging
 import sys
 from typing import Literal, Optional, Sequence, TextIO
 
-from . import __version__
-from .args_handling import handle_config_args, handle_track_args, resolved_path_from_str
-from .constants import (
+from auto_file_sorter import __status__, __version__
+from auto_file_sorter.args_handling import (
+    handle_config_args,
+    handle_track_args,
+    resolved_path_from_str,
+)
+from auto_file_sorter.constants import (
     CONFIGURATION_LOG_LEVEL,
     LOG_FORMAT,
     LOG_LOCATION,
@@ -18,8 +24,6 @@ from .constants import (
     MOVEMENT_LOG_LEVEL,
     STREAM_HANDLER_FORMATTER,
 )
-
-__all__: list[str] = ["main"]
 
 _verbose_output_levels: dict[int, int] = {
     1: logging.ERROR,
@@ -38,7 +42,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         "-V",
         "--version",
         action="version",
-        version=f"%(prog)s {__version__}",
+        version=f"%(prog)s {__version__} {__status__}",
         help="Show version of auto-file-sorter",
     )
     parser.add_argument(
@@ -92,14 +96,16 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         "--add",
         dest="new_config",
         type=str,
-        help="Add path for an extension",
+        nargs=2,
+        help="Add path for extension",
     )
     config_parser.add_argument(
         "-d",
         "--delete",
-        dest="config_to_be_deleted",
+        dest="configs_to_be_deleted",
         type=str,
-        help="Delete a extension and its path from the configs",
+        nargs="+",
+        help="Delete extension(s) and its/their path from the configs",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
@@ -141,11 +147,8 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     )
 
     main_logger: logging.Logger = logging.getLogger(main.__name__)
-    main_logger.info(
-        "Started logging with level %s",
-        log_level,
-    )
-    main_logger.debug("Got %s", args)
+    main_logger.info("Started logging with level %s", log_level)
+    main_logger.debug("args=%s", repr(args))
 
     exit_code: Literal[0, 1] = args.handle(args)
 

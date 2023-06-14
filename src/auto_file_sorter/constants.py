@@ -3,10 +3,6 @@
 """Module defining and containing global constants."""
 from __future__ import annotations
 
-import logging
-from pathlib import Path
-from typing import Final, Literal
-
 __all__: list[str] = [
     "PROGRAM_LOCATION",
     "CONFIGS_LOCATION",
@@ -19,6 +15,10 @@ __all__: list[str] = [
     "EXIT_SUCCESS",
     "EXIT_FAILURE",
 ]
+
+import logging
+from pathlib import Path
+from typing import Final, Literal
 
 PROGRAM_LOCATION: Final[Path] = Path(__file__).resolve().parent
 CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath("configs.json")

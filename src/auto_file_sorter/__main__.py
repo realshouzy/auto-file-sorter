@@ -3,7 +3,7 @@
 """Run module as file."""
 from __future__ import annotations
 
-from .main import main
+from auto_file_sorter.main import main
 
 if __name__ == "__main__":
     raise SystemExit(main())
