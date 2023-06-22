@@ -9,8 +9,8 @@ import json
 import logging
 
 from auto_file_sorter.constants import (
+    CONFIG_LOG_LEVEL,
     CONFIGS_LOCATION,
-    CONFIGURATION_LOG_LEVEL,
     EXIT_FAILURE,
 )
 
@@ -26,7 +26,7 @@ def read_from_configs() -> dict[str, str]:
             reading_logger.debug("Loading %s", json_file)
             config_dict: dict[str, str] = json.load(json_file)
         reading_logger.log(
-            CONFIGURATION_LOG_LEVEL,
+            CONFIG_LOG_LEVEL,
             "Read from %s",
             CONFIGS_LOCATION,
         )
@@ -60,7 +60,7 @@ def write_to_configs(new_configs: dict[str, str]) -> None:
             writing_logger.debug("Dumping: %s", new_configs)
             json.dump(new_configs, json_file, indent=4)
         writing_logger.log(
-            CONFIGURATION_LOG_LEVEL,
+            CONFIG_LOG_LEVEL,
             "Added new extension configuration: %s",
             new_configs,
         )

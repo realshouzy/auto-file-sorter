@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Self
 
 from watchdog.events import FileSystemEventHandler
 
-from auto_file_sorter.constants import MOVEMENT_LOG_LEVEL
+from auto_file_sorter.constants import MOVE_LOG_LEVEL
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -112,7 +112,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         )
         shutil.move(file_name, final_destination_path)
         self.logger.log(
-            MOVEMENT_LOG_LEVEL,
+            MOVE_LOG_LEVEL,
             "Moved %s to %s",
             file_name,
             final_destination_path,

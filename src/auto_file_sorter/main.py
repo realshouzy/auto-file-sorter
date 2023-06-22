@@ -17,11 +17,11 @@ from auto_file_sorter.args_handling import (
     resolved_path_from_str,
 )
 from auto_file_sorter.constants import (
-    CONFIGURATION_LOG_LEVEL,
+    CONFIG_LOG_LEVEL,
     DEFAULT_LOG_LOCATION,
     LOG_FORMAT,
     MAX_VERBOSITY_LEVEL,
-    MOVEMENT_LOG_LEVEL,
+    MOVE_LOG_LEVEL,
     STREAM_HANDLER_FORMATTER,
 )
 
@@ -124,8 +124,8 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
 
     # custom "MOVEMENT" and "CONFIGURATION" logging level >= logging.CRITICAL (50)
     # so it can be handeled by the stream handler if verbose logging is enabled
-    logging.addLevelName(MOVEMENT_LOG_LEVEL, "MOVEMENT")
-    logging.addLevelName(CONFIGURATION_LOG_LEVEL, "CONFIGURATION")
+    logging.addLevelName(MOVE_LOG_LEVEL, "MOVE")
+    logging.addLevelName(CONFIG_LOG_LEVEL, "CONFIG")
 
     log_location: Path = (
         args.log_location

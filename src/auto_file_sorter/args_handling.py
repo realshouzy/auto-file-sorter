@@ -17,8 +17,8 @@ from auto_file_sorter.configs_handling import (
     write_to_configs,
 )
 from auto_file_sorter.constants import (
+    CONFIG_LOG_LEVEL,
     CONFIGS_LOCATION,
-    CONFIGURATION_LOG_LEVEL,
     EXIT_FAILURE,
     EXIT_SUCCESS,
 )
@@ -74,7 +74,7 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
             )
             configs[new_extension] = new_path
             config_handle_logger.log(
-                CONFIGURATION_LOG_LEVEL,
+                CONFIG_LOG_LEVEL,
                 "Updated '%s': '%s' from %s",
                 new_extension,
                 new_path,
@@ -109,7 +109,7 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                 config_handle_logger.debug("Deleting '%s'", extension)
                 del configs[extension]
                 config_handle_logger.log(
-                    CONFIGURATION_LOG_LEVEL,
+                    CONFIG_LOG_LEVEL,
                     "Deleted '%s'",
                     extension,
                 )

@@ -8,8 +8,8 @@ __all__: list[str] = [
     "CONFIGS_LOCATION",
     "DEFAULT_LOG_LOCATION",
     "LOG_FORMAT",
-    "MOVEMENT_LOG_LEVEL",
-    "CONFIGURATION_LOG_LEVEL",
+    "MOVE_LOG_LEVEL",
+    "CONFIG_LOG_LEVEL",
     "STREAM_HANDLER_FORMATTER",
     "MAX_VERBOSITY_LEVEL",
     "EXIT_SUCCESS",
@@ -29,8 +29,8 @@ DEFAULT_LOG_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath(
 LOG_FORMAT: Final[
     Literal["%(name)s [%(levelname)s] %(asctime)s - %(message)s"]
 ] = "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
-MOVEMENT_LOG_LEVEL: Final[Literal[60]] = 60
-CONFIGURATION_LOG_LEVEL: Final[Literal[70]] = 70
+MOVE_LOG_LEVEL: Final[Literal[60]] = 60
+CONFIG_LOG_LEVEL: Final[Literal[70]] = 70
 STREAM_HANDLER_FORMATTER: Final[logging.Formatter] = logging.Formatter(
     "[%(levelname)s] %(message)s",
 )
