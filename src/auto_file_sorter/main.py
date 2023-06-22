@@ -8,7 +8,7 @@ __all__: list[str] = ["main"]
 import argparse
 import logging
 import sys
-from typing import Literal, Optional, Sequence, TextIO
+from typing import TYPE_CHECKING, Literal, Optional, Sequence, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
@@ -18,12 +18,15 @@ from auto_file_sorter.args_handling import (
 )
 from auto_file_sorter.constants import (
     CONFIGURATION_LOG_LEVEL,
+    DEFAULT_LOG_LOCATION,
     LOG_FORMAT,
-    LOG_LOCATION,
     MAX_VERBOSITY_LEVEL,
     MOVEMENT_LOG_LEVEL,
     STREAM_HANDLER_FORMATTER,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _verbose_output_levels: dict[int, int] = {
     1: logging.ERROR,
@@ -59,6 +62,15 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         default=0,
         help="Increase output verbosity (up to 3 levels; third requires debugging)",
     )
+    parser.add_argument(
+        "-l",
+        "--log-location",
+        dest="log_location",
+        default=DEFAULT_LOG_LOCATION,
+        type=resolved_path_from_str,
+        metavar="",
+        help="Specify custom location for the log file (default: location of the program)",
+    )
 
     subparsers: argparse._SubParsersAction[  # noqa: SLF001 # type: ignore
         argparse.ArgumentParser
@@ -75,11 +87,11 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     )
     track_parser.set_defaults(handle=handle_track_args)
     track_parser.add_argument(
-        type=resolved_path_from_str,
         dest="tracked_path",
+        type=resolved_path_from_str,
         nargs="?",
         default=".",
-        metavar="PATH",
+        metavar="",
         help="Path to the directory to be tracked (default: current directory)",
     )
 
@@ -88,15 +100,14 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         "config",
         help="Configure the extension paths",
     )
-    config_parser.set_defaults(
-        handle=handle_config_args,
-    )
+    config_parser.set_defaults(handle=handle_config_args)
     config_parser.add_argument(
         "-a",
         "--add",
         dest="new_config",
         type=str,
         nargs=2,
+        metavar="",
         help="Add path for extension",
     )
     config_parser.add_argument(
@@ -105,6 +116,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         dest="configs_to_be_deleted",
         type=str,
         nargs="+",
+        metavar="",
         help="Delete extension(s) and its/their path from the configs",
     )
 
@@ -115,8 +127,14 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     logging.addLevelName(MOVEMENT_LOG_LEVEL, "MOVEMENT")
     logging.addLevelName(CONFIGURATION_LOG_LEVEL, "CONFIGURATION")
 
+    log_location: Path = (
+        args.log_location
+        if args.log_location.is_file()
+        else args.log_location.joinpath("auto-file-sorter.log")
+    )
+
     file_handler: logging.FileHandler = logging.FileHandler(
-        filename=LOG_LOCATION,
+        filename=log_location,
         mode="w",
         encoding="utf-8",
     )
@@ -147,7 +165,11 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     )
 
     main_logger: logging.Logger = logging.getLogger(main.__name__)
-    main_logger.info("Started logging with level %s", log_level)
+    main_logger.info(
+        "Started logging at '%s' with level %s",
+        log_location,
+        log_level,
+    )
     main_logger.debug("args=%s", repr(args))
 
     exit_code: Literal[0, 1] = args.handle(args)

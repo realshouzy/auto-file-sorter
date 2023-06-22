@@ -4,5 +4,5 @@
 
 - [ ] Add ``autostart`` subcommand, which starts the automation on startup
 - [ ] Add ``-l``/``--load`` to ``config``subcommand to load a list of extension paths from a file (``json`` or ``txt``)
-- [ ] Add argument to specify custom location for log file
+- [x] Add argument to specify custom location for log file
 - [ ] Tracking multiple paths simultaneous
