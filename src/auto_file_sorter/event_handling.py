@@ -11,7 +11,7 @@ import shutil
 import signal
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 from watchdog.events import FileSystemEventHandler
 
@@ -20,6 +20,7 @@ from auto_file_sorter.constants import MOVE_LOG_LEVEL
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from typing_extensions import Self
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
 
@@ -50,7 +51,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
         )
 
     def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
-        return type(self), (self.tracked_path, self.extension_paths)
+        return self.__class__, (self.tracked_path, self.extension_paths)
 
     # overriding method from FileSystemEventHandler
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
@@ -58,10 +59,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
             self.logger.debug(event)
             with ThreadPoolExecutor() as executor:
                 for child in self.tracked_path.iterdir():
-                    if (
-                        child.is_file()
-                        and child.suffix.lower() in self.extension_paths
-                    ):
+                    if child.is_file() and child.suffix.lower() in self.extension_paths:
                         self.logger.debug("Processing %s", child)
                         executor.submit(self._move_file, child)
                     else:
@@ -139,9 +137,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
 
         increment: int = 1
         while new_path.exists():
-            new_path = (
-                destination / f"{source.stem} ({increment}){source.suffix}"
-            )
+            new_path = destination / f"{source.stem} ({increment}){source.suffix}"
             increment += 1
 
         return new_path
