@@ -68,7 +68,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         dest="log_location",
         default=DEFAULT_LOG_LOCATION,
         type=resolved_path_from_str,
-        metavar="",
+        metavar="LOCATION",
         help="Specify custom location for the log file (default: location of the program)",
     )
 
@@ -91,7 +91,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         type=resolved_path_from_str,
         nargs="?",
         default=".",
-        metavar="",
+        metavar="PATH",
         help="Path to the directory to be tracked (default: current directory)",
     )
 
@@ -107,7 +107,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         dest="new_config",
         type=str,
         nargs=2,
-        metavar="",
+        metavar="CONFIG",
         help="Add path for extension",
     )
     config_parser.add_argument(
@@ -116,22 +116,37 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         dest="configs_to_be_deleted",
         type=str,
         nargs="+",
-        metavar="",
+        metavar="CONFIG",
         help="Delete extension(s) and its/their path from the configs",
+    )
+    config_parser.add_argument(
+        "-g",
+        "--get-configs",
+        dest="get_configs",
+        type=str,
+        nargs="+",
+        metavar="CONFIG",
+        help="Get the corresponding path for each given extension from the configs",
+    )
+    config_parser.add_argument(
+        "-ga",
+        "--get-all-configs",
+        action="store_true",
+        dest="get_all_configs",
+        help="Get all extensions and their corresponding path from the configs",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
 
-    # custom "MOVEMENT" and "CONFIGURATION" logging level >= logging.CRITICAL (50)
+    # custom "MOVE" and "CONFIG" logging level >= logging.CRITICAL (50)
     # so it can be handeled by the stream handler if verbose logging is enabled
     logging.addLevelName(MOVE_LOG_LEVEL, "MOVE")
     logging.addLevelName(CONFIG_LOG_LEVEL, "CONFIG")
 
-    log_location: Path = (
-        args.log_location
-        if args.log_location.is_file()
-        else args.log_location.joinpath("auto-file-sorter.log")
-    )
+    if args.log_location.is_file():
+        log_location: Path = args.log_location
+    else:
+        log_location: Path = args.log_location.joinpath("auto-file-sorter.log")
 
     file_handler: logging.FileHandler = logging.FileHandler(
         filename=log_location,

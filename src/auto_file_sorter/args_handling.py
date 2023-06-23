@@ -12,10 +12,7 @@ from typing import TYPE_CHECKING, Literal
 
 from watchdog.observers import Observer
 
-from auto_file_sorter.configs_handling import (
-    read_from_configs,
-    write_to_configs,
-)
+from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
     CONFIGS_LOCATION,
@@ -113,6 +110,36 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                     "Deleted '%s'",
                     extension,
                 )
+
+        if args.get_configs is not None:
+            config_handle_logger.debug(
+                "get_configs=%s",
+                repr(args.get_configs),
+            )
+
+            config_handle_logger.debug(
+                "Getting selected configs and storing them in dict",
+            )
+            selected_configs: dict[str, Path] = {
+                config: resolved_path_from_str(configs[config])
+                for config in args.get_configs
+            }
+
+            config_handle_logger.log(
+                CONFIG_LOG_LEVEL,
+                "Printing from %s",
+                selected_configs,
+            )
+
+            for extension, path in selected_configs.items():
+                print(f"{extension}: {path}")
+            return EXIT_SUCCESS
+
+        if args.get_all_configs is not None:
+            for extension, raw_path in configs.items():
+                print(f"{extension}: {resolved_path_from_str(raw_path)}")
+            return EXIT_SUCCESS
+
     except KeyError:
         config_handle_logger.critical(
             "Given JSON file is not correctly configured: %s",
