@@ -165,4 +165,5 @@ deactivate/
 .ruff_cache/
 .vscode/
 testenv/
+versionenv/
 *.json
