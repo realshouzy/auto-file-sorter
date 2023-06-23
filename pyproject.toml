@@ -81,6 +81,7 @@ ignore = [
     "E501",
     "BLE001",
     "INP001",
+    "PLR0912",
 ]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -92,4 +93,4 @@ line-length = 88
 convention = "pep257"
 
 [tool.pylint.messages_control]
-disable = "broad-exception-caught"
+disable = ["broad-exception-caught", "too-many-branches"]
