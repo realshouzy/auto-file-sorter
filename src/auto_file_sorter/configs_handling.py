@@ -8,11 +8,7 @@ __all__: list[str] = ["read_from_configs", "write_to_configs"]
 import json
 import logging
 
-from auto_file_sorter.constants import (
-    CONFIG_LOG_LEVEL,
-    CONFIGS_LOCATION,
-    EXIT_FAILURE,
-)
+from auto_file_sorter.constants import CONFIG_LOG_LEVEL, CONFIGS_LOCATION, EXIT_FAILURE
 
 
 def read_from_configs() -> dict[str, str]:
