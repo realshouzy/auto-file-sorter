@@ -11,11 +11,13 @@ authors = [{ name = "realshouzy" }]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11 :: Only",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
-requires-python = ">=3.11"
-dependencies = ["watchdog"]
+requires-python = ">=3.10"
+dependencies = ["watchdog", "typing_extensions"]
 dynamic = ["version", "readme"]
 
 [project.scripts]
