@@ -3,7 +3,7 @@
 """Module that contains the event handler class to move a file to the correct path."""
 from __future__ import annotations
 
-__all__: list[str] = ["FileModifiedEventHandler"]
+__all__: list[str] = ["OnModifiedEventHandler"]
 
 import logging
 import os
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
 
-class FileModifiedEventHandler(FileSystemEventHandler):
+class OnModifiedEventHandler(FileSystemEventHandler):
     """Handler for file-modified system events."""
 
     def __init__(
@@ -64,7 +64,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
                         executor.submit(self._move_file, child)
                     else:
                         self.logger.debug("Skipping %s", child)
-        # os.kill instead of SystemExit because of threading
+        # using os.kill instead of SystemExit because of threading
         except PermissionError as perm_err:
             pid: int = os.getpid()
             self.logger.critical(
@@ -72,7 +72,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
                 pid,
                 perm_err,
             )
-            os.kill(pid, signal.SIGINT)
+            os.kill(pid, signal.SIGTERM)
         except OSError as os_err:
             pid: int = os.getpid()
             self.logger.critical(
@@ -80,7 +80,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
                 pid,
                 os_err,
             )
-            os.kill(pid, signal.SIGINT)
+            os.kill(pid, signal.SIGTERM)
         except Exception as err:
             pid: int = os.getpid()
             self.logger.exception(
@@ -88,7 +88,7 @@ class FileModifiedEventHandler(FileSystemEventHandler):
                 err.__class__.__name__,
                 pid,
             )
-            os.kill(pid, signal.SIGINT)
+            os.kill(pid, signal.SIGTERM)
 
     def _move_file(self, file_name: Path) -> None:
         """Moves the file to its destination path."""
