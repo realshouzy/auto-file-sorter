@@ -19,7 +19,7 @@ from auto_file_sorter.constants import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
 )
-from auto_file_sorter.event_handling import FileModifiedEventHandler
+from auto_file_sorter.event_handling import OnModifiedEventHandler
 
 if TYPE_CHECKING:
     import argparse
@@ -160,7 +160,8 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
         handle_track_args.__name__,
     )
 
-    tracked_path: Path = args.tracked_path
+    tracked_paths: list[Path] = args.tracked_paths
+    track_handle_logger.debug("tracked_paths=%s", tracked_paths)
 
     track_handle_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
@@ -179,22 +180,28 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     }
     track_handle_logger.info("Got extension paths")
 
-    track_handle_logger.debug(
-        "Creating FileModifiedEventHandler instance tracking '%s'",
-        tracked_path,
-    )
-    event_handler: FileModifiedEventHandler = FileModifiedEventHandler(
-        tracked_path,
-        extension_paths,
-    )
+    observers: list[BaseObserver] = []
+    for path in tracked_paths:
+        track_handle_logger.debug(
+            "Creating FileModifiedEventHandler instance tracking '%s'",
+            path,
+        )
+        event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+            path,
+            extension_paths,
+        )
 
-    track_handle_logger.debug("Creating observer")
-    observer: BaseObserver = Observer()
-    track_handle_logger.debug("Scheduling observer: %s", observer)
-    observer.schedule(event_handler, tracked_path, recursive=True)
-    track_handle_logger.debug("Starting observer: %s", observer)
-    observer.start()
-    track_handle_logger.info("Started observer: '%s'", observer.name)
+        track_handle_logger.debug("Creating observer")
+        observer: BaseObserver = Observer()
+        track_handle_logger.debug("Scheduling observer: %s", observer)
+        observer.schedule(event_handler, path, recursive=True)
+        track_handle_logger.debug("Starting observer: %s", observer)
+        observer.start()
+        track_handle_logger.info("Started observer: '%s'", observer.name)
+        observers.append(observer)
+        track_handle_logger.info("Appended observer: '%s'", observer.name)
+
+    track_handle_logger.debug("observers=%s", observers)
 
     try:
         while True:
@@ -202,9 +209,10 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     except KeyboardInterrupt:
         track_handle_logger.debug("User stopped/interrupted program")
     finally:
-        if observer.is_alive():
-            observer.stop()
-            track_handle_logger.info("Stopped observer: %s", observer.name)
-        observer.join()
-        track_handle_logger.debug("Joined observer: %s", observer)
+        for observer in observers:
+            if observer.is_alive():
+                observer.stop()
+                track_handle_logger.info("Stopped observer: %s", observer.name)
+            observer.join()
+            track_handle_logger.debug("Joined observer: %s", observer)
     return EXIT_SUCCESS

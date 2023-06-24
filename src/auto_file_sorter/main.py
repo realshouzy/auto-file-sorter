@@ -87,12 +87,12 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     )
     track_parser.set_defaults(handle=handle_track_args)
     track_parser.add_argument(
-        dest="tracked_path",
+        dest="tracked_paths",
         type=resolved_path_from_str,
-        nargs="?",
-        default=".",
-        metavar="PATH",
-        help="Path to the directory to be tracked (default: current directory)",
+        nargs="*",
+        default=[resolved_path_from_str(".")],
+        metavar="PATHS",
+        help="Paths to the directories to be tracked (default: current directory)",
     )
 
     # "config" subcommand
@@ -163,13 +163,20 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         handlers.append(stream_handler)
     elif args.verbose > MAX_VERBOSITY_LEVEL:
         print(
-            "Maximum verbosity level exceeded. Using maximum level of 3.",
+            "WARNING: Maximum verbosity level exceeded. Using maximum level of 3.",
             file=sys.stderr,
         )
         stream_handler: logging.StreamHandler[TextIO] = logging.StreamHandler()
         stream_handler.setLevel(MAX_VERBOSITY_LEVEL)
         stream_handler.setFormatter(STREAM_HANDLER_FORMATTER)
         handlers.append(stream_handler)
+
+    if args.verbose >= MAX_VERBOSITY_LEVEL and not args.debugging:
+        print(
+            "WARNING: Using maximum verbosity level, but debugging is disabled.",
+            "To get the full output add the '-D' flag",
+            file=sys.stderr,
+        )
 
     log_level: int = logging.INFO if not args.debugging else logging.DEBUG
 
