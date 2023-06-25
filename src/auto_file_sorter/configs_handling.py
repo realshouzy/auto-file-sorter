@@ -18,7 +18,7 @@ def read_from_configs() -> dict[str, str]:
         reading_logger.debug("Opening %s", CONFIGS_LOCATION)
         with open(CONFIGS_LOCATION, "r", encoding="utf-8") as json_file:
             reading_logger.debug("Loading %s", json_file)
-            config_dict: dict[str, str] = json.load(json_file)
+            configs_dict: dict[str, str] = json.load(json_file)
         reading_logger.log(
             CONFIG_LOG_LEVEL,
             "Read from %s",
@@ -28,8 +28,8 @@ def read_from_configs() -> dict[str, str]:
         reading_logger.warning(
             "Unable to find 'configs.json', falling back to an empty configuration",
         )
-        config_dict = {}
-        write_to_configs(config_dict)
+        configs_dict = {}
+        write_to_configs(configs_dict)
         raise SystemExit(EXIT_FAILURE) from no_file_err
     except json.JSONDecodeError as json_decode_err:
         reading_logger.critical(
@@ -40,7 +40,7 @@ def read_from_configs() -> dict[str, str]:
     except Exception as err:
         reading_logger.exception("Unexpected %s", err.__class__.__name__)
         raise SystemExit(EXIT_FAILURE) from err
-    return config_dict
+    return configs_dict
 
 
 def write_to_configs(new_configs: dict[str, str]) -> None:
