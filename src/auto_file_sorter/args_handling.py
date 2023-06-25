@@ -44,16 +44,14 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
         if args.new_config is not None:
             config_handle_logger.debug("new_config=%s", repr(args.new_config))
 
-            new_raw_extension, new_raw_path = args.new_config
-
             new_extension, new_path = (
-                new_raw_extension.strip(),
-                new_raw_path.strip(),
+                args.new_config[0].strip(),
+                args.new_config[1].strip(),
             )
 
             if not new_extension or not new_path:
                 config_handle_logger.critical(
-                    "No extension ('%s') or path ('%s')",
+                    "No extension ('%s') or path ('%s') were given to be added",
                     new_extension,
                     new_path,
                 )
@@ -199,7 +197,7 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
         observer.start()
         track_handle_logger.info("Started observer: '%s'", observer.name)
         observers.append(observer)
-        track_handle_logger.info("Appended observer: '%s'", observer.name)
+        track_handle_logger.debug("Appended '%s' to %s", observer, observers)
 
     track_handle_logger.debug("observers=%s", observers)
 
