@@ -13,9 +13,7 @@ from auto_file_sorter.constants import CONFIG_LOG_LEVEL, CONFIGS_LOCATION, EXIT_
 
 def read_from_configs() -> dict[str, str]:
     """Function wrapping ``open`` for reading from ``configs.json``."""
-    reading_logger: logging.Logger = logging.getLogger(
-        read_from_configs.__name__,
-    )
+    reading_logger: logging.Logger = logging.getLogger(read_from_configs.__name__)
     try:
         reading_logger.debug("Opening %s", CONFIGS_LOCATION)
         with open(CONFIGS_LOCATION, "r", encoding="utf-8") as json_file:
@@ -47,9 +45,7 @@ def read_from_configs() -> dict[str, str]:
 
 def write_to_configs(new_configs: dict[str, str]) -> None:
     """Function wrapping ``open`` for writing to ``configs.json``."""
-    writing_logger: logging.Logger = logging.getLogger(
-        write_to_configs.__name__,
-    )
+    writing_logger: logging.Logger = logging.getLogger(write_to_configs.__name__)
     try:
         writing_logger.debug("Opening '%s'", CONFIGS_LOCATION)
         with open(CONFIGS_LOCATION, "w", encoding="utf-8") as json_file:

@@ -104,10 +104,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             dated_destination_path,
             file_name,
         )
-        self.logger.debug(
-            "Processed optional incrementation for %s",
-            file_name,
-        )
+        self.logger.debug("Processed optional incrementation for %s", file_name)
         shutil.move(file_name, final_destination_path)
         self.logger.log(
             MOVE_LOG_LEVEL,

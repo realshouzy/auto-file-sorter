@@ -186,11 +186,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
             "To get the full output add the '-D' flag to enable debugging",
         )
 
-    main_logger.info(
-        "Started logging at '%s' with level %s",
-        log_location,
-        log_level,
-    )
+    main_logger.info("Started logging at '%s' with level %s", log_location, log_level)
 
     main_logger.debug("args=%s", repr(args))
 

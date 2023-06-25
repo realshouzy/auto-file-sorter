@@ -62,11 +62,8 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
 
             new_path = str(resolved_path_from_str(new_path))
 
-            config_handle_logger.debug(
-                "Got '%s': '%s'",
-                new_extension,
-                new_path,
-            )
+            config_handle_logger.debug("Got '%s': '%s'", new_extension, new_path)
+
             configs[new_extension] = new_path
             config_handle_logger.log(
                 CONFIG_LOG_LEVEL,
@@ -90,11 +87,7 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                 if not extension.startswith("."):
                     extension: str = f".{extension}"
 
-                config_handle_logger.debug(
-                    "Normalized '%s' to '%s'",
-                    config,
-                    extension,
-                )
+                config_handle_logger.debug("Normalized '%s' to '%s'", config, extension)
 
                 # skip if the extension is not in the configs or the user provided an empty string
                 if extension not in configs.keys() or extension == ".":
@@ -110,10 +103,7 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                 )
 
         if args.get_configs is not None:
-            config_handle_logger.debug(
-                "get_configs=%s",
-                repr(args.get_configs),
-            )
+            config_handle_logger.debug("get_configs=%s", repr(args.get_configs))
 
             config_handle_logger.debug(
                 "Getting selected configs and storing them in dict",
