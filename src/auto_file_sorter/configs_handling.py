@@ -27,7 +27,7 @@ def read_from_configs() -> dict[str, str]:
             CONFIGS_LOCATION,
         )
     except FileNotFoundError as no_file_err:
-        reading_logger.info(
+        reading_logger.warning(
             "Unable to find 'configs.json', falling back to an empty configuration",
         )
         config_dict = {}
