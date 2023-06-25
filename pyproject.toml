@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "auto-file-sorter"
 description = "A file sorting automation"
-keywords = ["automation", "file", "sorter", "auto"]
+keywords = ["automation", "file", "sorter", "auto", "watchdog"]
 license = { text = "MIT" }
 authors = [{ name = "realshouzy" }]
 classifiers = [
@@ -83,7 +83,9 @@ ignore = [
     "E501",
     "BLE001",
     "INP001",
+    "PLR0911",
     "PLR0912",
+    "PLR0915",
 ]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -95,4 +97,9 @@ line-length = 88
 convention = "pep257"
 
 [tool.pylint.messages_control]
-disable = ["broad-exception-caught", "too-many-branches"]
+disable = [
+    "broad-exception-caught", 
+    "too-many-branches", 
+    "too-many-return-statements", 
+    "too-many-statements",
+]
