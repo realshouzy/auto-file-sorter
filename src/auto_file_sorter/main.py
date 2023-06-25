@@ -138,7 +138,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
 
     args: argparse.Namespace = parser.parse_args(argv)
 
-    # custom "MOVE" and "CONFIG" logging level >= logging.CRITICAL (50)
+    # Define custom "MOVE" and "CONFIG" logging level >= logging.CRITICAL (50)
     # so it can be handeled by the stream handler if verbose logging is enabled
     logging.addLevelName(MOVE_LOG_LEVEL, "MOVE")
     logging.addLevelName(CONFIG_LOG_LEVEL, "CONFIG")

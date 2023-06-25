@@ -89,7 +89,7 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
 
                 config_handle_logger.debug("Normalized '%s' to '%s'", config, extension)
 
-                # skip if the extension is not in the configs or the user provided an empty string
+                # Skip if the extension is not in the configs or the user provided an empty string
                 if extension not in configs.keys() or extension == ".":
                     config_handle_logger.debug("Skipping '%s'", extension)
                     continue

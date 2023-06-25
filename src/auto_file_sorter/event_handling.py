@@ -53,7 +53,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
     def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
         return self.__class__, (self.tracked_path, self.extension_paths)
 
-    # overriding method from FileSystemEventHandler
+    # Overriding method from FileSystemEventHandler
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         try:
             self.logger.debug(event)
@@ -64,7 +64,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                         executor.submit(self._move_file, child)
                     else:
                         self.logger.debug("Skipping %s", child)
-        # using os.kill instead of SystemExit because of threading
+        # Using os.kill instead of SystemExit because of threading
         except PermissionError as perm_err:
             pid: int = os.getpid()
             self.logger.critical(
