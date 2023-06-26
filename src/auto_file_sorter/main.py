@@ -11,8 +11,9 @@ from typing import TYPE_CHECKING, Literal, Optional, Sequence, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
-    handle_config_args,
+    handle_read_args,
     handle_track_args,
+    handle_write_args,
     resolved_path_from_str,
 )
 from auto_file_sorter.constants import (
@@ -95,13 +96,13 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Paths to the directories to be tracked (default: current directory)",
     )
 
-    # "config" subcommand
-    config_parser: argparse.ArgumentParser = subparsers.add_parser(
-        "config",
-        help="Configure the extension paths",
+    # "write" subcommand
+    write_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "write",
+        help="Write to the configs",
     )
-    config_parser.set_defaults(handle=handle_config_args)
-    config_parser.add_argument(
+    write_parser.set_defaults(handle=handle_write_args)
+    write_parser.add_argument(
         "-a",
         "--add",
         dest="new_config",
@@ -110,16 +111,16 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         metavar="CONFIG",
         help="Add path for extension",
     )
-    config_parser.add_argument(
+    write_parser.add_argument(
         "-d",
         "--delete",
         dest="configs_to_be_deleted",
         type=str,
         nargs="+",
         metavar="CONFIG",
-        help="Delete extension(s) and its/their path from the configs",
+        help="Delete extension(s) and its/their path from 'configs.json'",
     )
-    config_parser.add_argument(
+    write_parser.add_argument(
         "-l",
         "--load",
         dest="new_configs_file",
@@ -128,21 +129,20 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         metavar="PATH",
         help="Load new configs from a json file into 'configs.json'",
     )
-    config_parser.add_argument(
-        "-g",
-        "--get-configs",
+
+    # "read" subcommand
+    read_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "read",
+        help="Read from the configs",
+    )
+    read_parser.set_defaults(handle=handle_read_args)
+    read_parser.add_argument(
         dest="get_configs",
         type=str,
-        nargs="+",
-        metavar="CONFIG",
-        help="Get the corresponding path for each given extension from the configs",
-    )
-    config_parser.add_argument(
-        "-ga",
-        "--get-all-configs",
-        action="store_true",
-        dest="get_all_configs",
-        help="Get all extensions and their corresponding path from the configs",
+        nargs="*",
+        default=[],
+        metavar="CONFIGS",
+        help="Get the extensions and their path from 'configs.json' (default: all configs)",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
