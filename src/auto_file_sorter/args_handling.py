@@ -5,6 +5,7 @@ from __future__ import annotations
 
 __all__: list[str] = ["handle_config_args", "handle_track_args"]
 
+import json
 import logging
 from pathlib import Path
 from time import sleep
@@ -73,6 +74,31 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                 CONFIGS_LOCATION,
             )
 
+        if args.new_configs_file is not None:
+            config_handle_logger.debug(
+                "new_configs_file='%s'",
+                repr(args.new_configs_file),
+            )
+
+            if args.new_configs_file.suffix.lower() != ".json":
+                config_handle_logger.critical(
+                    "Configs can only be read from json files",
+                )
+                return EXIT_FAILURE
+
+            config_handle_logger.debug("Opening '%s'", args.new_configs_file)
+            with open(args.new_configs_file, "r", encoding="utf-8") as json_file:
+                config_handle_logger.debug("Reading from '%s'", args.new_configs_file)
+                new_configs_from_json: dict[str, str] = json.load(json_file)
+            config_handle_logger.debug("Read from '%s'", args.new_configs_file)
+
+            configs |= new_configs_from_json
+            config_handle_logger.log(
+                CONFIG_LOG_LEVEL,
+                "Loaded '%s' into configs",
+                args.new_configs_file,
+            )
+
         if args.configs_to_be_deleted is not None:
             config_handle_logger.debug(
                 "configs_to_be_deleted=%s",
@@ -123,7 +149,7 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
                 print(f"{extension}: {path}")
             return EXIT_SUCCESS
 
-        if args.get_all_configs is not None:
+        if args.get_all_configs:
             for extension, raw_path in configs.items():
                 print(f"{extension}: {resolved_path_from_str(raw_path)}")
             return EXIT_SUCCESS
@@ -132,6 +158,18 @@ def handle_config_args(args: argparse.Namespace) -> Literal[0, 1]:
         config_handle_logger.critical(
             "Given JSON file is not correctly configured: %s",
             CONFIGS_LOCATION,
+        )
+        return EXIT_FAILURE
+    except FileNotFoundError:
+        config_handle_logger.critical(
+            "Unable to find '%s'",
+            args.new_configs_file,
+        )
+        return EXIT_FAILURE
+    except json.JSONDecodeError:
+        config_handle_logger.critical(
+            "Given JSON file is not correctly formatted: %s",
+            args.new_configs_file,
         )
         return EXIT_FAILURE
     except Exception as err:

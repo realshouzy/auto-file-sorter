@@ -120,6 +120,15 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Delete extension(s) and its/their path from the configs",
     )
     config_parser.add_argument(
+        "-l",
+        "--load",
+        dest="new_configs_file",
+        type=resolved_path_from_str,
+        nargs="+",
+        metavar="PATH",
+        help="Load new configs from a json file into 'configs.json'",
+    )
+    config_parser.add_argument(
         "-g",
         "--get-configs",
         dest="get_configs",
