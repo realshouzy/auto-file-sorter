@@ -28,9 +28,9 @@ if TYPE_CHECKING:
     from watchdog.observers.api import BaseObserver
 
 
-def resolved_path_from_str(raw_path: str) -> Path:
+def resolved_path_from_str(path_as_str: str) -> Path:
     """Returns the absolute path given a string of a path."""
-    return Path(raw_path).resolve()
+    return Path(path_as_str).resolve()
 
 
 def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
