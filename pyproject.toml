@@ -85,7 +85,6 @@ ignore = [
     "INP001",
     "PLR0911",
     "PLR0912",
-    "PLR0915",
 ]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
