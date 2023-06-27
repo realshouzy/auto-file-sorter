@@ -134,7 +134,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
 
         increment: int = 1
         while new_path.exists():
-            new_path = destination / f"{source.stem} ({increment}){source.suffix}"
             increment += 1
+            new_path = destination / f"{source.stem} ({increment}){source.suffix}"
 
         return new_path
