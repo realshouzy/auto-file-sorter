@@ -2,7 +2,7 @@
 
 ## Potential features for the future
 
-- [x] Add ~~``autostart`` subcommand~~ ``-A`` / ``--autostart`` option to ``track`` subcommand, which runs the automation on startup
+- [x] Add ~~``autostart`` subcommand~~ ``-A``/``--autostart`` option to ``track`` subcommand, which runs the automation on startup
 - [x] Add ``-l``/``--load`` to ``config`` subcommand to load a list of extension paths from a file (``json`` or ~~``txt``~~)
 - [x] Add argument to specify custom location for log file
 - [x] Tracking multiple paths simultaneous
@@ -12,5 +12,5 @@
 
 ## Other todo things
 
-- [ ] Adjust ``--autostart`` so no window opens
+- [x] Adjust ``-A``/``--autostart`` so no window opens
 - [ ] Update README

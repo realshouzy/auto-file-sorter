@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 def _add_to_startup() -> None:
-    """Add the ran command to startup."""
+    """Add the ran command to startup by creating a vbs file in the 'Startup' folder."""
     add_to_startup_logger: logging.Logger = logging.getLogger(_add_to_startup.__name__)
     if platform.system() != "Windows":
         add_to_startup_logger.warning(
@@ -41,9 +41,20 @@ def _add_to_startup() -> None:
         return
 
     add_to_startup_logger.debug("argv=%s", sys.argv)
-    argv_arguments: list[str] = sys.argv[1:]
-    argv_arguments.remove("-A")
-    cmd: str = f"auto-file-sorter {' '.join(argv_arguments)}"
+
+    flags_to_be_removed: list[str] = [
+        "-v",
+        "-vv",
+        "-vvv",
+        "--verbose",
+        "-A",
+        "--autostart",
+    ]
+
+    cleaned_sys_argv: list[str] = [
+        arg for arg in sys.argv if arg not in flags_to_be_removed
+    ]
+    cmd: str = " ".join(cleaned_sys_argv)
     add_to_startup_logger.debug("Adding '%s' to autostart", cmd)
 
     startup_folder: Path = Path(os.path.expandvars("%APPDATA%")).joinpath(
@@ -54,16 +65,17 @@ def _add_to_startup() -> None:
         "Startup",
     )
     add_to_startup_logger.debug("Startup folder location: '%s'", startup_folder)
-    path_to_batch_file: Path = startup_folder.joinpath("auto-file-sorter.bat")
-    add_to_startup_logger.debug("Batch file location: '%s'", path_to_batch_file)
+    path_to_vbs: Path = startup_folder.joinpath("auto-file-sorter.vbs")
 
-    add_to_startup_logger.debug("Opening batch file")
-    with open(path_to_batch_file, "w", encoding="utf-8") as batch_file:
-        add_to_startup_logger.debug("Writing to batch file")
-        batch_file.write(f"@echo off\nstart /min {cmd}")
+    add_to_startup_logger.debug("Opening vbs file: '%s'", path_to_vbs)
+    with open(path_to_vbs, "w", encoding="utf-8") as vbs_file:
+        add_to_startup_logger.debug("Writing to vsb file: '%s'", vbs_file)
+        vbs_file.write(
+            f'Set objShell = WScript.CreateObject("WScript.Shell")\nobjShell.Run "{cmd}", 0, True',
+        )
     add_to_startup_logger.info(
         "Added '%s' with '%s' to startup",
-        path_to_batch_file,
+        path_to_vbs,
         cmd,
     )
 
