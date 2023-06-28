@@ -17,8 +17,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 requires-python = ">=3.10"
-dependencies = ["watchdog", "typing_extensions"]
-dynamic = ["version", "readme"]
+dynamic = ["version", "readme", "dependencies"]
 
 [project.scripts]
 auto-file-sorter = "auto_file_sorter.main:main"
@@ -29,9 +28,10 @@ where = ["src"]
 [tool.setuptools.dynamic]
 version = {attr = "auto_file_sorter.__version__"}
 readme = {file = ["README.md"]}
+dependencies = {file = "requirements.txt"}
 
 [tool.black]
-target-version = ["py311"]
+target-version = ["py311", "py310"]
 line-length = 88
 
 [tool.isort]
