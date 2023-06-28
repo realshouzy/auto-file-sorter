@@ -7,6 +7,9 @@ __all__: list[str] = ["handle_write_args", "handle_read_args", "handle_track_arg
 
 import json
 import logging
+import os
+import platform
+import sys
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Literal
@@ -26,6 +29,43 @@ if TYPE_CHECKING:
     import argparse
 
     from watchdog.observers.api import BaseObserver
+
+
+def _add_to_startup() -> None:
+    """Add the ran command to startup."""
+    add_to_startup_logger: logging.Logger = logging.getLogger(_add_to_startup.__name__)
+    if platform.system() != "Windows":
+        add_to_startup_logger.warning(
+            "Adding 'auto-file-sorter' to startup is only supported on Windows.",
+        )
+        return
+
+    add_to_startup_logger.debug("argv=%s", sys.argv)
+    argv_arguments: list[str] = sys.argv[1:]
+    argv_arguments.remove("-A")
+    cmd: str = f"auto-file-sorter {' '.join(argv_arguments)}"
+    add_to_startup_logger.debug("Adding '%s' to autostart", cmd)
+
+    startup_folder: Path = Path(os.path.expandvars("%APPDATA%")).joinpath(
+        "Microsoft",
+        "Windows",
+        "Start Menu",
+        "Programs",
+        "Startup",
+    )
+    add_to_startup_logger.debug("Startup folder location: '%s'", startup_folder)
+    path_to_batch_file: Path = startup_folder.joinpath("auto-file-sorter.bat")
+    add_to_startup_logger.debug("Batch file location: '%s'", path_to_batch_file)
+
+    add_to_startup_logger.debug("Opening batch file")
+    with open(path_to_batch_file, "w", encoding="utf-8") as batch_file:
+        add_to_startup_logger.debug("Writing to batch file")
+        batch_file.write(f"@echo off\nstart /min {cmd}")
+    add_to_startup_logger.info(
+        "Added '%s' with '%s' to startup",
+        path_to_batch_file,
+        cmd,
+    )
 
 
 def resolved_path_from_str(path_as_str: str) -> Path:
@@ -204,6 +244,9 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     track_handle_logger: logging.Logger = logging.getLogger(
         handle_track_args.__name__,
     )
+
+    if args.enable_autostart:
+        _add_to_startup()
 
     tracked_paths: list[Path] = args.tracked_paths
     track_handle_logger.debug("tracked_paths=%s", tracked_paths)

@@ -7,7 +7,7 @@ __all__: list[str] = ["main"]
 
 import argparse
 import logging
-from typing import TYPE_CHECKING, Literal, Optional, Sequence, TextIO
+from typing import Literal, Optional, Sequence, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
@@ -24,9 +24,6 @@ from auto_file_sorter.constants import (
     MOVE_LOG_LEVEL,
     STREAM_HANDLER_FORMATTER,
 )
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 _verbose_output_levels: dict[int, int] = {
     1: logging.WARNING,
@@ -95,6 +92,13 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         metavar="PATHS",
         help="Paths to the directories to be tracked (default: current directory)",
     )
+    track_parser.add_argument(
+        "-A",
+        "--autostart",
+        action="store_true",
+        dest="enable_autostart",
+        help="Add the current command to run on startup (only works on windows)",
+    )
 
     # "write" subcommand
     write_parser: argparse.ArgumentParser = subparsers.add_parser(
@@ -152,13 +156,8 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     logging.addLevelName(MOVE_LOG_LEVEL, "MOVE")
     logging.addLevelName(CONFIG_LOG_LEVEL, "CONFIG")
 
-    if args.log_location.is_file():
-        log_location: Path = args.log_location
-    else:
-        log_location: Path = args.log_location.joinpath("auto-file-sorter.log")
-
     file_handler: logging.FileHandler = logging.FileHandler(
-        filename=log_location,
+        filename=args.log_location,
         mode="w",
         encoding="utf-8",
     )
@@ -195,7 +194,11 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
             "To get the full output add the '-D' flag to enable debugging",
         )
 
-    main_logger.info("Started logging at '%s' with level %s", log_location, log_level)
+    main_logger.info(
+        "Started logging at '%s' with level %s",
+        args.log_location,
+        log_level,
+    )
 
     main_logger.debug("args=%s", repr(args))
 
