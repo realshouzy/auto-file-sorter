@@ -40,7 +40,7 @@ def _add_to_startup() -> None:
         )
         return
 
-    add_to_startup_logger.debug("argv=%s", sys.argv)
+    add_to_startup_logger.debug("sys.argv=%s", sys.argv)
 
     flags_to_be_removed: list[str] = [
         "-v",
@@ -96,7 +96,7 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
 
     try:
         if args.new_config is not None:
-            write_handle_logger.debug("new_config=%s", repr(args.new_config))
+            write_handle_logger.debug("args.new_config=%s", repr(args.new_config))
 
             new_extension, new_path = (
                 args.new_config[0].strip(),
@@ -127,7 +127,7 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
 
         if args.new_configs_file is not None:
             write_handle_logger.debug(
-                "new_configs_file='%s'",
+                "args.new_configs_file='%s'",
                 repr(args.new_configs_file),
             )
 
@@ -152,7 +152,7 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
 
         if args.configs_to_be_deleted is not None:
             write_handle_logger.debug(
-                "configs_to_be_deleted=%s",
+                "args.configs_to_be_deleted=%s",
                 repr(args.configs_to_be_deleted),
             )
 
@@ -221,7 +221,7 @@ def handle_read_args(args: argparse.Namespace) -> Literal[0, 1]:
                 "Printed all the configs",
             )
         else:
-            read_handle_logger.debug("get_configs=%s", repr(args.get_configs))
+            read_handle_logger.debug("args.get_configs=%s", repr(args.get_configs))
 
             read_handle_logger.debug(
                 "Getting selected configs and storing them in dict",
