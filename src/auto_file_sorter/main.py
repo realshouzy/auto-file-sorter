@@ -63,7 +63,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Increase output verbosity (up to 3 levels; third requires debugging)",
     )
     parser.add_argument(
-        "-l",
+        "-L",
         "--log-location",
         dest="log_location",
         default=DEFAULT_LOG_LOCATION,
