@@ -25,6 +25,8 @@ from auto_file_sorter.constants import (
     STREAM_HANDLER_FORMATTER,
 )
 
+main_logger: logging.Logger = logging.getLogger(__name__)
+
 _verbose_output_levels: dict[int, int] = {
     1: logging.WARNING,
     2: logging.INFO,
@@ -180,8 +182,6 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         format=LOG_FORMAT,
         handlers=handlers,
     )
-
-    main_logger: logging.Logger = logging.getLogger(main.__name__)
 
     if args.verbosity_level > MAX_VERBOSITY_LEVEL:
         main_logger.warning(

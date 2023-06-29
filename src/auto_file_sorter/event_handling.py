@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
+event_handling_logger: logging.Logger = logging.getLogger(__name__)
+
 
 class OnModifiedEventHandler(FileSystemEventHandler):
     """Handler for file-modified system events."""
@@ -31,14 +33,10 @@ class OnModifiedEventHandler(FileSystemEventHandler):
         tracked_path: Path,
         extension_paths: dict[str, Path],
     ) -> None:
-        self.logger: logging.Logger = logging.getLogger(
-            self.__class__.__name__,
-        )
-
         self.tracked_path: Path = tracked_path
         self.extension_paths: dict[str, Path] = extension_paths
 
-        self.logger.info("Initialized %s", self)
+        event_handling_logger.info("Initialized %s", self)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}('{self.tracked_path}')"
@@ -52,18 +50,18 @@ class OnModifiedEventHandler(FileSystemEventHandler):
     # Overriding method from FileSystemEventHandler
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
         try:
-            self.logger.debug(event)
+            event_handling_logger.debug(event)
             with ThreadPoolExecutor() as executor:
                 for child in self.tracked_path.iterdir():
                     if child.is_file() and child.suffix.lower() in self.extension_paths:
-                        self.logger.debug("Processing %s", child)
+                        event_handling_logger.debug("Processing %s", child)
                         executor.submit(self._move_file, child)
                     else:
-                        self.logger.debug("Skipping %s", child)
+                        event_handling_logger.debug("Skipping %s", child)
         # Using os.kill instead of SystemExit because of threading
         except PermissionError as perm_err:
             pid: int = os.getpid()
-            self.logger.critical(
+            event_handling_logger.critical(
                 "Permission denied in process %s, please check your OS or antivirus: %s",
                 pid,
                 perm_err,
@@ -71,7 +69,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             os.kill(pid, signal.SIGTERM)
         except OSError as os_err:
             pid: int = os.getpid()
-            self.logger.critical(
+            event_handling_logger.critical(
                 "Error in process %s while moving file: %s",
                 pid,
                 os_err,
@@ -79,7 +77,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             os.kill(pid, signal.SIGTERM)
         except Exception as err:
             pid: int = os.getpid()
-            self.logger.exception(
+            event_handling_logger.exception(
                 "Unexpected %s in process %s",
                 err.__class__.__name__,
                 pid,
@@ -89,20 +87,23 @@ class OnModifiedEventHandler(FileSystemEventHandler):
     def _move_file(self, file_name: Path) -> None:
         """Moves the file to its destination path."""
         destination_path: Path = self.extension_paths[file_name.suffix.lower()]
-        self.logger.debug(
+        event_handling_logger.debug(
             "Got '%s' extension path for '%s'",
             destination_path,
             file_name,
         )
         dated_destination_path: Path = self._add_date_to_path(destination_path)
-        self.logger.debug("Added date to %s", dated_destination_path)
+        event_handling_logger.debug("Added date to %s", dated_destination_path)
         final_destination_path: Path = self._increment_file_name(
             dated_destination_path,
             file_name,
         )
-        self.logger.debug("Processed optional incrementation for %s", file_name)
+        event_handling_logger.debug(
+            "Processed optional incrementation for %s",
+            file_name,
+        )
         shutil.move(file_name, final_destination_path)
-        self.logger.log(
+        event_handling_logger.log(
             MOVE_LOG_LEVEL,
             "Moved %s to %s",
             file_name,
