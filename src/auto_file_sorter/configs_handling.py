@@ -34,7 +34,7 @@ def read_from_configs() -> dict[str, str]:
         raise SystemExit(EXIT_FAILURE) from perm_err
     except OSError as os_err:
         reading_logger.critical(
-            "Operating system-related error occurred while opening and reading from '%s'",
+            "I/O-related error occurred while opening and reading from '%s'",
             CONFIGS_LOCATION,
         )
         raise SystemExit(EXIT_FAILURE) from os_err
@@ -63,21 +63,27 @@ def write_to_configs(new_configs: dict[str, str]) -> None:
         with open(CONFIGS_LOCATION, "w", encoding="utf-8") as json_file:
             writing_logger.debug("Dumping: %s", new_configs)
             json.dump(new_configs, json_file, indent=4)
-    except KeyError as key_err:
+    except TypeError as type_err:
         writing_logger.critical(
             "Given JSON file is not correctly configured: %s",
             CONFIGS_LOCATION,
         )
-        raise SystemExit(EXIT_FAILURE) from key_err
+        raise SystemExit(EXIT_FAILURE) from type_err
     except PermissionError as perm_err:
         writing_logger.critical(
             "Permission denied to open and read from '%s'",
             CONFIGS_LOCATION,
         )
         raise SystemExit(EXIT_FAILURE) from perm_err
+    except FileNotFoundError as no_file_err:
+        writing_logger.critical(
+            "Unable to find '%s'",
+            CONFIGS_LOCATION,
+        )
+        raise SystemExit(EXIT_FAILURE) from no_file_err
     except OSError as os_err:
         writing_logger.critical(
-            "Operating system-related error occurred while opening and reading from '%s'",
+            "I/O-related error occurred while opening and reading from '%s'",
             CONFIGS_LOCATION,
         )
         raise SystemExit(EXIT_FAILURE) from os_err

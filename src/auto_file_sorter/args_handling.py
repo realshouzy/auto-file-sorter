@@ -81,9 +81,15 @@ def _add_to_startup() -> None:
             path_to_vbs,
         )
         return
+    except FileNotFoundError:
+        add_to_startup_logger.critical(
+            "Unable to find '%s'",
+            path_to_vbs,
+        )
+        return
     except OSError:
         add_to_startup_logger.critical(
-            "Operating system-related error occurred while opening and reading from '%s'",
+            "I/O-related error occurred while opening and reading from '%s'",
             path_to_vbs,
         )
         return
