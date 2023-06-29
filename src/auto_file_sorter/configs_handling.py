@@ -19,18 +19,25 @@ def read_from_configs() -> dict[str, str]:
         with open(CONFIGS_LOCATION, "r", encoding="utf-8") as json_file:
             reading_logger.debug("Loading %s", json_file)
             configs_dict: dict[str, str] = json.load(json_file)
-        reading_logger.log(
-            CONFIG_LOG_LEVEL,
-            "Read from %s",
-            CONFIGS_LOCATION,
-        )
     except FileNotFoundError as no_file_err:
-        reading_logger.warning(
+        reading_logger.critical(
             "Unable to find 'configs.json', falling back to an empty configuration",
         )
         configs_dict = {}
         write_to_configs(configs_dict)
         raise SystemExit(EXIT_FAILURE) from no_file_err
+    except PermissionError as perm_err:
+        reading_logger.critical(
+            "Permission denied to open and read from '%s'",
+            CONFIGS_LOCATION,
+        )
+        raise SystemExit(EXIT_FAILURE) from perm_err
+    except OSError as os_err:
+        reading_logger.critical(
+            "Operating system-related error occurred while opening and reading from '%s'",
+            CONFIGS_LOCATION,
+        )
+        raise SystemExit(EXIT_FAILURE) from os_err
     except json.JSONDecodeError as json_decode_err:
         reading_logger.critical(
             "Given JSON file is not correctly formatted: %s",
@@ -40,6 +47,11 @@ def read_from_configs() -> dict[str, str]:
     except Exception as err:
         reading_logger.exception("Unexpected %s", err.__class__.__name__)
         raise SystemExit(EXIT_FAILURE) from err
+    reading_logger.log(
+        CONFIG_LOG_LEVEL,
+        "Read from %s",
+        CONFIGS_LOCATION,
+    )
     return configs_dict
 
 
@@ -51,17 +63,29 @@ def write_to_configs(new_configs: dict[str, str]) -> None:
         with open(CONFIGS_LOCATION, "w", encoding="utf-8") as json_file:
             writing_logger.debug("Dumping: %s", new_configs)
             json.dump(new_configs, json_file, indent=4)
-        writing_logger.log(
-            CONFIG_LOG_LEVEL,
-            "Added new extension configuration: %s",
-            new_configs,
-        )
     except KeyError as key_err:
         writing_logger.critical(
             "Given JSON file is not correctly configured: %s",
             CONFIGS_LOCATION,
         )
         raise SystemExit(EXIT_FAILURE) from key_err
+    except PermissionError as perm_err:
+        writing_logger.critical(
+            "Permission denied to open and read from '%s'",
+            CONFIGS_LOCATION,
+        )
+        raise SystemExit(EXIT_FAILURE) from perm_err
+    except OSError as os_err:
+        writing_logger.critical(
+            "Operating system-related error occurred while opening and reading from '%s'",
+            CONFIGS_LOCATION,
+        )
+        raise SystemExit(EXIT_FAILURE) from os_err
     except Exception as err:
         writing_logger.exception("Unexpected %s", err.__class__.__name__)
         raise SystemExit(EXIT_FAILURE) from err
+    writing_logger.log(
+        CONFIG_LOG_LEVEL,
+        "Added new extension configuration: %s",
+        new_configs,
+    )
