@@ -35,7 +35,6 @@ class OnModifiedEventHandler(FileSystemEventHandler):
     ) -> None:
         self.tracked_path: Path = tracked_path
         self.extension_paths: dict[str, Path] = extension_paths
-
         event_handling_logger.info("Initialized %s", self)
 
     def __str__(self) -> str:

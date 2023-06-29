@@ -224,7 +224,6 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
                 "Deleted '%s'",
                 extension,
             )
-
     write_to_configs(configs)
     return EXIT_SUCCESS
 
