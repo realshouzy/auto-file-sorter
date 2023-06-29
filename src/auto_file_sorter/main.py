@@ -89,10 +89,9 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     track_parser.add_argument(
         dest="tracked_paths",
         type=resolved_path_from_str,
-        nargs="*",
-        default=[resolved_path_from_str(".")],
+        nargs="+",
         metavar="PATHS",
-        help="Paths to the directories to be tracked (default: current directory)",
+        help="Paths to the directories to be tracked",
     )
     track_parser.add_argument(
         "-A",
