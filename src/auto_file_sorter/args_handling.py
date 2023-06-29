@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import platform
+import re
 import sys
 from pathlib import Path
 from time import sleep
@@ -42,18 +43,17 @@ def _add_to_startup() -> None:
 
     add_to_startup_logger.debug("sys.argv=%s", sys.argv)
 
-    flags_to_be_removed: list[str] = [
-        "-v",
-        "-vv",
-        "-vvv",
-        "--verbose",
-        "-A",
-        "--autostart",
-    ]
+    flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
+        r"-v+|--verbose|-A|--autostart",
+    )
 
     cleaned_sys_argv: list[str] = [
-        arg for arg in sys.argv if arg not in flags_to_be_removed
+        arg for arg in sys.argv if flag_patterns_to_be_removed.fullmatch(arg) is None
     ]
+    add_to_startup_logger.debug(
+        "Removed verbosity and autostart flags: '%s'",
+        cleaned_sys_argv,
+    )
     cmd: str = " ".join(cleaned_sys_argv)
     add_to_startup_logger.debug("Adding '%s' to autostart", cmd)
 
