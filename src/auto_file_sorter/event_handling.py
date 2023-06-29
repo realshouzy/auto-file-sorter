@@ -20,7 +20,6 @@ from auto_file_sorter.constants import MOVE_LOG_LEVEL
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from typing_extensions import Self
     from watchdog.events import DirModifiedEvent, FileModifiedEvent
 
 
@@ -49,9 +48,6 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             f"{self.__class__.__name__}(tracked_path={self.tracked_path!r}, "
             f"extension_paths={self.extension_paths!r})"
         )
-
-    def __reduce__(self) -> tuple[type[Self], tuple[Path, dict[str, Path]]]:
-        return self.__class__, (self.tracked_path, self.extension_paths)
 
     # Overriding method from FileSystemEventHandler
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
