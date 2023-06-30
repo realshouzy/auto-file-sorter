@@ -166,4 +166,4 @@ deactivate/
 .vscode/
 testenv/
 versionenv/
-*.json
+src/auto_file_sorter/configs.json
