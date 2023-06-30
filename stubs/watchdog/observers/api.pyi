@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from __future__ import annotations
 
-from pathlib import Path
+from os import PathLike
 from typing import Protocol
 
 from watchdog.events import FileSystemEventHandler
@@ -15,7 +15,7 @@ class BaseObserver(EventDispatcher):
     def schedule(
         self,
         event_handler: FileSystemEventHandler,
-        path: str | Path,
+        path: PathLike[str],
         recursive: bool = False,
     ) -> ObservedWatch: ...
     def start(self) -> None: ...
