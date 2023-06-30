@@ -270,7 +270,7 @@ def handle_read_args(args: argparse.Namespace) -> Literal[0, 1]:
 
 
 def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
-    """Function handling the ``start`` subcommand."""
+    """Function handling the ``track`` subcommand."""
     if args.enable_autostart:
         _add_to_startup()
 
