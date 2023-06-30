@@ -7,7 +7,7 @@ __all__: list[str] = ["main"]
 
 import argparse
 import logging
-from typing import Literal, Optional, Sequence, TextIO
+from typing import Optional, Sequence, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
@@ -35,7 +35,7 @@ _verbose_output_levels: dict[int, int] = {
 }
 
 
-def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
+def main(argv: Optional[Sequence[str]] = None) -> int:
     """Runs the program."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         prog="auto-file-sorter",
@@ -222,7 +222,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
 
     main_logger.debug("args=%s", repr(args))
 
-    exit_code: Literal[0, 1] = args.handle(args)
+    exit_code: int = args.handle(args)
 
     return exit_code
 

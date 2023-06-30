@@ -18,7 +18,7 @@ import re
 import sys
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from watchdog.observers import Observer
 
@@ -113,7 +113,7 @@ def resolved_path_from_str(path_as_str: str) -> Path:
     return Path(path_as_str).resolve()
 
 
-def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
+def handle_write_args(args: argparse.Namespace) -> int:
     """Function handling the ``write`` subcommand."""
     args_handling_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
@@ -243,7 +243,7 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
     return EXIT_SUCCESS
 
 
-def handle_read_args(args: argparse.Namespace) -> Literal[0, 1]:
+def handle_read_args(args: argparse.Namespace) -> int:
     """Function handling the ``read`` subcommand."""
     args_handling_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
@@ -284,7 +284,7 @@ def handle_read_args(args: argparse.Namespace) -> Literal[0, 1]:
     return EXIT_SUCCESS
 
 
-def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
+def handle_track_args(args: argparse.Namespace) -> int:
     """Function handling the ``track`` subcommand."""
     if args.enable_autostart:
         _add_to_startup()
@@ -347,7 +347,7 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
     return EXIT_SUCCESS
 
 
-def handle_locations_args(args: argparse.Namespace) -> Literal[0, 1]:
+def handle_locations_args(args: argparse.Namespace) -> int:
     """Function handling the ``locations`` subcommand."""
     if args.get_log_location:
         print(args.log_location)
