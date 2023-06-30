@@ -14,4 +14,4 @@
 ## Other todo things
 
 - [x] Adjust ``-A`` / ``--autostart`` so no window opens
-- [ ] Update README
+- [x] Update README
