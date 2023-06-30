@@ -11,6 +11,7 @@ from typing import Literal, Optional, Sequence, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
+    handle_locations_args,
     handle_read_args,
     handle_track_args,
     handle_write_args,
@@ -48,7 +49,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Show version of auto-file-sorter",
     )
     parser.add_argument(
-        "-D",
+        "-d",
         "--debug",
         action="store_true",
         dest="debugging",
@@ -63,7 +64,6 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Increase output verbosity (up to 3 levels; third requires debugging)",
     )
     parser.add_argument(
-        "-L",
         "--log-location",
         dest="log_location",
         default=DEFAULT_LOG_LOCATION,
@@ -76,7 +76,8 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         argparse.ArgumentParser
     ] = parser.add_subparsers(
         title="subcommands",
-        description="Track a directory or configure the extension paths",
+        description="Track a directory, configure the extension paths"
+        "or get the locations of the log and config file",
         required=True,
     )
 
@@ -94,7 +95,6 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Paths to the directories to be tracked",
     )
     track_parser.add_argument(
-        "-A",
         "--autostart",
         action="store_true",
         dest="enable_autostart",
@@ -117,18 +117,18 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         help="Add path for extension",
     )
     write_parser.add_argument(
-        "-d",
-        "--delete",
-        dest="configs_to_be_deleted",
+        "-r",
+        "--remove",
+        dest="configs_to_be_removed",
         type=str,
         nargs="+",
         metavar="CONFIG",
-        help="Delete extension(s) and its/their path from 'configs.json'",
+        help="Remove extension(s) and its/their path from 'configs.json'",
     )
     write_parser.add_argument(
-        "-l",
-        "--load",
-        dest="new_configs_file",
+        "-j",
+        "--json",
+        dest="json_file",
         type=resolved_path_from_str,
         nargs="+",
         metavar="PATH",
@@ -148,6 +148,27 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
         default=[],
         metavar="CONFIGS",
         help="Get the extensions and their path from 'configs.json' (default: all configs)",
+    )
+
+    # "locations" subcommand
+    locations_parser: argparse.ArgumentParser = subparsers.add_parser(
+        "locations",
+        help="Output the locations of the log and configs file",
+    )
+    locations_parser.set_defaults(handle=handle_locations_args)
+    locations_parser.add_argument(
+        "-l",
+        "--get-log-location",
+        action="store_true",
+        dest="get_log_location",
+        help="Get the location of the log file",
+    )
+    locations_parser.add_argument(
+        "-c",
+        "--get-config-location",
+        action="store_true",
+        dest="get_config_location",
+        help="Get the location of the config file",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)

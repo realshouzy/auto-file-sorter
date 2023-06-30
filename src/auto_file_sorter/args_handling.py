@@ -3,7 +3,12 @@
 """Module responsible for handling the args."""
 from __future__ import annotations
 
-__all__: list[str] = ["handle_write_args", "handle_read_args", "handle_track_args"]
+__all__: list[str] = [
+    "handle_write_args",
+    "handle_read_args",
+    "handle_track_args",
+    "handle_locations_args",
+]
 
 import json
 import logging
@@ -32,6 +37,8 @@ if TYPE_CHECKING:
     from watchdog.observers.api import BaseObserver
 
 args_handling_logger: logging.Logger = logging.getLogger(__name__)
+
+file_extension_pattern: re.Pattern[str] = re.compile(r"^\.[a-zA-Z0-9]+$")
 
 
 def _add_to_startup() -> None:
@@ -115,8 +122,8 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
         args_handling_logger.debug("args.new_config=%s", repr(args.new_config))
 
         new_extension, new_path = (
-            args.new_config[0].strip(),
-            args.new_config[1].strip(),
+            args.new_config[0].strip().lower(),
+            args.new_config[1].strip().lower(),
         )
 
         if not new_extension or not new_path:
@@ -128,8 +135,12 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
             )
             return EXIT_FAILURE
 
-        if not new_extension.startswith("."):
-            new_extension: str = f".{new_extension.lower()}"
+        if file_extension_pattern.fullmatch(new_extension) is None:
+            args_handling_logger.critical(
+                "Given extension ('%s') is invalid",
+                new_extension,
+            )
+            return EXIT_FAILURE
 
         args_handling_logger.debug("Got '%s': '%s'", new_extension, new_path)
 
@@ -142,75 +153,79 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
             CONFIGS_LOCATION,
         )
 
-    if args.new_configs_file is not None:
+    if args.json_file is not None:
         args_handling_logger.debug(
-            "args.new_configs_file='%s'",
-            repr(args.new_configs_file),
+            "args.json_file='%s'",
+            repr(args.json_file),
         )
 
-        if args.new_configs_file.suffix.lower() != ".json":
+        if args.json_file.suffix.lower() != ".json":
             args_handling_logger.critical(
                 "Configs can only be read from json files",
             )
             return EXIT_FAILURE
 
-        args_handling_logger.debug("Opening '%s'", args.new_configs_file)
+        args_handling_logger.debug("Opening '%s'", args.json_file)
         try:
-            with open(args.new_configs_file, "r", encoding="utf-8") as json_file:
+            with open(args.json_file, "r", encoding="utf-8") as json_file:
                 args_handling_logger.debug(
                     "Reading from '%s'",
-                    args.new_configs_file,
+                    args.json_file,
                 )
                 new_configs_from_json: dict[str, str] = json.load(json_file)
         except FileNotFoundError:
             args_handling_logger.critical(
                 "Unable to find '%s'",
-                args.new_configs_file,
+                args.json_file,
             )
             return EXIT_FAILURE
         except PermissionError:
             args_handling_logger.critical(
                 "Permission denied to open and read from '%s'",
-                args.new_configs_file,
+                args.json_file,
             )
             return EXIT_FAILURE
         except OSError:
             args_handling_logger.critical(
                 "Operating system-related error occurred while opening and reading from '%s'",
-                args.new_configs_file,
+                args.json_file,
             )
             return EXIT_FAILURE
         except json.JSONDecodeError:
             args_handling_logger.critical(
                 "Given JSON file is not correctly formatted: %s",
-                args.new_configs_file,
+                args.json_file,
             )
             return EXIT_FAILURE
-        args_handling_logger.debug("Read from '%s'", args.new_configs_file)
+        args_handling_logger.debug("Read from '%s'", args.json_file)
 
         configs |= new_configs_from_json
         args_handling_logger.log(
             CONFIG_LOG_LEVEL,
             "Loaded '%s' into configs",
-            args.new_configs_file,
+            args.json_file,
         )
 
-    if args.configs_to_be_deleted is not None:
+    if args.configs_to_be_removed is not None:
         args_handling_logger.debug(
-            "args.configs_to_be_deleted=%s",
-            repr(args.configs_to_be_deleted),
+            "args.configs_to_be_removed=%s",
+            repr(args.configs_to_be_removed),
         )
 
-        for config in args.configs_to_be_deleted:
-            extension: str = config.strip()
+        for config in args.configs_to_be_removed:
+            extension: str = config.strip().lower()
             args_handling_logger.debug("Stripped '%s' to '%s'", config, extension)
 
-            if not extension.startswith("."):
-                extension: str = f".{extension.lower()}"
+            if file_extension_pattern.fullmatch(extension) is None:
+                args_handling_logger.warning(
+                    "Skipping invalid extension: '%s'",
+                    extension,
+                )
+                continue
 
             args_handling_logger.debug("Normalized '%s' to '%s'", config, extension)
 
-            args_handling_logger.debug("Deleting '%s'", extension)
+            args_handling_logger.debug("Removing '%s'", extension)
             try:
                 del configs[extension]
             except KeyError:
@@ -221,7 +236,7 @@ def handle_write_args(args: argparse.Namespace) -> Literal[0, 1]:
                 continue
             args_handling_logger.log(
                 CONFIG_LOG_LEVEL,
-                "Deleted '%s'",
+                "Removed '%s'",
                 extension,
             )
     write_to_configs(configs)
@@ -329,4 +344,15 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
                 args_handling_logger.info("Stopped observer: %s", observer.name)
             observer.join()
             args_handling_logger.debug("Joined observer: %s", observer)
+    return EXIT_SUCCESS
+
+
+def handle_locations_args(args: argparse.Namespace) -> Literal[0, 1]:
+    """Function handling the ``locations`` subcommand."""
+    if args.get_log_location:
+        print(args.log_location)
+
+    if args.get_config_location:
+        print(CONFIGS_LOCATION)
+
     return EXIT_SUCCESS
