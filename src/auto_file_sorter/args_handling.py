@@ -247,7 +247,7 @@ def handle_read_args(args: argparse.Namespace) -> Literal[0, 1]:
             }
         except KeyError:
             args_handling_logger.critical(
-                "Unable to get the corresponding path from '%s' of one of the given extensions",
+                "Unable to get the respetive path from '%s' of one of the given extensions",
                 CONFIGS_LOCATION,
             )
             return EXIT_FAILURE
