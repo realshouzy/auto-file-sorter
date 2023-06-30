@@ -4,37 +4,56 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auto-file-sorter"
-version = "1.1"
 description = "A file sorting automation"
-readme = "README.md"
+keywords = ["automation", "file", "sorter", "auto", "watchdog"]
 license = { text = "MIT" }
 authors = [{ name = "realshouzy" }]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: Implementation :: CPython"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
 ]
-requires-python = ">=3.11"
-dependencies = ["watchdog", "PySimpleGUI"]
+requires-python = ">=3.10"
+dynamic = ["version", "readme", "dependencies"]
+
+[project.scripts]
+auto-file-sorter = "auto_file_sorter.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.dynamic]
+version = {attr = "auto_file_sorter.__version__"}
+readme = {file = ["README.md"]}
+dependencies = {file = "requirements.txt"}
+
 [tool.black]
+target-version = ["py311", "py310"]
 line-length = 88
 
 [tool.isort]
 profile = "black"
 
 [tool.mypy]
+mypy_path = "stubs"
 strict = true
 check_untyped_defs = true
 disallow_any_generics = true
 disallow_incomplete_defs = true
 disallow_untyped_defs = true
 warn_redundant_casts = true
-ignore_missing_imports = true
+show_error_codes = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+warn_return_any = true
+strict_equality = true
+no_implicit_reexport = true
+no_implicit_optional = true
+warn_unused_ignores = true
+disable_error_code = ["no-redef"]
 
 [tool.ruff]
 extend-select = [
@@ -58,17 +77,28 @@ extend-select = [
     "G",
     "COM",
     "BLE",
-    "FBT"
+    "FBT",
 ]
 ignore = [
     "E501",
     "BLE001",
-    "INP001"
+    "INP001",
+    "PLR0911",
+    "PLR0912",
 ]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 show-fixes = true
 target-version = "py311"
+line-length = 88
 
 [tool.ruff.pydocstyle]
 convention = "pep257"
+
+[tool.pylint.messages_control]
+disable = [
+    "broad-exception-caught", 
+    "too-many-branches", 
+    "too-many-return-statements", 
+    "too-many-statements",
+]
