@@ -211,7 +211,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Literal[0, 1]:
     if args.verbosity_level >= MAX_VERBOSITY_LEVEL and not args.debugging:
         main_logger.warning(
             "Using maximum verbosity level, but debugging is disabled. "
-            "To get the full output add the '-D' flag to enable debugging",
+            "To get the full output add the '-d' flag to enable debugging",
         )
 
     main_logger.info(
