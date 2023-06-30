@@ -52,7 +52,7 @@ def _add_to_startup() -> None:
     args_handling_logger.debug("sys.argv=%s", sys.argv)
 
     flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
-        r"-v+|--verbose|-A|--autostart",
+        r"-v+|--verbose|--autostart",
     )
 
     cleaned_sys_argv: list[str] = [
