@@ -260,8 +260,8 @@ def handle_read_args(args: argparse.Namespace) -> Literal[0, 1]:
             "Printed the selected configs",
         )
     else:
-        for extension, raw_path in configs.items():
-            print(f"{extension}: {resolved_path_from_str(raw_path)}")
+        for extension, path_as_str in configs.items():
+            print(f"{extension}: {resolved_path_from_str(path_as_str)}")
         args_handling_logger.log(
             CONFIG_LOG_LEVEL,
             "Printed all the configs",
@@ -289,8 +289,8 @@ def handle_track_args(args: argparse.Namespace) -> Literal[0, 1]:
 
     args_handling_logger.debug("Resolving extension paths")
     extension_paths: dict[str, Path] = {
-        extension: resolved_path_from_str(raw_path)
-        for extension, raw_path in configs.items()
+        extension: resolved_path_from_str(path_as_str)
+        for extension, path_as_str in configs.items()
     }
     args_handling_logger.info("Got extension paths")
 
