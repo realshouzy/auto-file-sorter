@@ -2,6 +2,6 @@
 # -*- coding: UTF-8 -*-
 from __future__ import annotations
 
-from .api import BaseObserverSubclassCallable
+from watchdog.observers.api import BaseObserverSubclassCallable
 
 Observer: BaseObserverSubclassCallable
