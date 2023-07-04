@@ -7,7 +7,7 @@ __all__: list[str] = ["main"]
 
 import argparse
 import logging
-from typing import Optional, Sequence, TextIO
+from typing import Final, Optional, Sequence, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
@@ -26,9 +26,9 @@ from auto_file_sorter.constants import (
     STREAM_HANDLER_FORMATTER,
 )
 
-main_logger: logging.Logger = logging.getLogger(__name__)
+_MAIN_LOGGER: Final[logging.Logger] = logging.getLogger(__name__)
 
-_verbose_output_levels: dict[int, int] = {
+_VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
     1: logging.WARNING,
     2: logging.INFO,
     3: logging.DEBUG,
@@ -192,7 +192,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if args.verbosity_level > MAX_VERBOSITY_LEVEL:
             stream_handler.setLevel(MAX_VERBOSITY_LEVEL)
         else:
-            stream_handler.setLevel(_verbose_output_levels[args.verbosity_level])
+            stream_handler.setLevel(_VERBOSE_OUTPUT_LEVELS[args.verbosity_level])
         handlers.append(stream_handler)
 
     log_level: int = logging.INFO if not args.debugging else logging.DEBUG
@@ -204,23 +204,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
 
     if args.verbosity_level > MAX_VERBOSITY_LEVEL:
-        main_logger.warning(
+        _MAIN_LOGGER.warning(
             "Maximum verbosity level exceeded. Using maximum level of 3.",
         )
 
     if args.verbosity_level >= MAX_VERBOSITY_LEVEL and not args.debugging:
-        main_logger.warning(
+        _MAIN_LOGGER.warning(
             "Using maximum verbosity level, but debugging is disabled. "
             "To get the full output add the '-d' flag to enable debugging",
         )
 
-    main_logger.info(
+    _MAIN_LOGGER.info(
         "Started logging at '%s' with level %s",
         args.log_location,
         log_level,
     )
 
-    main_logger.debug("args=%s", repr(args))
+    _MAIN_LOGGER.debug("args=%s", repr(args))
 
     exit_code: int = args.handle(args)
 
