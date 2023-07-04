@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 __version__: Final[str] = "2.0.0"
-__status__: Final[str] = "development"
+__status__: Final[str] = "production"
 __title__: Final[str] = "auto-file-sorter"
 __author__: Final[str] = "realshouzy"
 __license__: Final[str] = "MIT"
