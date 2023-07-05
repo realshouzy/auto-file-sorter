@@ -94,10 +94,10 @@ Ultimately you can directly modify the ``configs.json`` file yourself.
 ### Windows setup
 
 To run the tool on startup, add the ``--autostart`` flag after the ``track`` subcommand. This will add the command to the Startup folder as a ``.vbs`` file, ensuring it runs in the background.
-To avoid the overhead of creating a StreamHandler and prevent overwriting the ``.vbs`` file on every startup, it removes all occurrences of ``--verbose``, any number of ``-v``, and ``--autostart``.
-For instance: ``auto-file-sorter -d -vvv track C:\path\to\be\tracked``
-Which will be transformed into: ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked``
-Which will then be executed by the ``.vbs`` file on startup.
+To avoid the overhead of creating a StreamHandler and prevent overwriting the ``.vbs`` file on every startup, it removes all occurrences of ``--verbose`` / ``-v`` as well as ``--autostart``.
+For instance:
+``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` which will be transformed into ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked``.
+Which will then be run by the ``.vbs`` file on startup.
 
 ### macOS setup
 
