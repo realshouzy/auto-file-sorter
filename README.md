@@ -1,12 +1,9 @@
 # auto-file-sorter
 
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
-[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
-[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
-[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
-![GitHub top language](https://img.shields.io/github/languages/top/realshouzy/auto-file-sorter)
-![Contributors](https://img.shields.io/github/contributors/realshouzy/auto-file-sorter)
+[![Python 3.8](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads)
+[![GitHub top language](https://img.shields.io/github/languages/top/realshouzy/auto-file-sorter)](https://www.python.org)
+[![Contributors](https://img.shields.io/github/contributors/realshouzy/auto-file-sorter)](https://github.com/realshouzy/auto-file-sorter/graphs/contributors)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
 
 **``auto-file-sorter`` is a Python automation tool that tracks a directory and sorts files into their respective folders based on their file extensions.**
@@ -65,7 +62,7 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 
 ### Arguments and flags of ``auto-file-sorter``
 
-- ``--version`` / ``-V``: utputs the installed version and status, either ``production`` or ``development``.
+- ``--version`` / ``-V``: Outputs the installed version and status, either ``production`` or ``development``.
 - ``--debug`` / ``-d``: Sets the logging level to 10 (debugging), enabling more informative debugging logs.
 - ``--verbose`` / ``-v``: Enables verbose outputs. It can be used up to three levels, with each level printing more logs to the stream. The first level prints all logs up to the logging level WARNING, the second level prints all logs up to INFO, and the third level prints all logs up to DEBUG (this requires the debugging flag).
 - ``--log-location``: Specifies the path to a log file. By default, the log file will be located with the source code.
@@ -84,7 +81,7 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 - ``--add`` / ``-a``: Adds an extension and its corresponding path to the ``configs.json`` file. It takes two arguments: the extension and the path to which files with this extension will be saved. If the extension already exists, the path will be overridden.
 - ``--remove`` / ``-r``: Removes one or more extensions and their respective paths from the configuration.
 - ``--json`` / ``-j``: Loads one or more ``json`` files that bind extensions to paths and merges them into the ``configs.json`` file.
-The json files should be structured similarly to the ``configs.json`` file. An example can be found in [``example_configs.json``](/example_configs.json).
+The json files should be structured similarly to the ``configs.json`` file. An example (with Windows paths) can be found in [``example_configs.json``](/example_configs.json).
 Ultimately you can directly modify the ``configs.json`` file yourself.
 
 ### Flags of ``auto-file-sorter locations``
@@ -96,7 +93,11 @@ Ultimately you can directly modify the ``configs.json`` file yourself.
 
 ### Windows setup
 
-To run the tool on startup, add the ``--autostart`` flag after the ``track`` subcommand. This will add the command to the Startup folder as a ``.vbs`` file, ensuring it runs in the background. It removes all occurrences of ``--verbose``, any number of ``-v``, and ``--autostart`` to avoid the overhead of creating a StreamHandler and prevent overwriting the ``.vbs`` file on every startup. For example, ``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` will be transformed into ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked``, which will be executed by the ``.vbs`` file.
+To run the tool on startup, add the ``--autostart`` flag after the ``track`` subcommand. This will add the command to the Startup folder as a ``.vbs`` file, ensuring it runs in the background.
+To avoid the overhead of creating a StreamHandler and prevent overwriting the ``.vbs`` file on every startup, it removes all occurrences of ``--verbose``, any number of ``-v``, and ``--autostart``.
+For instance: ``auto-file-sorter -d -vvv track C:\path\to\be\tracked``
+Which will be transformed into: ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked``
+Which will then be executed by the ``.vbs`` file on startup.
 
 ### macOS setup
 
@@ -113,7 +114,8 @@ Simply place files into the tracked folder, and the tool will automatically sort
 ## Contributing
 
 Contributions are welcome! Please create an issue for any suggestions or bug reports.
+While not mandatory, it would be greatly appreciated if you could also consider using the tools listed in the [``dev-requirements``](/dev-requirements.txt) file for linting and formatting purposes. By following these guidelines, we can ensure code consistency and maintain high standards throughout the project.
 
 ## TODO
 
-Check the [TODO](/TODO.md) file for pending tasks and future improvements.
+Check out the [TODO](/TODO.md) file for a list of pending tasks and future improvements.
