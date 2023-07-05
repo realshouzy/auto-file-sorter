@@ -1,6 +1,8 @@
 # auto-file-sorter
 
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 ![GitHub top language](https://img.shields.io/github/languages/top/realshouzy/auto-file-sorter)
@@ -11,7 +13,7 @@
 
 ## Installation
 
-Make sure you have Python 3.10 or later installed. You can install the package using ``pip``:
+Make sure you have Python 3.8 or later installed. You can install the package using ``pip``:
 
 ```bash
 pip install git+https://github.com/realshouzy/auto-file-sorter.git
@@ -44,6 +46,7 @@ import time
 import typing
 
 # third party
+# import watchdog
 import watchdog.events
 import watchdog.observers
 

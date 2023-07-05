@@ -161,9 +161,7 @@ cython_debug/
 
 temp/
 *.log
-deactivate/
 .ruff_cache/
 .vscode/
-testenv/
-versionenv/
+venv*/
 src/auto_file_sorter/configs.json

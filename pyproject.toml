@@ -6,18 +6,27 @@ build-backend = "setuptools.build_meta"
 name = "auto-file-sorter"
 description = "A file sorting automation"
 keywords = ["automation", "file", "sorter", "auto", "watchdog"]
-license = { text = "MIT" }
-authors = [{ name = "realshouzy" }]
+license = {text = "MIT"}
+authors = [{name = "realshouzy"}]
+maintainers = [{name = "realshouzy"}]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 dynamic = ["version", "readme", "dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/realshouzy/auto-file-sorter"
+Repository = "https://github.com/realshouzy/auto-file-sorter"
+Documentation = "https://github.com/realshouzy/auto-file-sorter/blob/main/README.md#documentation"
+Changelog = "https://github.com/realshouzy/auto-file-sorter/commits/"
 
 [project.optional-dependencies]
 dev = ["mypy", "ruff", "pylint", "pyright", "black", "isort"]
@@ -34,7 +43,7 @@ readme = {file = ["README.md"]}
 dependencies = {file = "requirements.txt"}
 
 [tool.black]
-target-version = ["py311", "py310"]
+target-version = ["py311", "py310", "py39", "py38"]
 line-length = 88
 
 [tool.isort]
