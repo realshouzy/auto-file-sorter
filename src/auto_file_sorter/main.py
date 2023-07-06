@@ -158,14 +158,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     locations_parser.set_defaults(handle=handle_locations_args)
     locations_parser.add_argument(
         "-l",
-        "--get-log-location",
+        "--log",
         action="store_true",
         dest="get_log_location",
         help="Get the location of the log file",
     )
     locations_parser.add_argument(
         "-c",
-        "--get-config-location",
+        "--config",
         action="store_true",
         dest="get_config_location",
         help="Get the location of the config file",

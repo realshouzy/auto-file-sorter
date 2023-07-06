@@ -86,8 +86,8 @@ Ultimately you can directly modify the ``configs.json`` file yourself.
 
 ### Flags of ``auto-file-sorter locations``
 
-- ``--get-log-location`` / ``-l``: Prints the location of the log file.
-- ``--get-config-location`` / ``-c``: Prints the location of the config file.
+- ``--log`` / ``-l``: Prints the location of the log file.
+- ``--config`` / ``-c``: Prints the location of the config file.
 
 ## Run on startup
 
