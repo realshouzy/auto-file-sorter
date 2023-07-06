@@ -1,7 +1,7 @@
 # auto-file-sorter
 
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
-[![Python 3.8](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11-blue.svg)](https://www.python.org/downloads)
 [![GitHub top language](https://img.shields.io/github/languages/top/realshouzy/auto-file-sorter)](https://www.python.org)
 [![Contributors](https://img.shields.io/github/contributors/realshouzy/auto-file-sorter)](https://github.com/realshouzy/auto-file-sorter/graphs/contributors)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
