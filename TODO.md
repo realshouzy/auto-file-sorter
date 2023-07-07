@@ -7,7 +7,8 @@
 - [x] Add argument to specify custom location for log file
 - [x] Tracking multiple paths simultaneous
 - [x] Add option to ``read`` from config (*also ``write``)
-- [x] Add a option to output the loaction of the log and configs file
+- [x] Add option to output the loaction of the log and configs file
+- [ ] Add option to specify a location for unknown file extensions; skips them by default (which is already the case)
 
 ## Bug fixes
 
