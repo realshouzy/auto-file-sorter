@@ -12,6 +12,8 @@
 
 ## Bug fixes
 
+- [ ] Fix proper exception handling and cleanup during event handling
+
 ## Other todo things
 
 - [x] Adjust ``-A`` / ``--autostart`` so no window opens
