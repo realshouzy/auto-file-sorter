@@ -135,4 +135,4 @@ Check out the [TODO](/TODO.md) file for a list of pending tasks and future impro
 
 ## Credits
 
-This project was originally inspired by Kalle Hallden's [desktop_cleaner]((https://github.com/KalleHallden/desktop_cleaner)) project.
+This project was originally inspired by Kalle Hallden's [desktop_cleaner](https://github.com/KalleHallden/desktop_cleaner) project.
