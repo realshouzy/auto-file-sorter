@@ -110,10 +110,10 @@ def _add_to_startup() -> None:
 
 def resolved_path_from_str(path_as_str: str) -> Path:
     """Returns the absolute path given a string of a path."""
-    return Path(path_as_str).resolve()
+    return Path(path_as_str.strip()).resolve()
 
 
-def handle_write_args(args: argparse.Namespace) -> int:
+def handle_write_args(args: argparse.Namespace) -> int:  # noqa: PLR0915
     """Function handling the ``write`` subcommand."""
     _ARGS_HANDLING_LOGGER.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
@@ -122,13 +122,23 @@ def handle_write_args(args: argparse.Namespace) -> int:
         _ARGS_HANDLING_LOGGER.debug("args.new_config=%s", repr(args.new_config))
 
         new_extension, new_path = (
-            args.new_config[0].strip().lower(),
-            args.new_config[1].strip().lower(),
+            args.new_config[0].lower().replace(" ", ""),
+            args.new_config[1].strip(),
+        )
+        _ARGS_HANDLING_LOGGER.debug(
+            "Normalized '%s' to '%s'",
+            args.new_config[0],
+            new_extension,
+        )
+        _ARGS_HANDLING_LOGGER.debug(
+            "Normalized '%s' to '%s'",
+            args.new_config[1],
+            new_path,
         )
 
         if not new_extension or not new_path:
             _ARGS_HANDLING_LOGGER.critical(
-                "Either an empty extension ('%s') or an empty path ('%s') was specified to add, "
+                "Either an empty extension '%s' or an empty path '%s' was specified to add, "
                 "which is invalid",
                 new_extension,
                 new_path,
@@ -137,7 +147,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
 
         if _FILE_EXTENSION_PATTERN.fullmatch(new_extension) is None:
             _ARGS_HANDLING_LOGGER.critical(
-                "Given extension ('%s') is invalid",
+                "Given extension '%s' is invalid",
                 new_extension,
             )
             return EXIT_FAILURE
@@ -213,7 +223,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
         )
 
         for config in args.configs_to_be_removed:
-            extension: str = config.strip().lower()
+            extension: str = config.replace(" ", "").lower()
             _ARGS_HANDLING_LOGGER.debug("Stripped '%s' to '%s'", config, extension)
 
             if _FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
@@ -255,17 +265,35 @@ def handle_read_args(args: argparse.Namespace) -> int:
             "Getting selected configs and storing them in dict",
         )
 
-        try:
-            selected_configs: dict[str, Path] = {
-                config: resolved_path_from_str(configs[config])
-                for config in args.get_configs
-            }
-        except KeyError:
-            _ARGS_HANDLING_LOGGER.critical(
-                "Unable to get the respetive path from '%s' of one of the given extensions",
-                CONFIGS_LOCATION,
-            )
-            return EXIT_FAILURE
+        selected_configs: dict[str, Path] = {}
+
+        for config in args.get_configs:
+            extension: str = config.replace(" ", "").lower()
+
+            if _FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
+                _ARGS_HANDLING_LOGGER.warning(
+                    "Ignoring invalid extension '%s'",
+                    extension,
+                )
+                continue
+
+            if extension not in configs:
+                _ARGS_HANDLING_LOGGER.warning(
+                    "Ignoring '%s', because it is not in the configs",
+                    extension,
+                )
+                continue
+
+            try:
+                selected_configs[extension] = resolved_path_from_str(configs[extension])
+            except KeyError:
+                _ARGS_HANDLING_LOGGER.warning(
+                    "Unable to get the respetive path from '%s' "
+                    "of one of the given extensions '%s'",
+                    CONFIGS_LOCATION,
+                    extension,
+                )
+                continue
 
         _ARGS_HANDLING_LOGGER.debug("Printing from %s", selected_configs)
         for extension, path in selected_configs.items():
