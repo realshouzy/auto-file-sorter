@@ -26,7 +26,7 @@ from auto_file_sorter.constants import (
     STREAM_HANDLER_FORMATTER,
 )
 
-_MAIN_LOGGER: Final[logging.Logger] = logging.getLogger(__name__)
+main_logger: logging.Logger = logging.getLogger(__name__)
 
 _VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
     1: logging.WARNING,
@@ -204,23 +204,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
 
     if args.verbosity_level > MAX_VERBOSITY_LEVEL:
-        _MAIN_LOGGER.warning(
+        main_logger.warning(
             "Maximum verbosity level exceeded. Using maximum level of 3.",
         )
 
     if args.verbosity_level >= MAX_VERBOSITY_LEVEL and not args.debugging:
-        _MAIN_LOGGER.warning(
+        main_logger.warning(
             "Using maximum verbosity level, but debugging is disabled. "
             "To get the full output add the '-d' flag to enable debugging",
         )
 
-    _MAIN_LOGGER.info(
+    main_logger.info(
         "Started logging at '%s' with level %s",
         args.log_location,
         log_level,
     )
 
-    _MAIN_LOGGER.debug("args=%s", repr(args))
+    main_logger.debug("args=%s", repr(args))
 
     exit_code: int = args.handle(args)
 
