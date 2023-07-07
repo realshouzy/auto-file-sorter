@@ -128,3 +128,11 @@ While not mandatory, it would be greatly appreciated if you could also consider 
 ## TODO
 
 Check out the [TODO](/TODO.md) file for a list of pending tasks and future improvements.
+
+## License
+
+[MIT](/LICENSE)
+
+## Credits
+
+This project was originally inspired by Kalle Hallden's [desktop_cleaner]((https://github.com/KalleHallden/desktop_cleaner)) project.
