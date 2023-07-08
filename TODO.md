@@ -10,11 +10,11 @@
 - [x] Add option to output the loaction of the log and configs file
 - [ ] Add option to specify a location for unknown file extensions; skips them by default (which is already the case)
 
-## Bug fixes
+## Bugs and security issues
 
 - [ ] Fix proper exception handling and cleanup during event handling
 
-## Other todo things
+## Other
 
 - [x] Adjust ``-A`` / ``--autostart`` so no window opens
 - [x] Update README
