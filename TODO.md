@@ -8,7 +8,7 @@
 - [x] Tracking multiple paths simultaneous
 - [x] Add option to ``read`` from config (*also ``write``)
 - [x] Add option to output the loaction of the log and configs file
-- [ ] Add option to specify a location for unknown file extensions; skips them by default (which is already the case)
+- [ ] Add option to specify a location for ~~unknown~~ undefined file extensions; skips them by default (which is already the case)
 
 ## Bugs and security issues
 
@@ -18,3 +18,4 @@
 
 - [x] Adjust ``-A`` / ``--autostart`` so no window opens
 - [x] Update README
+- [ ] Add ``pre-commit``
