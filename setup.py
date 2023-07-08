@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-"""Setup script."""
+"""Setup script, only to specify the url (Home-page)."""
 from __future__ import annotations
 
 from setuptools import setup
