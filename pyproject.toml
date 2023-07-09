@@ -105,6 +105,9 @@ show-fixes = true
 target-version = "py311"
 line-length = 88
 
+[tool.ruff.isort]
+required-imports = ["from __future__ import annotations"]
+
 [tool.ruff.pydocstyle]
 convention = "pep257"
 
