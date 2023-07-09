@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Module defining and containing global constants."""
 from __future__ import annotations
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Module responsible for handling the JSON configs."""
 from __future__ import annotations
 
