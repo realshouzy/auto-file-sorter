@@ -1,7 +1,7 @@
 -r requirements.txt
-mypy
-ruff
-pylint
-pyright
 black
 isort
+mypy
+pylint
+pyright
+ruff
