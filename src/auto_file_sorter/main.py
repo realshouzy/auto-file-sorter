@@ -7,7 +7,7 @@ __all__: list[str] = ["main"]
 
 import argparse
 import logging
-from typing import Final, Optional, Sequence, TextIO
+from typing import TYPE_CHECKING, Final, TextIO
 
 from auto_file_sorter import __status__, __version__
 from auto_file_sorter.args_handling import (
@@ -26,6 +26,9 @@ from auto_file_sorter.constants import (
     STREAM_HANDLER_FORMATTER,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 main_logger: logging.Logger = logging.getLogger(__name__)
 
 _VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
@@ -35,8 +38,8 @@ _VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
 }
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
-    """Runs the program."""
+def main(argv: Sequence[str] | None = None) -> int:
+    """Run the program."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         prog="auto-file-sorter",
         description="Automatically sorts files in a directory based on their extension.",

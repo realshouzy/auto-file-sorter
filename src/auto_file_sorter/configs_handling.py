@@ -14,10 +14,10 @@ configs_handling_logger: logging.Logger = logging.getLogger(__name__)
 
 
 def read_from_configs() -> dict[str, str]:
-    """Function wrapping ``open`` for reading from ``configs.json``."""
+    """Warp ``open`` for easy reading from ``configs.json``."""
     try:
         configs_handling_logger.debug("Opening %s", CONFIGS_LOCATION)
-        with open(CONFIGS_LOCATION, "r", encoding="utf-8") as json_file:
+        with CONFIGS_LOCATION.open(mode="r", encoding="utf-8") as json_file:
             configs_handling_logger.debug("Loading %s", json_file)
             configs_dict: dict[str, str] = json.load(json_file)
     except FileNotFoundError as no_file_err:
@@ -57,10 +57,10 @@ def read_from_configs() -> dict[str, str]:
 
 
 def write_to_configs(new_configs: dict[str, str]) -> None:
-    """Function wrapping ``open`` for writing to ``configs.json``."""
+    """Warp ``open`` for easy writing to ``configs.json``."""
     try:
         configs_handling_logger.debug("Opening '%s'", CONFIGS_LOCATION)
-        with open(CONFIGS_LOCATION, "w", encoding="utf-8") as json_file:
+        with CONFIGS_LOCATION.open(mode="w", encoding="utf-8") as json_file:
             configs_handling_logger.debug("Dumping: %s", new_configs)
             json.dump(new_configs, json_file, indent=4)
     except TypeError as type_err:

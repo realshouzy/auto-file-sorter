@@ -77,7 +77,7 @@ def _add_to_startup() -> None:
 
     args_handling_logger.debug("Opening vbs file: '%s'", path_to_vbs)
     try:
-        with open(path_to_vbs, "w", encoding="utf-8") as vbs_file:
+        with path_to_vbs.open(mode="r", encoding="utf-8") as vbs_file:
             args_handling_logger.debug("Writing to vsb file: '%s'", vbs_file)
             vbs_file.write(
                 'Set objShell = WScript.CreateObject("WScript.Shell")\n'
@@ -109,12 +109,12 @@ def _add_to_startup() -> None:
 
 
 def resolved_path_from_str(path_as_str: str) -> Path:
-    """Returns the absolute path given a string of a path."""
+    """Return the absolute path given a string of a path."""
     return Path(path_as_str.strip()).resolve()
 
 
-def handle_write_args(args: argparse.Namespace) -> int:  # noqa: PLR0915
-    """Function handling the ``write`` subcommand."""
+def handle_write_args(args: argparse.Namespace) -> int:  # noqa: C901, PLR0915
+    """Handle the ``write`` subcommand."""
     args_handling_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
 
@@ -177,7 +177,7 @@ def handle_write_args(args: argparse.Namespace) -> int:  # noqa: PLR0915
 
         args_handling_logger.debug("Opening '%s'", args.json_file)
         try:
-            with open(args.json_file, "r", encoding="utf-8") as json_file:
+            with args.json_file.open() as json_file:
                 args_handling_logger.debug(
                     "Reading from '%s'",
                     args.json_file,
@@ -254,7 +254,7 @@ def handle_write_args(args: argparse.Namespace) -> int:  # noqa: PLR0915
 
 
 def handle_read_args(args: argparse.Namespace) -> int:
-    """Function handling the ``read`` subcommand."""
+    """Handle the ``read`` subcommand."""
     args_handling_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
 
@@ -312,8 +312,8 @@ def handle_read_args(args: argparse.Namespace) -> int:
     return EXIT_SUCCESS
 
 
-def handle_track_args(args: argparse.Namespace) -> int:
-    """Function handling the ``track`` subcommand."""
+def handle_track_args(args: argparse.Namespace) -> int:  # noqa: C901
+    """Handle the ``track`` subcommand."""
     if args.enable_autostart:
         _add_to_startup()
 
@@ -398,7 +398,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
 
 
 def handle_locations_args(args: argparse.Namespace) -> int:
-    """Function handling the ``locations`` subcommand."""
+    """Handle the ``locations`` subcommand."""
     if args.get_log_location:
         print(args.log_location)
 

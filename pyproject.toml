@@ -68,36 +68,46 @@ warn_unused_ignores = true
 disable_error_code = ["no-redef"]
 
 [tool.ruff]
-extend-select = [
-    "F",
-    "A",
-    "B",
-    "INP",
-    "I",
-    "PYI",
-    "RSE",
-    "RET",
-    "Q",
-    "SLF",
-    "SIM",
-    "TID",
-    "TCH",
-    "ARG",
-    "PL",
-    "RUF",
-    "C4",
-    "G",
-    "COM",
-    "BLE",
-    "FBT",
-]
+select = ["ALL"]
+# Old extend-select (backup)
+# extend-select = [
+#     "F",
+#     "A",
+#     "B",
+#     "INP",
+#     "I",
+#     "PYI",
+#     "RSE",
+#     "RET",
+#     "Q",
+#     "SLF",
+#     "SIM",
+#     "TID",
+#     "TCH",
+#     "ARG",
+#     "PL",
+#     "RUF",
+#     "C4",
+#     "G",
+#     "COM",
+#     "BLE",
+#     "FBT",
+# ]
 ignore = [
     "E501",
     "BLE001",
     "INP001",
     "PLR0911",
     "PLR0912",
+    "PGH003",
+    "ANN101",
+    "D107",
+    "D105",
+    "T201",
+    "D205",
+    "DTZ005",
 ]
+fixable = ["ALL"]
 unfixable = []
 exclude = ["stubs"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"

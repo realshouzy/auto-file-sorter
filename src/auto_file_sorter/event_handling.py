@@ -9,8 +9,8 @@ import logging
 import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
-from typing import TYPE_CHECKING, Optional
+from datetime import datetime
+from typing import TYPE_CHECKING
 
 from watchdog.events import FileSystemEventHandler
 
@@ -31,13 +31,11 @@ class OnModifiedEventHandler(FileSystemEventHandler):
         self,
         tracked_path: Path,
         extension_paths: dict[str, Path],
-        path_for_undefined_extensions: Optional[Path],
+        path_for_undefined_extensions: Path | None,
     ) -> None:
         self.tracked_path: Path = tracked_path
         self.extension_paths: dict[str, Path] = extension_paths
-        self.path_for_undefined_extensions: Optional[
-            Path
-        ] = path_for_undefined_extensions
+        self.path_for_undefined_extensions: Path | None = path_for_undefined_extensions
         event_handling_logger.info("Initialized %s", self)
 
     def __str__(self) -> str:
@@ -51,7 +49,10 @@ class OnModifiedEventHandler(FileSystemEventHandler):
         )
 
     # Overriding method from FileSystemEventHandler
-    def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None:
+    def on_modified(  # noqa: D102
+        self,
+        event: DirModifiedEvent | FileModifiedEvent,
+    ) -> None:
         event_handling_logger.debug("event=%s", repr(event))
         with ThreadPoolExecutor() as executor:
             for child in self.tracked_path.iterdir():
@@ -62,8 +63,8 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                     event_handling_logger.debug("Skipping directory: '%s'", child)
 
     def _move_file(self, file_path: Path) -> None:
-        """Moves the file to its destination path."""
-        destination_path: Optional[Path] = self.extension_paths.get(
+        """Move the file to its destination path."""
+        destination_path: Path | None = self.extension_paths.get(
             file_path.suffix.lower(),
             self.path_for_undefined_extensions,
         )
@@ -108,7 +109,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             )
         except FileNotFoundError as file_not_found_err:
             pid: int = os.getpid()
-            event_handling_logger.error(
+            event_handling_logger.critical(
                 "File not found in process %s while moving %s: %s",
                 pid,
                 file_path,
@@ -131,17 +132,19 @@ class OnModifiedEventHandler(FileSystemEventHandler):
 
     @staticmethod
     def _add_date_to_path(path: Path) -> Path:
-        """Adds current year/month to destination path. If the path
-        doesn't already exist, it is created.
+        """Add current year/month to destination path.
+
+        If the path doesn't already exist, it is created.
         """
-        dated_path: Path = path / f"{date.today():%Y/%b}"
+        dated_path: Path = path / f"{datetime.now():%Y/%b}"
         dated_path.mkdir(parents=True, exist_ok=True)
         return dated_path
 
     @staticmethod
     def _increment_file_name(destination: Path, source: Path) -> Path:
-        """If a file of the same name already exists in the destination folder,
-        the file name is numbered and incremented until the filename is unique.
+        """Increment the file name if another file of the same name already exists
+        in the destination folder, until the filename is unique.
+
         This prevents overwriting other files.
         """
         new_path: Path = destination / source.name
