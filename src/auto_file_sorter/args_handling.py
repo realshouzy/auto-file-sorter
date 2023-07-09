@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: UTF-8 -*-
 """Module responsible for handling the args."""
 from __future__ import annotations
 
