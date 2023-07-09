@@ -65,6 +65,7 @@ strict_equality = true
 no_implicit_reexport = true
 no_implicit_optional = true
 warn_unused_ignores = true
+no_namespace_packages = true
 disable_error_code = ["no-redef"]
 
 [tool.ruff]
