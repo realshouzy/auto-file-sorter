@@ -70,30 +70,6 @@ disable_error_code = ["no-redef"]
 
 [tool.ruff]
 select = ["ALL"]
-# Old extend-select (backup)
-# extend-select = [
-#     "F",
-#     "A",
-#     "B",
-#     "INP",
-#     "I",
-#     "PYI",
-#     "RSE",
-#     "RET",
-#     "Q",
-#     "SLF",
-#     "SIM",
-#     "TID",
-#     "TCH",
-#     "ARG",
-#     "PL",
-#     "RUF",
-#     "C4",
-#     "G",
-#     "COM",
-#     "BLE",
-#     "FBT",
-# ]
 ignore = [
     "E501",
     "BLE001",
@@ -112,7 +88,7 @@ ignore = [
 ]
 fixable = ["ALL"]
 unfixable = []
-exclude = ["stubs"]
+extend-exclude = ["stubs"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 show-fixes = true
 target-version = "py311"
