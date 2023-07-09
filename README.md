@@ -128,7 +128,7 @@ Most exceptions will be logged in a log file. If an exception should occur, the 
 ## Contributing
 
 Contributions are welcome! Please create an issue for any suggestions or bug reports.
-While not mandatory, it would be greatly appreciated if you could also consider using the tools listed in the [``dev-requirements``](/dev-requirements.txt) file for linting and formatting purposes. By following these guidelines, we can ensure code consistency and maintain high standards throughout the project.
+While not mandatory, it would be greatly appreciated if you could also consider using the tools listed in the [``requirements-dev``](/requirements-dev.txt) file for linting and formatting purposes. By following these guidelines, we can ensure code consistency and maintain high standards throughout the project.
 
 ## TODO
 
