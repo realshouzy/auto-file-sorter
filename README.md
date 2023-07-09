@@ -1,6 +1,6 @@
 # auto-file-sorter
 
-**This a branch to ``pre-commit.ci``**
+**This a branch to ``pre-commit.ci`` - test**
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/realshouzy/auto-file-sorter/main.svg)](https://results.pre-commit.ci/latest/github/realshouzy/auto-file-sorter/main)
 [![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/file-sorter)](https://github.com/realshouzy/file-sorter)
