@@ -18,4 +18,4 @@
 
 - [x] Adjust ``-A`` / ``--autostart`` so no window opens
 - [x] Update README
-- [ ] Add ``pre-commit``
+- [x] Add support for ``pre-commit``
