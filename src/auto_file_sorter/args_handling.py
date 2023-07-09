@@ -113,7 +113,7 @@ def resolved_path_from_str(path_as_str: str) -> Path:
     return Path(path_as_str.strip()).resolve()
 
 
-def handle_write_args(args: argparse.Namespace) -> int:  # noqa: C901, PLR0915
+def handle_write_args(args: argparse.Namespace) -> int:
     """Handle the ``write`` subcommand."""
     args_handling_logger.debug("Reading from configs")
     configs: dict[str, str] = read_from_configs()
@@ -312,7 +312,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
     return EXIT_SUCCESS
 
 
-def handle_track_args(args: argparse.Namespace) -> int:  # noqa: C901
+def handle_track_args(args: argparse.Namespace) -> int:
     """Handle the ``track`` subcommand."""
     if args.enable_autostart:
         _add_to_startup()
