@@ -99,6 +99,7 @@ ignore = [
     "PLR0912",
 ]
 unfixable = []
+exclude = ["stubs"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 show-fixes = true
 target-version = "py311"
