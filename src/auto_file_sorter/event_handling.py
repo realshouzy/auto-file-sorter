@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from typing_extensions import override
 from watchdog.events import FileSystemEventHandler
 
 from auto_file_sorter.constants import MOVE_LOG_LEVEL
@@ -46,8 +47,8 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             f"path_for_undefined_extensions={self.path_for_undefined_extensions!r})"
         )
 
-    # Overriding method from FileSystemEventHandler
-    def on_modified(  # noqa: D102
+    @override
+    def on_modified(
         self,
         event: DirModifiedEvent | FileModifiedEvent,
     ) -> None:
