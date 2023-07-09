@@ -125,8 +125,8 @@ convention = "pep257"
 
 [tool.pylint.messages_control]
 disable = [
-    "broad-exception-caught", 
-    "too-many-branches", 
-    "too-many-return-statements", 
+    "broad-exception-caught",
+    "too-many-branches",
+    "too-many-return-statements",
     "too-many-statements",
 ]
