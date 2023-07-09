@@ -40,6 +40,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         prog="auto-file-sorter",
         description="Automatically sorts files in a directory based on their extension.",
+        allow_abbrev=False,
     )
     parser.add_argument(
         "-V",
@@ -93,6 +94,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         nargs="+",
         metavar="PATHS",
         help="Paths to the directories to be tracked",
+    )
+    track_parser.add_argument(
+        "-u",
+        "--undefined-extensions",
+        dest="path_for_undefined_extensions",
+        type=resolved_path_from_str,
+        metavar="PATH",
+        help="Specify a path for undefined extensions",
     )
     track_parser.add_argument(
         "--autostart",

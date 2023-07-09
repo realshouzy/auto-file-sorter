@@ -81,7 +81,7 @@ def _add_to_startup() -> None:
             args_handling_logger.debug("Writing to vsb file: '%s'", vbs_file)
             vbs_file.write(
                 'Set objShell = WScript.CreateObject("WScript.Shell")\n'
-                f'objShell.Run "{cmd}", 0, True',
+                f'objShell.Run "{cmd}", 0, True\n',
             )
     except PermissionError:
         args_handling_logger.critical(
@@ -339,6 +339,20 @@ def handle_track_args(args: argparse.Namespace) -> int:
 
     observers: list[BaseObserver] = []
     for path in tracked_paths:
+        if not path.exists():
+            args_handling_logger.warning(
+                "Skipping '%s', because it does not exist",
+                path,
+            )
+            continue
+
+        if path.is_file():
+            args_handling_logger.warning(
+                "Skipping '%s', expected a directory, not a file",
+                path,
+            )
+            continue
+
         args_handling_logger.debug(
             "Creating FileModifiedEventHandler instance tracking '%s'",
             path,
@@ -346,6 +360,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
         event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
             path,
             extension_paths,
+            args.path_for_undefined_extensions,
         )
 
         args_handling_logger.debug("Creating observer")
@@ -357,6 +372,13 @@ def handle_track_args(args: argparse.Namespace) -> int:
         args_handling_logger.info("Started observer: '%s'", observer.name)
         observers.append(observer)
         args_handling_logger.debug("Appended '%s' to %s", observer, observers)
+
+    if not observers:
+        args_handling_logger.critical(
+            "All given paths are invalid: %s",
+            ", ".join(str(path) for path in tracked_paths),
+        )
+        return EXIT_SUCCESS
 
     args_handling_logger.debug("observers=%s", observers)
 

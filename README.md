@@ -70,6 +70,7 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 ### Arguments and flags of ``auto-file-sorter track``
 
 - Positional arguments: Paths to the directories to be tracked. At least one directory path must be provided. The tool will track all the given directories simultaneously using threading.
+- ``--undefined-extensions`` / ``-u``: Path in which files whose extensions are not defined in the configs will be moved. If no path was specified, said files will be skipped.
 - ``--autostart``(only supported on Windows): Runs the command on startup. Refer to [Windows setup](#windows-setup) for more information.
 
 ### Arguments of ``auto-file-sorter read``
@@ -119,6 +120,10 @@ Due to the wide variety of Linux distributions and their differences, it is up t
 ## Usage
 
 Simply place files into the tracked folder, and the tool will automatically sort them for you.
+
+## Excpetion handling
+
+Most exceptions will be logged in a log file. If an exception should occur, the program will handly gracefuly by exiting with exit code 1, except in cases where an exception is encountered while moving a file. This is due to threading and ensures that everything gets properly garbage collected. This behavior is specifically implemented to address threading concerns and ensure proper garbage collection. In such cases, the respective thread will exit, while the main program continues its execution. Ultimately, the user has the option to stop the program manually. This approach allows for proper cleanup and termination of resources.
 
 ## Contributing
 

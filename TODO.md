@@ -8,11 +8,11 @@
 - [x] Tracking multiple paths simultaneous
 - [x] Add option to ``read`` from config (*also ``write``)
 - [x] Add option to output the loaction of the log and configs file
-- [ ] Add option to specify a location for ~~unknown~~ undefined file extensions; skips them by default (which is already the case)
+- [x] Add option to specify a location for undefined file extensions; skips them by default (which is already the case)
 
 ## Bugs and security issues
 
-- [ ] Fix proper exception handling and cleanup during event handling
+- [x] Fix proper exception handling and cleanup/garbage collection during event handling
 
 ## Other
 
