@@ -128,8 +128,19 @@ Most exceptions will be logged in a log file. If an exception should occur, the 
 
 ## Contributing
 
-Contributions are welcome! Please create an issue for any suggestions or bug reports.
-While not mandatory, it would be greatly appreciated if you could also consider using the tools listed in the [``requirements-dev``](/requirements-dev.txt) file for linting and formatting purposes. By following these guidelines, we can ensure code consistency and maintain high standards throughout the project.
+Contributions are welcome and highly appreciated!
+
+### Feature suggestions and bug reports
+
+If you have any feature suggestions or encounter any bugs, please create an [issue](https://github.com/realshouzy/auto-file-sorter/issues) in the project's repository. The case will be reviewed and if it is legitimate, you are welcome to work on addressing the issue and creating a [pull request](https://github.com/realshouzy/auto-file-sorter/pulls).
+
+### Regarding the lack of tests
+
+While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I decided not to invest time in writing tests, as I originally intended it to be a smaller-scale project.
+
+However, I do understand the value of testing and would be grateful if someone with the respective knowledge would be willing to contribute and write tests for this project (preferably using [``pytest``](https://docs.pytest.org)). Adding tests will greatly enhance its stability and maintainability.
+
+Thank you for understanding and your willingness to contribute to this project!
 
 ## TODO
 
