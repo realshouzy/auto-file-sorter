@@ -138,7 +138,7 @@ If you have any feature suggestions or encounter any bugs, please create an [iss
 
 While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I decided not to invest time in writing tests, as I originally intended it to be a smaller-scale project.
 
-However, I do understand the value of testing and would be grateful if someone with the respective knowledge would be willing to contribute and write tests for this project (preferably using [``pytest``](https://docs.pytest.org)). Adding tests will greatly enhance its stability and maintainability.
+However, I do understand the value of testing and have started addressing this issue. For more information refer [here](https://github.com/realshouzy/auto-file-sorter/tree/add-tests).
 
 Thank you for understanding and your willingness to contribute to this project!
 
