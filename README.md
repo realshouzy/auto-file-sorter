@@ -9,6 +9,21 @@
 
 **``auto-file-sorter`` is a Python automation tool that tracks a directory and sorts files into their respective folders based on their file extensions.**
 
+## Branch info
+
+This developer branch aims to enhance the testing process by integrating [``pytest``](https://docs.pytest.org), [``coverage``](https://coverage.readthedocs.io) and [``tox``](https://tox.wiki) to ensure robust continuous integration.
+
+### Tasks
+
+1. Incorporate pytest framework for effective testing.
+2. Integrate coverage tool to measure test coverage and ensure comprehensive testing.
+3. Implement tox for efficient management of testing environments and dependency checks.
+4. Ensure seamless integration of the above components.
+
+### Goals
+
+Guarantee continuous integration as well as enhance the reliability and stability of the codebase.
+
 ## Installation
 
 Make sure you have Python 3.8 or later installed. You can install the package using ``pip``:
@@ -137,8 +152,6 @@ If you have any feature suggestions or encounter any bugs, please create an [iss
 ### Regarding the lack of tests
 
 While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I decided not to invest time in writing tests, as I originally intended it to be a smaller-scale project.
-
-However, I do understand the value of testing and would be grateful if someone with the respective knowledge would be willing to contribute and write tests for this project (preferably using [``pytest``](https://docs.pytest.org)). Adding tests will greatly enhance its stability and maintainability.
 
 Thank you for understanding and your willingness to contribute to this project!
 
