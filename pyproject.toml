@@ -94,6 +94,9 @@ show-fixes = true
 target-version = "py311"
 line-length = 88
 
+[tool.ruff.extend-per-file-ignores]
+"./tests/__init__.py" = ["D104"]
+
 [tool.ruff.isort]
 required-imports = ["from __future__ import annotations"]
 
