@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 class FileSystemEventHandler:
     def on_modified(self, event: DirModifiedEvent | FileModifiedEvent) -> None: ...
 

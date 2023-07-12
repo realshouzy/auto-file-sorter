@@ -88,13 +88,23 @@ ignore = [
 ]
 fixable = ["ALL"]
 unfixable = []
-extend-exclude = ["stubs"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 show-fixes = true
 target-version = "py311"
 line-length = 88
 
 [tool.ruff.extend-per-file-ignores]
+"*.pyi" = [
+    "A002",
+    "ANN401",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "FBT001",
+    "FBT002",
+    "PLR0913",
+]
 "./tests/__init__.py" = ["D104"]
 
 [tool.ruff.isort]
@@ -103,10 +113,10 @@ required-imports = ["from __future__ import annotations"]
 [tool.ruff.pydocstyle]
 convention = "pep257"
 
-[tool.pylint.messages_control]
+[tool.pylint]
 disable = [
-    "broad-exception-caught",
-    "too-many-branches",
-    "too-many-return-statements",
-    "too-many-statements",
+    "R0911",
+    "R0912",
+    "R0915",
+    "W0718",
 ]
