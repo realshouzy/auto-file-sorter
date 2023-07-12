@@ -126,6 +126,10 @@ Simply place files into the tracked folder, and the tool will automatically sort
 
 Most exceptions will be logged in a log file. If an exception should occur, the program will handly gracefuly by exiting with exit code 1, except in cases where an exception is encountered while moving a file. This is due to threading and ensures that everything gets properly garbage collected. This behavior is specifically implemented to address threading concerns and ensure proper garbage collection. In such cases, the respective thread will exit, while the main program continues its execution. Ultimately, the user has the option to stop the program manually. This approach allows for proper cleanup and termination of resources.
 
+## Regarding the lack of tests
+
+While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I didn't care to invest time in writing tests, as I originally intended it to be a smaller-scale project. Recognizing the significance of testing in continuous integration, I have taken the initiative to write tests. I have created a dedicated [branch](https://github.com/realshouzy/auto-file-sorter/tree/add-tests), where you can find all the essential information.
+
 ## License
 
 [MIT](/LICENSE)
