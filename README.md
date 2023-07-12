@@ -130,6 +130,10 @@ Most exceptions will be logged in a log file. If an exception should occur, the 
 
 While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I didn't care to invest time in writing tests, as I originally intended it to be a smaller-scale project. Recognizing the significance of testing in continuous integration, I have taken the initiative to write tests. I have created a dedicated [branch](https://github.com/realshouzy/auto-file-sorter/tree/add-tests), where you can find all the essential information.
 
+## Contributing
+
+If you are interested in contributing to this project, please find more information [here](/CONTRIBUTING.md).
+
 ## License
 
 [MIT](/LICENSE)
