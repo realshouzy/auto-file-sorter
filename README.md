@@ -90,6 +90,7 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 | ``--add`` / ``-a`` | Adds an extension and its corresponding path to the ``configs.json`` file. It takes two arguments: the extension and the path to which files with this extension will be saved. If the extension already exists, the path will be overridden. |
 | ``--remove`` / ``-r`` | Removes one or more extensions and their respective paths from the configuration. |
 | ``--json`` / ``-j`` | Loads one or more ``json`` files that bind extensions to paths and merges them into the ``configs.json`` file. |
+
 The json files should be structured similarly to the ``configs.json`` file. An example (with Windows paths) can be found in [``example_configs.json``](/example_configs.json).
 Ultimately you can directly modify the ``configs.json`` file yourself.
 
@@ -110,7 +111,9 @@ To avoid the overhead of creating a StreamHandler and prevent overwriting the ``
 
 An example of this transformation:
 
-``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` → ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked``
+| Before | After |
+| -------- | ------- |
+| ``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` | ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked`` |
 
 This will then be run by the ``.vbs`` file on startup:
 
