@@ -53,7 +53,6 @@ import pathlib
 import platform
 import re
 import shutil
-import signal
 import sys
 import time
 import typing
@@ -78,33 +77,44 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 
 ### Arguments and flags of ``auto-file-sorter``
 
-- ``--version`` / ``-V``: Outputs the installed version and status, either ``production`` or ``development``.
-- ``--debug`` / ``-d``: Sets the logging level to 10 (debugging), enabling more informative debugging logs.
-- ``--verbose`` / ``-v``: Enables verbose outputs. It can be used up to three levels, with each level printing more logs to the stream. The first level prints all logs up to the logging level WARNING, the second level prints all logs up to INFO, and the third level prints all logs up to DEBUG (this requires the debugging flag).
-- ``--log-location``: Specifies the path to a log file. By default, the log file will be located with the source code.
+| Argument and flags | Use |
+| -------- | ------- |
+| ``--version`` / ``-V`` | Outputs the installed version and status, either ``production`` or ``development``.                                                                                                                                                                                                                             |
+| ``--debug`` / ``-d``   | Sets the logging level to 10 (debugging), enabling more informative debugging logs.                                                                                                                                                                                                                             |
+| ``--verbose`` / ``-v`` | Enables verbose outputs. It can be used up to three levels, with each level printing more logs to the stream. The first level prints all logs up to the logging level WARNING, the second level prints all logs up to INFO, and the third level prints all logs up to DEBUG (this requires the debugging flag). |
+| ``--log-location``     | Specifies the path to a log file. By default, the log file will be located with the source code.                                                                                                                                                                                                                |
 
 ### Arguments and flags of ``auto-file-sorter track``
 
-- Positional arguments: Paths to the directories to be tracked. At least one directory path must be provided. The tool will track all the given directories simultaneously using threading.
-- ``--undefined-extensions`` / ``-u``: Path in which files whose extensions are not defined in the configs will be moved. If no path was specified, said files will be skipped.
-- ``--autostart``(only supported on Windows): Runs the command on startup. Refer to [Windows setup](#windows-setup) for more information.
+| Argument and flags | Use |
+| -------- | ------- |
+| Positional arguments | Paths to the directories to be tracked. At least one directory path must be provided. The tool will track all the given directories simultaneously using threading. |
+| ``--undefined-extensions`` / ``-u`` | Path in which files whose extensions are not defined in the configs will be moved. If no path was specified, said files will be skipped. |
+| ``--autostart`` (only supported on Windows) | Runs the command on startup. Refer to [Windows setup](#windows-setup) for more information. |
 
 ### Arguments of ``auto-file-sorter read``
 
-- Positional arguments: Extensions for which their respective paths should be read from the configs.json file. If no extensions are given, it will print out the entire ``configs.json`` file.
+| Argument | Use |
+| -------- | ------- |
+| Positional arguments | Extensions for which their respective paths should be read from the configs.json file. If no extensions are given, it will print out the entire ``configs.json`` file. |
 
 ### Arguments of ``auto-file-sorter write``
 
-- ``--add`` / ``-a``: Adds an extension and its corresponding path to the ``configs.json`` file. It takes two arguments: the extension and the path to which files with this extension will be saved. If the extension already exists, the path will be overridden.
-- ``--remove`` / ``-r``: Removes one or more extensions and their respective paths from the configuration.
-- ``--json`` / ``-j``: Loads one or more ``json`` files that bind extensions to paths and merges them into the ``configs.json`` file.
+| Argument | Use |
+| -------- | ------- |
+| ``--add`` / ``-a`` | Adds an extension and its corresponding path to the ``configs.json`` file. It takes two arguments: the extension and the path to which files with this extension will be saved. If the extension already exists, the path will be overridden. |
+| ``--remove`` / ``-r`` | Removes one or more extensions and their respective paths from the configuration. |
+| ``--json`` / ``-j`` | Loads one or more ``json`` files that bind extensions to paths and merges them into the ``configs.json`` file. |
+
 The json files should be structured similarly to the ``configs.json`` file. An example (with Windows paths) can be found in [``example_configs.json``](/example_configs.json).
 Ultimately you can directly modify the ``configs.json`` file yourself.
 
 ### Flags of ``auto-file-sorter locations``
 
-- ``--log`` / ``-l``: Prints the location of the log file.
-- ``--config`` / ``-c``: Prints the location of the config file.
+| Argument | Use |
+| -------- | ------- |
+| ``--log`` / ``-l`` | Prints the location of the log file |
+| ``--config`` / ``-c`` | Prints the location of the config file |
 
 ## Run on startup
 
@@ -116,7 +126,9 @@ To avoid the overhead of creating a StreamHandler and prevent overwriting the ``
 
 An example of this transformation:
 
-``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` → ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked``
+| Before | After |
+| -------- | ------- |
+| ``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` | ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked`` |
 
 This will then be run by the ``.vbs`` file on startup:
 
