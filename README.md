@@ -150,6 +150,6 @@ If you are interested in contributing to this project, please find more informat
 
 [MIT](/LICENSE)
 
-## Credits
+## Credit
 
 This project was originally inspired by Kalle Hallden's [desktop_cleaner](https://github.com/KalleHallden/desktop_cleaner) project.
