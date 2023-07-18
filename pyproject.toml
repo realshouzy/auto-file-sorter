@@ -93,6 +93,10 @@ show-fixes = true
 target-version = "py311"
 line-length = 88
 
+[tool.ruff.isort]
+known-first-party = ["auto_file_sorter"]
+required-imports = ["from __future__ import annotations"]
+
 [tool.ruff.extend-per-file-ignores]
 "*.pyi" = [
     "A002",
@@ -105,10 +109,14 @@ line-length = 88
     "FBT002",
     "PLR0913",
 ]
-"./tests/__init__.py" = ["D104"]
-
-[tool.ruff.isort]
-required-imports = ["from __future__ import annotations"]
+"./tests/test_*.py" = [
+    "D103",
+    "S101",
+    "PT007",
+    "SLF001",
+    "N802",
+    "ARG001",
+]
 
 [tool.ruff.pydocstyle]
 convention = "pep257"
