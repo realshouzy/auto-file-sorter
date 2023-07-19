@@ -7,7 +7,7 @@ import pytest
 
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
-    CONFIGS_LOCATION,
+    DEFAULT_CONFIGS_LOCATION,
     DEFAULT_LOG_LOCATION,
     EXIT_FAILURE,
     EXIT_SUCCESS,
@@ -52,7 +52,7 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
     "location_check",
     (
         pytest.param(PROGRAM_LOCATION.is_dir, id="PROGRAM_LOCATION-is_dir"),
-        pytest.param(CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATIO-is_file"),
+        pytest.param(DEFAULT_CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATIO-is_file"),
         pytest.param(DEFAULT_LOG_LOCATION.is_file, id="DEFAULT_LOG_LOCATION-is_file"),
     ),
 )
