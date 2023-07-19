@@ -3,7 +3,7 @@ from __future__ import annotations
 
 __all__: list[str] = [
     "PROGRAM_LOCATION",
-    "CONFIGS_LOCATION",
+    "DEFAULT_CONFIGS_LOCATION",
     "DEFAULT_LOG_LOCATION",
     "LOG_FORMAT",
     "MOVE_LOG_LEVEL",
@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Final, Literal
 
 PROGRAM_LOCATION: Final[Path] = Path(__file__).resolve().parent
-CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath("configs.json")
+DEFAULT_CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath("configs.json")
 DEFAULT_LOG_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath(
     "auto-file-sorter.log",
 )

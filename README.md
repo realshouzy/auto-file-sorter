@@ -79,10 +79,11 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 
 | Argument and flags | Use |
 | -------- | ------- |
-| ``--version`` / ``-V`` | Outputs the installed version and status, either ``production`` or ``development``.                                                                                                                                                                                                                             |
-| ``--debug`` / ``-d``   | Sets the logging level to 10 (debugging), enabling more informative debugging logs.                                                                                                                                                                                                                             |
+| ``--version`` / ``-V`` | Outputs the installed version and status, either ``production`` or ``development``. |
+| ``--debug`` / ``-d``   | Sets the logging level to 10 (debugging), enabling more informative debugging logs. |
 | ``--verbose`` / ``-v`` | Enables verbose outputs. It can be used up to three levels, with each level printing more logs to the stream. The first level prints all logs up to the logging level WARNING, the second level prints all logs up to INFO, and the third level prints all logs up to DEBUG (this requires the debugging flag). |
-| ``--log-location``     | Specifies the path to a log file. By default, the log file will be located with the source code.                                                                                                                                                                                                                |
+| ``--log-location``     | Specifies the path to a log file. By default, the log file will be located with the source code. |
+| ``--configs-location`` | Specifies the path to the configs ``json`` file. By default, the configs file will be located with the source code. |
 
 ### Arguments and flags of ``auto-file-sorter track``
 
@@ -165,6 +166,6 @@ If you are interested in contributing to this project, please find more informat
 
 [MIT](/LICENSE)
 
-## Credits
+## Credit
 
 This project was originally inspired by Kalle Hallden's [desktop_cleaner](https://github.com/KalleHallden/desktop_cleaner) project.

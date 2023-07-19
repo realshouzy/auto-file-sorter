@@ -23,7 +23,7 @@ from watchdog.observers import Observer
 from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
-    CONFIGS_LOCATION,
+    DEFAULT_CONFIGS_LOCATION,
     EXIT_FAILURE,
     EXIT_SUCCESS,
 )
@@ -31,6 +31,7 @@ from auto_file_sorter.event_handling import OnModifiedEventHandler
 
 if TYPE_CHECKING:
     import argparse
+    from collections.abc import Sequence
 
     from watchdog.observers.api import BaseObserver
 
@@ -39,13 +40,16 @@ args_handling_logger: logging.Logger = logging.getLogger(__name__)
 _FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^\.[a-zA-Z0-9]+$")
 
 
-def _add_to_startup() -> None:
+def _add_to_startup(argv: Sequence[str] | None = None) -> None:
     """Add the ran command to startup by creating a vbs file in the 'Startup' folder."""
     if platform.system() != "Windows":
         args_handling_logger.warning(
             "Adding 'auto-file-sorter' to startup is only supported on Windows.",
         )
         return
+
+    if not argv:
+        argv = sys.argv
 
     args_handling_logger.debug("sys.argv=%s", sys.argv)
 
@@ -114,7 +118,7 @@ def resolved_path_from_str(path_as_str: str) -> Path:
 def handle_write_args(args: argparse.Namespace) -> int:
     """Handle the ``write`` subcommand."""
     args_handling_logger.debug("Reading from configs")
-    configs: dict[str, str] = read_from_configs()
+    configs: dict[str, str] = read_from_configs(configs=args.configs_location)
 
     if args.new_config is not None:
         args_handling_logger.debug("args.new_config=%s", repr(args.new_config))
@@ -158,7 +162,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             "Updated '%s': '%s' from %s",
             new_extension,
             new_path,
-            CONFIGS_LOCATION,
+            DEFAULT_CONFIGS_LOCATION,
         )
 
     if args.json_file is not None:
@@ -247,14 +251,14 @@ def handle_write_args(args: argparse.Namespace) -> int:
                 "Removed '%s'",
                 extension,
             )
-    write_to_configs(configs)
+    write_to_configs(configs, configs=args.configs_location)
     return EXIT_SUCCESS
 
 
 def handle_read_args(args: argparse.Namespace) -> int:
     """Handle the ``read`` subcommand."""
     args_handling_logger.debug("Reading from configs")
-    configs: dict[str, str] = read_from_configs()
+    configs: dict[str, str] = read_from_configs(configs=args.configs_location)
 
     if args.get_configs:
         args_handling_logger.debug("args.get_configs=%s", repr(args.get_configs))
@@ -288,7 +292,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
                 args_handling_logger.warning(
                     "Unable to get the respetive path from '%s' "
                     "of one of the given extensions '%s'",
-                    CONFIGS_LOCATION,
+                    DEFAULT_CONFIGS_LOCATION,
                     extension,
                 )
                 continue
@@ -319,12 +323,12 @@ def handle_track_args(args: argparse.Namespace) -> int:
     args_handling_logger.debug("tracked_paths=%s", tracked_paths)
 
     args_handling_logger.debug("Reading from configs")
-    configs: dict[str, str] = read_from_configs()
+    configs: dict[str, str] = read_from_configs(configs=args.configs_location)
 
     if not configs:
         args_handling_logger.critical(
             "No paths for extensions defined in '%s'",
-            CONFIGS_LOCATION,
+            DEFAULT_CONFIGS_LOCATION,
         )
         return EXIT_FAILURE
 
@@ -401,6 +405,6 @@ def handle_locations_args(args: argparse.Namespace) -> int:
         print(args.log_location)
 
     if args.get_config_location:
-        print(CONFIGS_LOCATION)
+        print(DEFAULT_CONFIGS_LOCATION)
 
     return EXIT_SUCCESS

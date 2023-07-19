@@ -7,7 +7,11 @@ import json
 import logging
 from typing import TYPE_CHECKING
 
-from auto_file_sorter.constants import CONFIG_LOG_LEVEL, CONFIGS_LOCATION, EXIT_FAILURE
+from auto_file_sorter.constants import (
+    CONFIG_LOG_LEVEL,
+    DEFAULT_CONFIGS_LOCATION,
+    EXIT_FAILURE,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -15,7 +19,7 @@ if TYPE_CHECKING:
 configs_handling_logger: logging.Logger = logging.getLogger(__name__)
 
 
-def read_from_configs(*, configs: Path = CONFIGS_LOCATION) -> dict[str, str]:
+def read_from_configs(*, configs: Path = DEFAULT_CONFIGS_LOCATION) -> dict[str, str]:
     """Warp ``open`` for easy reading from ``configs.json``."""
     try:
         configs_handling_logger.debug("Opening %s", configs)
@@ -61,7 +65,7 @@ def read_from_configs(*, configs: Path = CONFIGS_LOCATION) -> dict[str, str]:
 def write_to_configs(
     new_configs: dict[str, str],
     *,
-    configs: Path = CONFIGS_LOCATION,
+    configs: Path = DEFAULT_CONFIGS_LOCATION,
 ) -> None:
     """Warp ``open`` for easy writing to ``configs.json``."""
     try:
