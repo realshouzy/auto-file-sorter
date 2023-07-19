@@ -18,6 +18,7 @@ from auto_file_sorter.args_handling import (
 )
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
+    DEFAULT_CONFIGS_LOCATION,
     DEFAULT_LOG_LOCATION,
     LOG_FORMAT,
     MAX_VERBOSITY_LEVEL,
@@ -73,6 +74,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=resolved_path_from_str,
         metavar="LOCATION",
         help="Specify custom location for the log file (default: location of the program)",
+    )
+    parser.add_argument(
+        "--configs-location",
+        dest="configs_location",
+        default=DEFAULT_CONFIGS_LOCATION,
+        type=resolved_path_from_str,
+        metavar="LOCATION",
+        help="Specify custom location for the configs file (default: location of the program)",
     )
 
     subparsers: argparse._SubParsersAction[  # noqa: SLF001 # type: ignore
@@ -200,10 +209,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.verbosity_level:
         stream_handler: logging.StreamHandler[TextIO] = logging.StreamHandler()
         stream_handler.setFormatter(STREAM_HANDLER_FORMATTER)
-        if args.verbosity_level > MAX_VERBOSITY_LEVEL:
-            stream_handler.setLevel(MAX_VERBOSITY_LEVEL)
-        else:
-            stream_handler.setLevel(_VERBOSE_OUTPUT_LEVELS[args.verbosity_level])
+        stream_handler.setLevel(
+            _VERBOSE_OUTPUT_LEVELS.get(args.verbosity_level, MAX_VERBOSITY_LEVEL),
+        )
         handlers.append(stream_handler)
 
     log_level: int = logging.INFO if not args.debugging else logging.DEBUG
@@ -223,6 +231,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         main_logger.warning(
             "Using maximum verbosity level, but debugging is disabled. "
             "To get the full output add the '-d' flag to enable debugging",
+        )
+
+    if not args.configs_location.is_file():
+        args.configs_location = DEFAULT_CONFIGS_LOCATION
+        main_logger.warning(
+            "Given configs location is not a file. Using default location: '%s'",
+            DEFAULT_CONFIGS_LOCATION,
         )
 
     main_logger.info(
