@@ -406,6 +406,6 @@ def handle_locations_args(args: argparse.Namespace) -> int:
         print(args.log_location)
 
     if args.get_config_location:
-        print(DEFAULT_CONFIGS_LOCATION)
+        print(args.configs_location)
 
     return EXIT_SUCCESS
