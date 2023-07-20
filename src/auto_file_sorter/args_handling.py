@@ -74,8 +74,9 @@ def _add_to_startup(argv: Sequence[str] | None = None) -> None:
         "Programs",
         "Startup",
     )
+
     args_handling_logger.debug("Startup folder location: '%s'", startup_folder)
-    path_to_vbs: Path = startup_folder.joinpath("auto-file-sorter.vbs")
+    path_to_vbs: Path = startup_folder / "auto-file-sorter.vbs"
 
     args_handling_logger.debug("Opening vbs file: '%s'", path_to_vbs)
     try:

@@ -19,10 +19,8 @@ from pathlib import Path
 from typing import Final, Literal
 
 PROGRAM_LOCATION: Final[Path] = Path(__file__).resolve().parent
-DEFAULT_CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath("configs.json")
-DEFAULT_LOG_LOCATION: Final[Path] = PROGRAM_LOCATION.joinpath(
-    "auto-file-sorter.log",
-)
+DEFAULT_CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION / "configs.json"
+DEFAULT_LOG_LOCATION: Final[Path] = PROGRAM_LOCATION / "auto-file-sorter.log"
 
 LOG_FORMAT: Final[
     Literal["%(name)s [%(levelname)s] %(asctime)s - %(message)s"]

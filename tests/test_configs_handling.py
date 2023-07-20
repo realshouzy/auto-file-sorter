@@ -31,7 +31,7 @@ def test_read_from_configs(
     valid_json_data: dict[str, str],
     tmp_path: Path,
 ) -> None:
-    test_configs: Path = tmp_path.joinpath("test_configs.json")
+    test_configs: Path = tmp_path / "test_configs.json"
     test_configs.write_text(json.dumps(valid_json_data), encoding="utf-8")
     result: dict[str, str] = read_from_configs(configs=test_configs)
     assert result == valid_json_data
@@ -40,7 +40,7 @@ def test_read_from_configs(
 def test_read_from_configs_no_file(
     tmp_path: Path,
 ) -> None:
-    test_configs: Path = tmp_path.joinpath("nonexistent_configs.json")
+    test_configs: Path = tmp_path / "nonexistent_configs.json"
 
     assert not test_configs.exists()
 
@@ -55,7 +55,7 @@ def test_read_from_configs_no_file(
 
 
 def test_read_from_configs_permission_error(tmp_path: Path) -> None:
-    restricted_configs: Path = tmp_path.joinpath("restricted_configs.json")
+    restricted_configs: Path = tmp_path / "restricted_configs.json"
     restricted_configs.touch()
     restricted_configs.chmod(0000)
 
@@ -64,7 +64,7 @@ def test_read_from_configs_permission_error(tmp_path: Path) -> None:
 
 
 def test_read_from_configs_invalid_json(invalid_json_data: str, tmp_path: Path) -> None:
-    test_configs: Path = tmp_path.joinpath("invalid_configs.json")
+    test_configs: Path = tmp_path / "invalid_configs.json"
     test_configs.write_text(invalid_json_data)
 
     with pytest.raises(SystemExit):
@@ -72,7 +72,7 @@ def test_read_from_configs_invalid_json(invalid_json_data: str, tmp_path: Path) 
 
 
 def test_write_to_configs(valid_json_data: dict[str, str], tmp_path: Path) -> None:
-    test_configs: Path = tmp_path.joinpath("test_configs.json")
+    test_configs: Path = tmp_path / "test_configs.json"
 
     write_to_configs(valid_json_data, configs=test_configs)
 
@@ -85,7 +85,7 @@ def test_write_to_configs_nonexistent_configs(
     valid_json_data: dict[str, str],
     tmp_path: Path,
 ) -> None:
-    test_configs: Path = tmp_path.joinpath("nonexistent_configs.json")
+    test_configs: Path = tmp_path / "nonexistent_configs.json"
 
     assert not test_configs.exists()
 
@@ -102,7 +102,7 @@ def test_write_to_configs_permission_error(
     valid_json_data: dict[str, str],
     tmp_path: Path,
 ) -> None:
-    restricted_configs: Path = tmp_path.joinpath("restricted_configs.json")
+    restricted_configs: Path = tmp_path / "restricted_configs.json"
     restricted_configs.touch()
     restricted_configs.chmod(0000)
 
@@ -116,6 +116,6 @@ def test_write_to_configs_file_not_found_error(
 ) -> None:
     with pytest.raises(SystemExit):
         write_to_configs(
-            valid_json_data,  # type: ignore[unused-ignore, arg-type]
-            configs=tmp_path.joinpath("nonexistent_dir/nonexistent_configs.json"),
+            valid_json_data,  # type: ignore[arg-type]
+            configs=tmp_path / "nonexistent_dir/nonexistent_configs.json",
         )
