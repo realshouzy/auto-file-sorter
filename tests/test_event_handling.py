@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 # pylint: disable=C0116, W0212, W0621
 
 
-@pytest.fixture()  # type: ignore[misc]
+@pytest.fixture()
 def extension_paths(tmp_path: Path) -> dict[str, Path]:
     return {
         ".txt": tmp_path / "txt",
@@ -23,7 +23,7 @@ def extension_paths(tmp_path: Path) -> dict[str, Path]:
     }
 
 
-@pytest.fixture()  # type: ignore[misc]
+@pytest.fixture()
 def path_for_undefined_extensions(tmp_path: Path) -> Path:
     return tmp_path.joinpath("undefined")
 
@@ -109,7 +109,7 @@ def test_on_modified_event_handler_increment_file_name(tmp_path: Path) -> None:
     file1.touch()
     file2.touch()
 
-    incremented_path: Path = event_handler._increment_file_name(  # type: ignore[unused-ignore]
+    incremented_path: Path = event_handler._increment_file_name(  # type: ignore
         tmp_path,
         file1,
     )
@@ -133,16 +133,16 @@ def test_on_modified_event_handler_move_file(
         path_for_undefined_extensions=path_for_undefined_extensions,
     )
 
-    event_handler._move_file(file_path)  # type: ignore[unused-ignore]
+    event_handler._move_file(file_path)  # type: ignore
 
     assert destination_path.exists()
     assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
 
 
 def test_on_modified_event_handler_on_modified_override() -> None:
-    assert OnModifiedEventHandler.on_modified.__override__  # type: ignore[unused-ignore, attr-defined] # pylint: disable=E1101
+    assert OnModifiedEventHandler.on_modified.__override__  # type: ignore[attr-defined] # pylint: disable=E1101
 
 
-@pytest.mark.skip(reason="Test needs to be written")  # type: ignore[misc]
+@pytest.mark.skip(reason="Test needs to be written")
 def test_on_modified_event_handler_on_modified() -> None:
     ...

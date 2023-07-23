@@ -14,17 +14,17 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-@pytest.mark.skip(reason="Test needs to be written")  # type: ignore[misc]
+@pytest.mark.skip(reason="Test needs to be written")
 def test_handle_write_args() -> None:
     ...
 
 
-@pytest.mark.skip(reason="Test needs to be written")  # type: ignore[misc]
+@pytest.mark.skip(reason="Test needs to be written")
 def test_handle_read_args() -> None:
     ...
 
 
-@pytest.mark.skip(reason="Test needs to be written")  # type: ignore[misc]
+@pytest.mark.skip(reason="Test needs to be written")
 def test_handle_track_args() -> None:
     ...
 
