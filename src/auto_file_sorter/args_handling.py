@@ -51,20 +51,20 @@ def _add_to_startup(argv: Sequence[str] | None = None) -> None:
     if not argv:
         argv = sys.argv
 
-    args_handling_logger.debug("sys.argv=%s", sys.argv)
+    args_handling_logger.debug("argv=%s", argv)
 
     flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
         r"-v+|--verbose|--autostart",
     )
 
-    cleaned_sys_argv: list[str] = [
-        arg for arg in sys.argv if flag_patterns_to_be_removed.fullmatch(arg) is None
+    cleaned_argv: list[str] = [
+        arg for arg in argv if flag_patterns_to_be_removed.fullmatch(arg) is None
     ]
     args_handling_logger.debug(
         "Removed verbosity and autostart flags: '%s'",
-        cleaned_sys_argv,
+        cleaned_argv,
     )
-    cmd: str = " ".join(cleaned_sys_argv)
+    cmd: str = " ".join(cleaned_argv)
     args_handling_logger.debug("Adding '%s' to autostart", cmd)
 
     startup_folder: Path = Path(os.path.expandvars("%APPDATA%")).joinpath(
