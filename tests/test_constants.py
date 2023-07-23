@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 # pylint: disable=C0116, W0212
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     ("constant", "expected_value"),
     (
         pytest.param(CONFIG_LOG_LEVEL, 70, id="CONFIG_LOG_LEVEL-70"),
@@ -48,7 +48,7 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
     assert constant == expected_value
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "location_check",
     (
         pytest.param(PROGRAM_LOCATION.is_dir, id="PROGRAM_LOCATION-is_dir"),

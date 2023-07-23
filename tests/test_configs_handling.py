@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 # pylint: disable=C0116, W0621
 
 
-@pytest.fixture()  # type: ignore[misc]
+@pytest.fixture()
 def valid_json_data() -> dict[str, str]:
     return {
         ".txt": "test/path/for/txt",
@@ -22,7 +22,7 @@ def valid_json_data() -> dict[str, str]:
     }
 
 
-@pytest.fixture()  # type: ignore[misc]
+@pytest.fixture()
 def invalid_json_data() -> str:
     return "invalid_json_data"
 
