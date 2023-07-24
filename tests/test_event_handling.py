@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import pytest
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 
 from auto_file_sorter.event_handling import OnModifiedEventHandler
 
@@ -121,10 +121,30 @@ def test_on_modified_event_handler_move_file(
     tmp_path: Path,
     extension_paths: dict[str, Path],
 ) -> None:
-    path_for_undefined_extensions: Path = tmp_path / "undefined"
     file_path: Path = tmp_path / "test_file.txt"
+    file_path.touch()
+
     destination_path: Path = extension_paths[".txt"]
 
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event_handler._move_file(file_path)  # type: ignore
+
+    assert destination_path.exists()
+    assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+
+def test_on_modified_event_handler_move_file_undefined_extension(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    path_for_undefined_extensions: Path = tmp_path / "undefined"
+
+    file_path: Path = tmp_path / "test_file.idk"
     file_path.touch()
 
     event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
@@ -135,14 +155,198 @@ def test_on_modified_event_handler_move_file(
 
     event_handler._move_file(file_path)  # type: ignore
 
+    assert path_for_undefined_extensions.exists()
+    assert (
+        path_for_undefined_extensions / f"{datetime.now():%Y/%b}" / "test_file.idk"
+    ).exists()
+
+
+def test_on_modified_event_handler_move_file_permission_error_no_exit(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    file_path: Path = tmp_path / "test_file.txt"
+    file_path.touch()
+
+    destination_path: Path = extension_paths[".txt"]
+    destination_path.touch()
+    destination_path.chmod(0000)
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event_handler._move_file(file_path)  # type: ignore
+
+    assert destination_path.exists()
+    assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+
+def test_on_modified_event_handler_move_file_file_not_found_error_no_exit(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    file_path: Path = tmp_path / "test_file.txt"
+    destination_path: Path = extension_paths[".txt"]
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event_handler._move_file(file_path)  # type: ignore
+
+    assert destination_path.exists()
+    assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+
+def test_on_modified_event_handler_move_file_increment(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    file_path: Path = tmp_path / "test_file.txt"
+    file_path.touch()
+
+    destination_path: Path = extension_paths[".txt"]
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event_handler._move_file(file_path)  # type: ignore
+
     assert destination_path.exists()
     assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+    file_path: Path = tmp_path / "test_file.txt"
+    file_path.touch()
+
+    event_handler._move_file(file_path)  # type: ignore
+
+    assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file (2).txt").exists()
 
 
 def test_on_modified_event_handler_on_modified_override() -> None:
     assert OnModifiedEventHandler.on_modified.__override__  # type: ignore[attr-defined] # pylint: disable=E1101
 
 
-@pytest.mark.skip(reason="Test needs to be written")
-def test_on_modified_event_handler_on_modified() -> None:
-    ...
+def test_on_modified_event_handler_on_modified(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    file_path: Path = tmp_path / "test_file.txt"
+    file_path.touch()
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event: FileModifiedEvent = FileModifiedEvent(file_path)  # type: ignore
+
+    event_handler.on_modified(event)
+
+    destination_path: Path = extension_paths[".txt"]
+
+    # Assert that the file was moved to its correct destination
+    assert destination_path.exists()
+    assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+
+def test_on_modified_event_handler_on_modified_skip_directory(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    subdirectory: Path = tmp_path / "subdir"
+    subdirectory.mkdir()
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event: DirModifiedEvent = DirModifiedEvent(subdirectory)  # type: ignore
+
+    event_handler.on_modified(event)
+
+    destination_path: Path = extension_paths[".txt"]
+
+    assert not destination_path.exists()
+    assert not (destination_path / f"{datetime.now():%Y/%b}").exists()
+
+
+def test_on_modified_event_handler_on_modified_undefined_extension(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    path_for_undefined_extensions: Path = tmp_path / "undefined"
+    file_path: Path = tmp_path / "test_file.idk"
+    file_path.touch()
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=path_for_undefined_extensions,
+    )
+
+    event: FileModifiedEvent = FileModifiedEvent(file_path)  # type: ignore
+
+    event_handler.on_modified(event)
+
+    assert path_for_undefined_extensions.exists()
+    assert (
+        path_for_undefined_extensions / f"{datetime.now():%Y/%b}" / "test_file.idk"
+    ).exists()
+
+
+def test_on_modified_event_handler_on_modified_permission_error(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    file_path: Path = tmp_path / "test_file.txt"
+    file_path.touch()
+
+    destination_path: Path = extension_paths[".txt"]
+    destination_path.touch()
+    destination_path.chmod(0)
+
+    event_handler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event: FileModifiedEvent = FileModifiedEvent(file_path)  # type: ignore
+
+    event_handler.on_modified(event)
+
+    assert destination_path.exists()
+    assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+
+def test_on_modified_event_handler_on_modified_file_not_found_error(
+    tmp_path: Path,
+    extension_paths: dict[str, Path],
+) -> None:
+    file_path: Path = tmp_path / "test_file.txt"
+    destination_path: Path = extension_paths[".txt"]
+
+    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        tmp_path,
+        extension_paths,
+        path_for_undefined_extensions=None,
+    )
+
+    event: FileModifiedEvent = FileModifiedEvent(file_path)  # type: ignore
+
+    event_handler.on_modified(event)
+
+    assert not destination_path.exists()
+    assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
