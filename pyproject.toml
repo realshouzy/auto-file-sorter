@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "auto-file-sorter"
 description = "A file sorting automation"
 keywords = ["automation", "file", "sorter", "auto", "watchdog"]
-license = {text = "MIT"}
-authors = [{name = "realshouzy"}]
-maintainers = [{name = "realshouzy"}]
+license = { text = "MIT" }
+authors = [{ name = "realshouzy" }]
+maintainers = [{ name = "realshouzy" }]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -38,9 +38,9 @@ auto-file-sorter = "auto_file_sorter.main:main"
 where = ["src"]
 
 [tool.setuptools.dynamic]
-version = {attr = "auto_file_sorter.__version__"}
-readme = {file = ["README.md"]}
-dependencies = {file = "requirements.txt"}
+version = { attr = "auto_file_sorter.__version__" }
+readme = { file = ["README.md"] }
+dependencies = { file = "requirements.txt" }
 
 [tool.black]
 target-version = ["py311", "py310", "py39", "py38"]
@@ -113,22 +113,10 @@ required-imports = ["from __future__ import annotations"]
     "FBT002",
     "PLR0913",
 ]
-"./tests/test_*.py" = [
-    "D103",
-    "S101",
-    "PT007",
-    "SLF001",
-    "N802",
-    "ARG001",
-]
+"./tests/test_*.py" = ["D103", "S101", "PT007", "SLF001", "N802", "ARG001"]
 
 [tool.ruff.pydocstyle]
 convention = "pep257"
 
 [tool.pylint]
-disable = [
-    "R0911",
-    "R0912",
-    "R0915",
-    "W0718",
-]
+disable = ["R0911", "R0912", "R0915", "W0718"]
