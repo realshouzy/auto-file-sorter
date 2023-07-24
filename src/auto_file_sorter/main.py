@@ -8,7 +8,7 @@ import argparse
 import logging
 from typing import TYPE_CHECKING, Final, TextIO
 
-from auto_file_sorter import __status__, __version__
+from auto_file_sorter import __version__
 from auto_file_sorter.args_handling import (
     handle_locations_args,
     handle_read_args,
@@ -49,7 +49,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "-V",
         "--version",
         action="version",
-        version=f"%(prog)s {__version__} {__status__}",
+        version=f"%(prog)s {__version__}",
         help="Show version of auto-file-sorter",
     )
     parser.add_argument(
