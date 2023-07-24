@@ -1,5 +1,4 @@
 """Module testing ``auto_file_sorter.args_handling.py``."""
-
 from __future__ import annotations
 
 import argparse
