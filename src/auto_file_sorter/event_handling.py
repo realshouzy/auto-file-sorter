@@ -114,7 +114,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                 file_path,
                 file_not_found_err,
             )
-        except (OSError, shutil.Error) as os_err:
+        except (shutil.Error, OSError) as os_err:
             pid: int = os.getpid()
             event_handling_logger.critical(
                 "Error in process %s while moving file: %s",
