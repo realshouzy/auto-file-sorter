@@ -32,7 +32,7 @@ def test_handle_locations_args_get_log_location(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    test_log_file: Path = tmp_path.joinpath("auto-file-sorter.log")
+    test_log_file: Path = tmp_path / "auto-file-sorter.log"
 
     args = argparse.Namespace(
         log_location=test_log_file,
@@ -53,7 +53,7 @@ def test_handle_locations_args_get_configs_location(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    test_configs_file: Path = tmp_path.joinpath("configs.json")
+    test_configs_file: Path = tmp_path / "configs.json"
 
     args = argparse.Namespace(
         configs_location=test_configs_file,
@@ -74,8 +74,8 @@ def test_handle_locations_args_both(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    test_log_file: Path = tmp_path.joinpath("auto-file-sorter.log")
-    test_configs_file: Path = tmp_path.joinpath("configs.json")
+    test_log_file: Path = tmp_path / "auto-file-sorter.log"
+    test_configs_file: Path = tmp_path / "configs.json"
 
     args = argparse.Namespace(
         log_location=test_log_file,

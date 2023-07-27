@@ -25,7 +25,7 @@ def extension_paths(tmp_path: Path) -> dict[str, Path]:
 
 @pytest.fixture()
 def path_for_undefined_extensions(tmp_path: Path) -> Path:
-    return tmp_path.joinpath("undefined")
+    return tmp_path / "undefined"
 
 
 def test_on_modified_event_handler_base() -> None:
