@@ -2,28 +2,113 @@
 from __future__ import annotations
 
 import argparse
-from typing import TYPE_CHECKING
+import platform
+from pathlib import Path
 
 import pytest
 
 # pylint: disable=C0116, W0611
-from auto_file_sorter.args_handling import handle_locations_args
+from auto_file_sorter.args_handling import (
+    _FILE_EXTENSION_PATTERN,
+    _add_to_startup,
+    handle_locations_args,
+    resolved_path_from_str,
+)
 
-if TYPE_CHECKING:
-    from pathlib import Path
+
+@pytest.mark.parametrize(
+    "extension",
+    (
+        pytest.param(".TXT"),
+        pytest.param(".zip"),
+        pytest.param(".7z"),
+        pytest.param(".123"),
+        pytest.param(".PnG"),
+        pytest.param(".Jp2"),
+    ),
+)
+def test_file_valid_extension_pattern(extension: str) -> None:
+    assert _FILE_EXTENSION_PATTERN.fullmatch(extension) is not None
 
 
-@pytest.mark.skip(reason="Test needs to be written")
+@pytest.mark.parametrize(
+    "extension",
+    (
+        pytest.param("TXT"),
+        pytest.param("zip"),
+        pytest.param("_7z_"),
+        pytest.param("-123"),
+        pytest.param(".PnG!"),
+        pytest.param(".Jp2@"),
+        pytest.param("/doc"),
+        pytest.param(""),
+    ),
+)
+def test_file_invalid_extension_pattern(extension: str) -> None:
+    assert _FILE_EXTENSION_PATTERN.fullmatch(extension) is None
+
+
+@pytest.mark.parametrize(
+    ("path_as_str", "expected_path"),
+    (
+        pytest.param(
+            "/path/to/some/file.txt",
+            Path("C:/path/to/some/file.txt"),
+            id="regular-str",
+        ),
+        pytest.param(
+            "  /path/to/some/file.txt  ",
+            Path("C:/path/to/some/file.txt"),
+            id="trailing-whitespaces-str",
+        ),
+    ),
+)
+def test_resolved_path_from_str(path_as_str: str, expected_path: Path) -> None:
+    assert resolved_path_from_str(path_as_str) == expected_path
+
+
+@pytest.mark.skip(reason="Test not written yet")
+@pytest.mark.skipif(
+    platform.system() != "Windows",
+    reason="Test behavior on windows-systems",
+)
+def test_add_to_startup_windows() -> None:
+    ...
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows",
+    reason="Test behavior on non-windows systems",
+)
+@pytest.mark.parametrize(
+    ("argv"),
+    (
+        pytest.param(["track", "--autostart", "path/to/some/dir"], id="--autostart"),
+        pytest.param(["track", "-A", "path/to/some/dir"], id="-A"),
+    ),
+)
+def test_add_to_startup_non_windows(
+    argv: list[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    _add_to_startup(argv)
+    assert (
+        "Adding 'auto-file-sorter' to startup is only supported on Windows."
+        in caplog.text
+    )
+
+
+@pytest.mark.skip(reason="Test not written yet")
 def test_handle_write_args() -> None:
     ...
 
 
-@pytest.mark.skip(reason="Test needs to be written")
+@pytest.mark.skip(reason="Test not written yet")
 def test_handle_read_args() -> None:
     ...
 
 
-@pytest.mark.skip(reason="Test needs to be written")
+@pytest.mark.skip(reason="Test not written yet")
 def test_handle_track_args() -> None:
     ...
 
