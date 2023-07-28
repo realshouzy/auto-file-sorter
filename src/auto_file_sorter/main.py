@@ -84,7 +84,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Specify custom location for the configs file (default: location of the program)",
     )
 
-    subparsers: argparse._SubParsersAction[  # noqa: SLF001 # type: ignore
+    subparsers: argparse._SubParsersAction[  # noqa: SLF001
         argparse.ArgumentParser
     ] = parser.add_subparsers(
         title="subcommands",
