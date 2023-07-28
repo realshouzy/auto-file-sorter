@@ -27,16 +27,16 @@ if TYPE_CHECKING:
 @pytest.mark.parametrize(
     ("constant", "expected_value"),
     (
-        pytest.param(CONFIG_LOG_LEVEL, 70, id="CONFIG_LOG_LEVEL-70"),
-        pytest.param(MOVE_LOG_LEVEL, 60, id="MOVE_LOG_LEVEL-60"),
+        pytest.param(CONFIG_LOG_LEVEL, 70, id="CONFIG_LOG_LEVEL"),
+        pytest.param(MOVE_LOG_LEVEL, 60, id="MOVE_LOG_LEVEL"),
         pytest.param(
             LOG_FORMAT,
             "%(name)s [%(levelname)s] %(asctime)s - %(message)s",
             id="LOG_FORMAT-%(name)s [%(levelname)s] %(asctime)s - %(message)s",
         ),
-        pytest.param(MAX_VERBOSITY_LEVEL, 3, id="MAX_VERBOSITY_LEVEL-3"),
-        pytest.param(EXIT_SUCCESS, 0, id="EXIT_SUCCESS-0"),
-        pytest.param(EXIT_FAILURE, 1, id="EXIT_FAILURE-1"),
+        pytest.param(MAX_VERBOSITY_LEVEL, 3, id="MAX_VERBOSITY_LEVEL"),
+        pytest.param(EXIT_SUCCESS, 0, id="EXIT_SUCCESS"),
+        pytest.param(EXIT_FAILURE, 1, id="EXIT_FAILURE"),
         pytest.param(
             STREAM_HANDLER_FORMATTER._fmt,
             "[%(levelname)s] %(message)s",
