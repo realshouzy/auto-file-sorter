@@ -95,7 +95,7 @@ def test_on_modified_event_handler_repr_no_path_for_undefined_extensions(
 def test_on_modified_event_handler_add_date_to_path(tmp_path: Path) -> None:
     event_handler: OnModifiedEventHandler = OnModifiedEventHandler(tmp_path, {}, None)
 
-    dated_path: Path = event_handler._add_date_to_path(tmp_path)  # type: ignore[unused-ignore]
+    dated_path: Path = event_handler._add_date_to_path(tmp_path)
 
     assert dated_path.exists()
     assert dated_path == tmp_path / f"{datetime.now():%Y/%b}"
@@ -109,7 +109,7 @@ def test_on_modified_event_handler_increment_file_name(tmp_path: Path) -> None:
     file1.touch()
     file2.touch()
 
-    incremented_path: Path = event_handler._increment_file_name(  # type: ignore
+    incremented_path: Path = event_handler._increment_file_name(
         tmp_path,
         file1,
     )
@@ -132,7 +132,7 @@ def test_on_modified_event_handler_move_file(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path)  # type: ignore
+    event_handler._move_file(file_path)
 
     assert destination_path.exists()
     assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
@@ -153,7 +153,7 @@ def test_on_modified_event_handler_move_file_undefined_extension(
         path_for_undefined_extensions=path_for_undefined_extensions,
     )
 
-    event_handler._move_file(file_path)  # type: ignore
+    event_handler._move_file(file_path)
 
     assert path_for_undefined_extensions.exists()
     assert (
@@ -178,7 +178,7 @@ def test_on_modified_event_handler_move_file_permission_error_no_exit(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path)  # type: ignore
+    event_handler._move_file(file_path)
 
     assert destination_path.exists()
     assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
@@ -197,7 +197,7 @@ def test_on_modified_event_handler_move_file_file_not_found_error_no_exit(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path)  # type: ignore
+    event_handler._move_file(file_path)
 
     assert destination_path.exists()
     assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
@@ -207,8 +207,8 @@ def test_on_modified_event_handler_move_file_increment(
     tmp_path: Path,
     extension_paths: dict[str, Path],
 ) -> None:
-    file_path: Path = tmp_path / "test_file.txt"
-    file_path.touch()
+    file_path2: Path = tmp_path / "test_file.txt"
+    file_path2.touch()
 
     destination_path: Path = extension_paths[".txt"]
 
@@ -218,21 +218,21 @@ def test_on_modified_event_handler_move_file_increment(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path)  # type: ignore
+    event_handler._move_file(file_path2)
 
     assert destination_path.exists()
     assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
 
-    file_path: Path = tmp_path / "test_file.txt"
-    file_path.touch()
+    file_path2: Path = tmp_path / "test_file.txt"
+    file_path2.touch()
 
-    event_handler._move_file(file_path)  # type: ignore
+    event_handler._move_file(file_path2)
 
     assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file (2).txt").exists()
 
 
 def test_on_modified_event_handler_on_modified_override() -> None:
-    assert OnModifiedEventHandler.on_modified.__override__  # type: ignore[attr-defined] # pylint: disable=E1101
+    assert OnModifiedEventHandler.on_modified.__override__  # type: ignore[attr-defined]  # pylint: disable=E1101
 
 
 def test_on_modified_event_handler_on_modified(
