@@ -385,7 +385,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
             "All given paths are invalid: %s",
             ", ".join(str(path) for path in tracked_paths),
         )
-        return EXIT_SUCCESS
+        return EXIT_FAILURE
 
     args_handling_logger.debug("observers=%s", observers)
 
