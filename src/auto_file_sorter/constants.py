@@ -12,9 +12,11 @@ __all__: list[str] = [
     "MAX_VERBOSITY_LEVEL",
     "EXIT_SUCCESS",
     "EXIT_FAILURE",
+    "FILE_EXTENSION_PATTERN",
 ]
 
 import logging
+import re
 from pathlib import Path
 from typing import Final, Literal
 
@@ -31,6 +33,8 @@ STREAM_HANDLER_FORMATTER: Final[logging.Formatter] = logging.Formatter(
     "[%(levelname)s] %(message)s",
 )
 MAX_VERBOSITY_LEVEL: Final[Literal[3]] = 3
+
+FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^\.[a-zA-Z0-9]+$")
 
 EXIT_SUCCESS: Final[Literal[0]] = 0
 EXIT_FAILURE: Final[Literal[1]] = 1

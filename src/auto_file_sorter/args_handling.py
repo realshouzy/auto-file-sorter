@@ -10,13 +10,13 @@ __all__: list[str] = [
 
 import json
 import logging
-import os
+import os.path
 import platform
 import re
 import sys
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from watchdog.observers import Observer
 
@@ -26,6 +26,7 @@ from auto_file_sorter.constants import (
     DEFAULT_CONFIGS_LOCATION,
     EXIT_FAILURE,
     EXIT_SUCCESS,
+    FILE_EXTENSION_PATTERN,
 )
 from auto_file_sorter.event_handling import OnModifiedEventHandler
 
@@ -36,8 +37,6 @@ if TYPE_CHECKING:
     from watchdog.observers.api import BaseObserver
 
 args_handling_logger: logging.Logger = logging.getLogger(__name__)
-
-_FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^\.[a-zA-Z0-9]+$")
 
 
 def _add_to_startup(argv: Sequence[str] | None = None) -> None:
@@ -148,7 +147,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             )
             return EXIT_FAILURE
 
-        if _FILE_EXTENSION_PATTERN.fullmatch(new_extension) is None:
+        if FILE_EXTENSION_PATTERN.fullmatch(new_extension) is None:
             args_handling_logger.critical(
                 "Given extension '%s' is invalid",
                 new_extension,
@@ -229,7 +228,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             extension: str = config.replace(" ", "").lower()
             args_handling_logger.debug("Stripped '%s' to '%s'", config, extension)
 
-            if _FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
+            if FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
                 args_handling_logger.warning(
                     "Skipping invalid extension: '%s'",
                     extension,
@@ -273,7 +272,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
         for config in args.get_configs:
             extension: str = config.replace(" ", "").lower()
 
-            if _FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
+            if FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
                 args_handling_logger.warning(
                     "Ignoring invalid extension '%s'",
                     extension,

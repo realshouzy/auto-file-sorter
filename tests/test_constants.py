@@ -11,6 +11,7 @@ from auto_file_sorter.constants import (
     DEFAULT_LOG_LOCATION,
     EXIT_FAILURE,
     EXIT_SUCCESS,
+    FILE_EXTENSION_PATTERN,
     LOG_FORMAT,
     MAX_VERBOSITY_LEVEL,
     MOVE_LOG_LEVEL,
@@ -58,3 +59,35 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
 )
 def test_locations(location_check: Callable[[], bool]) -> None:
     assert location_check()
+
+
+@pytest.mark.parametrize(
+    "extension",
+    (
+        pytest.param(".TXT"),
+        pytest.param(".zip"),
+        pytest.param(".7z"),
+        pytest.param(".123"),
+        pytest.param(".PnG"),
+        pytest.param(".Jp2"),
+    ),
+)
+def test_file_valid_extension_pattern(extension: str) -> None:
+    assert FILE_EXTENSION_PATTERN.fullmatch(extension) is not None
+
+
+@pytest.mark.parametrize(
+    "extension",
+    (
+        pytest.param("TXT"),
+        pytest.param("zip"),
+        pytest.param("_7z_"),
+        pytest.param("-123"),
+        pytest.param(".PnG!"),
+        pytest.param(".Jp2@"),
+        pytest.param("/doc"),
+        pytest.param(""),
+    ),
+)
+def test_file_invalid_extension_pattern(extension: str) -> None:
+    assert FILE_EXTENSION_PATTERN.fullmatch(extension) is None
