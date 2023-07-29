@@ -184,7 +184,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
 
         args_handling_logger.debug("Opening '%s'", args.json_file)
         try:
-            with args.json_file.open() as json_file:
+            with args.json_file.open(mode="r", encoding="utf-8") as json_file:
                 args_handling_logger.debug(
                     "Reading from '%s'",
                     args.json_file,
