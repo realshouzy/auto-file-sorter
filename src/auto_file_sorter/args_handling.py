@@ -39,7 +39,11 @@ if TYPE_CHECKING:
 args_handling_logger: logging.Logger = logging.getLogger(__name__)
 
 
-def _add_to_startup(argv: Sequence[str] | None = None) -> None:
+def _add_to_startup(
+    *,
+    argv: Sequence[str] | None = None,
+    startup_folder: Path | None = None,
+) -> None:
     """Add the ran command to startup by creating a vbs file in the 'Startup' folder."""
     if platform.system() != "Windows":
         args_handling_logger.warning(
@@ -49,6 +53,15 @@ def _add_to_startup(argv: Sequence[str] | None = None) -> None:
 
     if not argv:
         argv = sys.argv
+
+    if startup_folder is None:
+        startup_folder = Path(os.path.expandvars("%APPDATA%")).joinpath(
+            "Microsoft",
+            "Windows",
+            "Start Menu",
+            "Programs",
+            "Startup",
+        )
 
     args_handling_logger.debug("argv=%s", argv)
 
@@ -66,20 +79,12 @@ def _add_to_startup(argv: Sequence[str] | None = None) -> None:
     cmd: str = " ".join(cleaned_argv)
     args_handling_logger.debug("Adding '%s' to autostart", cmd)
 
-    startup_folder: Path = Path(os.path.expandvars("%APPDATA%")).joinpath(
-        "Microsoft",
-        "Windows",
-        "Start Menu",
-        "Programs",
-        "Startup",
-    )
-
     args_handling_logger.debug("Startup folder location: '%s'", startup_folder)
     path_to_vbs: Path = startup_folder / "auto-file-sorter.vbs"
 
     args_handling_logger.debug("Opening vbs file: '%s'", path_to_vbs)
     try:
-        with path_to_vbs.open(mode="r", encoding="utf-8") as vbs_file:
+        with path_to_vbs.open(mode="w", encoding="utf-8") as vbs_file:
             args_handling_logger.debug("Writing to vsb file: '%s'", vbs_file)
             vbs_file.write(
                 'Set objShell = WScript.CreateObject("WScript.Shell")\n'
