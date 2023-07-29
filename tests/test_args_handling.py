@@ -34,13 +34,82 @@ def test_resolved_path_from_str(path_as_str: str, expected_path: Path) -> None:
     assert resolved_path_from_str(path_as_str) == expected_path
 
 
-@pytest.mark.skip(reason="Test not written yet")
 @pytest.mark.skipif(
     platform.system() != "Windows",
     reason="Test behavior on windows-systems",
 )
-def test_add_to_startup_windows() -> None:
-    ...
+@pytest.mark.parametrize(
+    ("argv", "clean_argv"),
+    (
+        pytest.param(
+            ["track", "--autostart", "path/to/some/dir"],
+            "track path/to/some/dir",
+            id="normal_autostart",
+        ),
+        pytest.param(
+            ["--verbose", "track", "--autostart", "path/to/some/dir"],
+            "track path/to/some/dir",
+            id="one_verbose_flag",
+        ),
+        pytest.param(
+            ["--verbose", "--verbose", "track", "--autostart", "path/to/some/dir"],
+            "track path/to/some/dir",
+            id="more_verbose_flag",
+        ),
+        pytest.param(
+            ["--debug", "--verbose", "track", "--autostart", "path/to/some/dir"],
+            "--debug track path/to/some/dir",
+            id="debug_verbose_flag",
+        ),
+        pytest.param(
+            ["-v", "track", "--autostart", "path/to/some/dir"],
+            "track path/to/some/dir",
+            id="v_flag",
+        ),
+        pytest.param(
+            ["-vv", "track", "--autostart", "path/to/some/dir"],
+            "track path/to/some/dir",
+            id="vv_flag",
+        ),
+        pytest.param(
+            ["-vvvv", "track", "--autostart", "path/to/some/dir"],
+            "track path/to/some/dir",
+            id="vvvv_flag",
+        ),
+        pytest.param(
+            ["-d", "-vvv", "track", "--autostart", "path/to/some/dir"],
+            "-d track path/to/some/dir",
+            id="debug_vvv_flag",
+        ),
+        pytest.param(
+            [
+                "-vvv",
+                "track",
+                "--autostart",
+                "path/to/some/dir",
+                "path/to/some/other/dir",
+            ],
+            "track path/to/some/dir path/to/some/other/dir",
+            id="vvv_flag_two_tracked_paths",
+        ),
+    ),
+)
+def test_add_to_startup_windows(
+    argv: list[str],
+    clean_argv: str,
+    tmp_path: Path,
+) -> None:
+    path_to_vbs: Path = tmp_path / "auto-file-sorter.vbs"
+    vbs_file_contents: str = (
+        'Set objShell = WScript.CreateObject("WScript.Shell")\n'
+        f'objShell.Run "{clean_argv}", 0, True\n'
+    )
+
+    _add_to_startup(argv=argv, startup_folder=tmp_path)
+
+    assert tmp_path.exists()
+    assert path_to_vbs.exists()
+    assert path_to_vbs.read_text() == vbs_file_contents
 
 
 @pytest.mark.skipif(
@@ -50,15 +119,55 @@ def test_add_to_startup_windows() -> None:
 @pytest.mark.parametrize(
     ("argv"),
     (
-        pytest.param(["track", "--autostart", "path/to/some/dir"], id="--autostart"),
-        pytest.param(["track", "-A", "path/to/some/dir"], id="-A"),
+        pytest.param(
+            ["track", "--autostart", "path/to/some/dir"],
+            id="normal_autostart",
+        ),
+        pytest.param(
+            ["--verbose", "track", "--autostart", "path/to/some/dir"],
+            id="one_verbose_flag",
+        ),
+        pytest.param(
+            ["--verbose", "--verbose", "track", "--autostart", "path/to/some/dir"],
+            id="more_verbose_flag",
+        ),
+        pytest.param(
+            ["--debug", "--verbose", "track", "--autostart", "path/to/some/dir"],
+            id="debug_verbose_flag",
+        ),
+        pytest.param(
+            ["-v", "track", "--autostart", "path/to/some/dir"],
+            id="v_flag",
+        ),
+        pytest.param(
+            ["-vv", "track", "--autostart", "path/to/some/dir"],
+            id="vv_flag",
+        ),
+        pytest.param(
+            ["-vvvv", "track", "--autostart", "path/to/some/dir"],
+            id="vvvv_flag",
+        ),
+        pytest.param(
+            ["-d", "-vvv", "track", "--autostart", "path/to/some/dir"],
+            id="debug_vvv_flag",
+        ),
+        pytest.param(
+            [
+                "-vvv",
+                "track",
+                "--autostart",
+                "path/to/some/dir",
+                "path/to/some/other/dir",
+            ],
+            id="vvv_flag_two_tracked_paths",
+        ),
     ),
 )
 def test_add_to_startup_non_windows(
     argv: list[str],
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    _add_to_startup(argv)
+    _add_to_startup(argv=argv)
     assert (
         "Adding 'auto-file-sorter' to startup is only supported on Windows."
         in caplog.text
