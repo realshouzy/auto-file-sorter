@@ -33,7 +33,7 @@ if TYPE_CHECKING:
         pytest.param(
             LOG_FORMAT,
             "%(name)s [%(levelname)s] %(asctime)s - %(message)s",
-            id="LOG_FORMAT-%(name)s [%(levelname)s] %(asctime)s - %(message)s",
+            id="LOG_FORMAT",
         ),
         pytest.param(MAX_VERBOSITY_LEVEL, 3, id="MAX_VERBOSITY_LEVEL"),
         pytest.param(EXIT_SUCCESS, 0, id="EXIT_SUCCESS"),
@@ -41,7 +41,7 @@ if TYPE_CHECKING:
         pytest.param(
             STREAM_HANDLER_FORMATTER._fmt,
             "[%(levelname)s] %(message)s",
-            id="STREAM_HANDLER_FORMATTER-[%(levelname)s] %(message)s",
+            id="STREAM_HANDLER_FORMATTER",
         ),
     ),
 )
@@ -52,9 +52,9 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
 @pytest.mark.parametrize(
     "location_check",
     (
-        pytest.param(PROGRAM_LOCATION.is_dir, id="PROGRAM_LOCATION-is_dir"),
-        pytest.param(DEFAULT_CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATIO-is_file"),
-        pytest.param(DEFAULT_LOG_LOCATION.is_file, id="DEFAULT_LOG_LOCATION-is_file"),
+        pytest.param(PROGRAM_LOCATION.is_dir, id="PROGRAM_LOCATION"),
+        pytest.param(DEFAULT_CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATIO"),
+        pytest.param(DEFAULT_LOG_LOCATION.is_file, id="DEFAULT_LOG_LOCATION"),
     ),
 )
 def test_locations(location_check: Callable[[], bool]) -> None:
