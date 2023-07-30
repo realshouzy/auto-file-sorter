@@ -2,17 +2,37 @@
 from __future__ import annotations
 
 import argparse
+import json
 import platform
 from pathlib import Path
 
 import pytest
 
-# pylint: disable=C0116, W0611
 from auto_file_sorter.args_handling import (
     _add_to_startup,
     handle_locations_args,
+    handle_read_args,
+    handle_track_args,
+    handle_write_args,
     resolved_path_from_str,
 )
+
+# pylint: disable=C0116, W0621
+
+
+@pytest.fixture()
+def test_config(tmp_path: Path) -> tuple[Path, dict[str, str]]:
+    test_configs_file: Path = tmp_path / "test_configs.json"
+
+    test_configs: dict[str, str] = {
+        ".txt": "/path/to/txt",
+        ".pdf": "/path/to/pdf",
+    }
+
+    with test_configs_file.open(mode="w") as json_file:
+        json.dump(test_configs, json_file, indent=4)
+
+    return test_configs_file, test_configs
 
 
 @pytest.mark.parametrize(
@@ -21,12 +41,12 @@ from auto_file_sorter.args_handling import (
         pytest.param(
             "/path/to/some/file.txt",
             Path("C:/path/to/some/file.txt"),
-            id="regular-str",
+            id="regular_str",
         ),
         pytest.param(
             "  /path/to/some/file.txt  ",
             Path("C:/path/to/some/file.txt"),
-            id="trailing-whitespaces-str",
+            id="trailing_whitespaces_str",
         ),
     ),
 )
@@ -174,19 +194,238 @@ def test_add_to_startup_non_windows(
     )
 
 
-@pytest.mark.skip(reason="Test not written yet")
-def test_handle_write_args() -> None:
-    ...
+def test_handle_write_args_new_config(test_config: tuple[Path, dict[str, str]]) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=[".jpg", "/path/to/jpg"],
+        json_file=None,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 0
+
+    with test_configs_file.open() as json_file:
+        updated_configs: dict[str, str] = json.load(json_file)
+
+    assert updated_configs[".jpg"] == "/path/to/jpg"
 
 
-@pytest.mark.skip(reason="Test not written yet")
-def test_handle_read_args() -> None:
-    ...
+@pytest.mark.parametrize(
+    "new_config",
+    (
+        pytest.param(["", "/path/to/jpg"], id="no_extension"),
+        pytest.param([".jpg", ""], id="no_path"),
+    ),
+)
+def test_handle_write_args_new_config_no_extension_or_path(
+    new_config: list[str],
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=new_config,
+        json_file=None,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 1
 
 
-@pytest.mark.skip(reason="Test not written yet")
-def test_handle_track_args() -> None:
-    ...
+@pytest.mark.parametrize(
+    "extension",
+    (
+        pytest.param("TXT"),
+        pytest.param("zip"),
+        pytest.param("_7z_"),
+        pytest.param("-123"),
+        pytest.param(".PnG!"),
+        pytest.param(".Jp2@"),
+        pytest.param("/doc"),
+        pytest.param(""),
+    ),
+)
+def test_handle_write_args_new_config_invalid_extension(
+    extension: str,
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=[extension, "/path/to/some/dir"],
+        json_file=None,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 1
+
+
+def test_handle_write_args_load_json_file(
+    tmp_path: Path,
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    json_file_path = tmp_path / "test_load_configs.json"
+    json_data: dict[str, str] = {
+        ".docx": "/path/to/docx",
+        ".png": "/path/to/png",
+    }
+    with json_file_path.open("w") as json_file:
+        json.dump(json_data, json_file)
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=None,
+        json_file=json_file_path,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 0
+
+    with test_configs_file.open() as json_file:
+        updated_configs: dict[str, str] = json.load(json_file)
+
+    assert updated_configs[".docx"] == "/path/to/docx"
+    assert updated_configs[".png"] == "/path/to/png"
+
+
+def test_handle_write_args_load_json_file_no_json(
+    tmp_path: Path,
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    json_file_path = tmp_path / "test_load_configs.txt"
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=None,
+        json_file=json_file_path,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 1
+
+
+def test_handle_write_args_load_json_file_file_not_found_error(
+    tmp_path: Path,
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    json_file_path = tmp_path / "test_load_configs.json"
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=None,
+        json_file=json_file_path,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 1
+
+
+def test_handle_write_args_load_json_file_json_decode_error(
+    tmp_path: Path,
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    json_file_path = tmp_path / "test_load_configs.json"
+    json_file_path.write_text("invalid json data")
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=None,
+        json_file=json_file_path,
+        configs_to_be_removed=None,
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 1
+
+
+def test_handle_write_args_remove_configs(
+    test_config: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=None,
+        json_file=None,
+        configs_to_be_removed=[".txt", ".pdf", ".png"],
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 0
+
+    with test_configs_file.open() as json_file:
+        updated_configs: dict[str, str] = json.load(json_file)
+
+    assert ".txt" not in updated_configs
+    assert ".pdf" not in updated_configs
+    assert ".png" not in updated_configs
+
+
+@pytest.mark.parametrize(
+    ("get_configs", "expected_out"),
+    (
+        pytest.param(
+            None,
+            ".txt: C:\\path\\to\\txt\n.pdf: C:\\path\\to\\pdf\n",
+            id="all_configs",
+        ),
+        pytest.param(
+            [".pdf"],
+            ".pdf: C:\\path\\to\\pdf\n",
+            id="selected_configs",
+        ),
+        pytest.param(
+            [".png"],
+            "",
+            id="selected_configs_not_in_config",
+        ),
+    ),
+)
+def test_handle_read_args(
+    get_configs: list[str] | None,
+    expected_out: str,
+    test_config: tuple[Path, dict[str, str]],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=get_configs,
+    )
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 0
+
+    out, _ = capsys.readouterr()
+    assert out == expected_out
+
+
+# TODO: Make this actually testable
+@pytest.mark.skip(reason="Test not finished yet")
+def test_handle_track_args_no_auto_start(
+    test_config: tuple[Path, dict[str, str]],
+    tmp_path: Path,
+) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        tracked_paths=[tmp_path],
+        path_for_undefined_extensions=None,
+        enable_autostart=False,
+    )
+    exit_code: int = handle_track_args(args)
+    assert exit_code == 0
 
 
 def test_handle_locations_args_get_log_location(
@@ -195,7 +434,7 @@ def test_handle_locations_args_get_log_location(
 ) -> None:
     test_log_file: Path = tmp_path / "auto-file-sorter.log"
 
-    args = argparse.Namespace(
+    args: argparse.Namespace = argparse.Namespace(
         log_location=test_log_file,
         get_log_location=True,
         get_config_location=False,
@@ -216,7 +455,7 @@ def test_handle_locations_args_get_configs_location(
 ) -> None:
     test_configs_file: Path = tmp_path / "configs.json"
 
-    args = argparse.Namespace(
+    args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
         get_log_location=False,
         get_config_location=True,
@@ -238,7 +477,7 @@ def test_handle_locations_args_both(
     test_log_file: Path = tmp_path / "auto-file-sorter.log"
     test_configs_file: Path = tmp_path / "configs.json"
 
-    args = argparse.Namespace(
+    args: argparse.Namespace = argparse.Namespace(
         log_location=test_log_file,
         configs_location=test_configs_file,
         get_log_location=True,
