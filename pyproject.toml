@@ -93,6 +93,9 @@ ignore = [
     "T201",
     "D205",
     "DTZ005",
+    "TD002",
+    "TD003",
+    "FIX002",
 ]
 fixable = ["ALL"]
 unfixable = []
@@ -123,7 +126,7 @@ required-imports = ["from __future__ import annotations"]
 convention = "pep257"
 
 [tool.pylint]
-disable = ["R0911", "R0912", "R0915", "W0718"]
+disable = ["R0911", "R0912", "R0915", "W0718", "W0511"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]
