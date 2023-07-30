@@ -23,7 +23,6 @@ from watchdog.observers import Observer
 from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
-    DEFAULT_CONFIGS_LOCATION,
     EXIT_FAILURE,
     EXIT_SUCCESS,
     FILE_EXTENSION_PATTERN,
@@ -167,7 +166,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             "Updated '%s': '%s' from %s",
             new_extension,
             new_path,
-            DEFAULT_CONFIGS_LOCATION,
+            args.configs_location,
         )
 
     if args.json_file is not None:
@@ -297,7 +296,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
                 args_handling_logger.warning(
                     "Unable to get the respetive path from '%s' "
                     "of one of the given extensions '%s'",
-                    DEFAULT_CONFIGS_LOCATION,
+                    args.configs_location,
                     extension,
                 )
                 continue
@@ -333,7 +332,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
     if not configs:
         args_handling_logger.critical(
             "No paths for extensions defined in '%s'",
-            DEFAULT_CONFIGS_LOCATION,
+            args.configs_location,
         )
         return EXIT_FAILURE
 
