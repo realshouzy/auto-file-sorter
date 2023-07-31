@@ -32,6 +32,12 @@ CONFIG_LOG_LEVEL: Final[Literal[70]] = 70
 STREAM_HANDLER_FORMATTER: Final[logging.Formatter] = logging.Formatter(
     "[%(levelname)s] %(message)s",
 )
+
+VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG,
+}
 MAX_VERBOSITY_LEVEL: Final[Literal[3]] = 3
 
 FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^\.[a-zA-Z0-9]+$")

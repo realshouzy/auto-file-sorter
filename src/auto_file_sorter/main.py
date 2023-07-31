@@ -6,7 +6,7 @@ __all__: list[str] = ["main"]
 
 import argparse
 import logging
-from typing import TYPE_CHECKING, Final, TextIO
+from typing import TYPE_CHECKING, TextIO
 
 from auto_file_sorter import __version__
 from auto_file_sorter.args_handling import (
@@ -24,18 +24,13 @@ from auto_file_sorter.constants import (
     MAX_VERBOSITY_LEVEL,
     MOVE_LOG_LEVEL,
     STREAM_HANDLER_FORMATTER,
+    VERBOSE_OUTPUT_LEVELS,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
 main_logger: logging.Logger = logging.getLogger(__name__)
-
-_VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
-    1: logging.WARNING,
-    2: logging.INFO,
-    3: logging.DEBUG,
-}
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -210,7 +205,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         stream_handler: logging.StreamHandler[TextIO] = logging.StreamHandler()
         stream_handler.setFormatter(STREAM_HANDLER_FORMATTER)
         stream_handler.setLevel(
-            _VERBOSE_OUTPUT_LEVELS.get(args.verbosity_level, MAX_VERBOSITY_LEVEL),
+            VERBOSE_OUTPUT_LEVELS.get(args.verbosity_level, MAX_VERBOSITY_LEVEL),
         )
         handlers.append(stream_handler)
 

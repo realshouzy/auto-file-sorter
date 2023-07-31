@@ -17,6 +17,7 @@ from auto_file_sorter.constants import (
     MOVE_LOG_LEVEL,
     PROGRAM_LOCATION,
     STREAM_HANDLER_FORMATTER,
+    VERBOSE_OUTPUT_LEVELS,
 )
 
 if TYPE_CHECKING:
@@ -42,6 +43,11 @@ if TYPE_CHECKING:
             STREAM_HANDLER_FORMATTER._fmt,
             "[%(levelname)s] %(message)s",
             id="STREAM_HANDLER_FORMATTER",
+        ),
+        pytest.param(
+            VERBOSE_OUTPUT_LEVELS,
+            {1: 30, 2: 20, 3: 10},
+            id="VERBOSE_OUTPUT_LEVELS",
         ),
     ),
 )
