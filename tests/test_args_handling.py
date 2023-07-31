@@ -29,8 +29,7 @@ def test_config(tmp_path: Path) -> tuple[Path, dict[str, str]]:
         ".pdf": "/path/to/pdf",
     }
 
-    with test_configs_file.open(mode="w") as json_file:
-        json.dump(test_configs, json_file, indent=4)
+    test_configs_file.write_text(json.dumps(test_configs))
 
     return test_configs_file, test_configs
 
@@ -118,6 +117,7 @@ def test_add_to_startup_windows(
     argv: list[str],
     clean_argv: str,
     tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     path_to_vbs: Path = tmp_path / "auto-file-sorter.vbs"
     vbs_file_contents: str = (
@@ -127,9 +127,9 @@ def test_add_to_startup_windows(
 
     _add_to_startup(argv=argv, startup_folder=tmp_path)
 
-    assert tmp_path.exists()
     assert path_to_vbs.exists()
     assert path_to_vbs.read_text() == vbs_file_contents
+    assert not caplog.text
 
 
 @pytest.mark.skipif(
@@ -426,6 +426,43 @@ def test_handle_track_args_no_auto_start(
     )
     exit_code: int = handle_track_args(args)
     assert exit_code == 0
+
+
+def test_handle_track_args_path_not_found(
+    test_config: tuple[Path, dict[str, str]],
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_config
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        tracked_paths=[tmp_path / "test"],
+        path_for_undefined_extensions=None,
+        enable_autostart=False,
+    )
+    exit_code: int = handle_track_args(args)
+    assert exit_code == 1
+    assert f"All given paths are invalid: {tmp_path / 'test'}" in caplog.text
+
+
+def test_handle_track_args_no_configs(
+    test_config: tuple[Path, dict[str, str]],
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_config
+    test_configs_file.write_text(json.dumps({}))
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        tracked_paths=[tmp_path],
+        path_for_undefined_extensions=None,
+        enable_autostart=False,
+    )
+    exit_code: int = handle_track_args(args)
+    assert exit_code == 1
+    assert f"No paths for extensions defined in '{test_configs_file}'" in caplog.text
 
 
 def test_handle_locations_args_get_log_location(
