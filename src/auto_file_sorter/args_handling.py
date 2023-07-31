@@ -320,9 +320,6 @@ def handle_read_args(args: argparse.Namespace) -> int:
 
 def handle_track_args(args: argparse.Namespace) -> int:
     """Handle the ``track`` subcommand."""
-    if args.enable_autostart:
-        _add_to_startup()
-
     tracked_paths: list[Path] = args.tracked_paths
     args_handling_logger.debug("tracked_paths=%s", tracked_paths)
 
@@ -387,6 +384,9 @@ def handle_track_args(args: argparse.Namespace) -> int:
         return EXIT_FAILURE
 
     args_handling_logger.debug("observers=%s", observers)
+
+    if args.enable_autostart:
+        _add_to_startup()
 
     try:
         while True:
