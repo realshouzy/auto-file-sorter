@@ -120,7 +120,16 @@ required-imports = ["from __future__ import annotations"]
     "FBT002",
     "PLR0913",
 ]
-"./tests/test_*.py" = ["D103", "S101", "PT007", "SLF001", "N802", "ARG001"]
+"./tests/test_*.py" = [
+    "D103",
+    "S101",
+    "PT007",
+    "SLF001",
+    "N802",
+    "ARG001",
+    "F811",
+    "F401",
+]
 
 [tool.ruff.pydocstyle]
 convention = "pep257"
