@@ -120,7 +120,7 @@ required-imports = ["from __future__ import annotations"]
     "FBT002",
     "PLR0913",
 ]
-"./tests/test_*.py" = [
+"./tests/*_test.py" = [
     "D103",
     "S101",
     "PT007",
