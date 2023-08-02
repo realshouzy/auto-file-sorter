@@ -4,28 +4,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-import pytest
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 
+# pylint: disable=C0116, W0212, W0611, W0621
 from auto_file_sorter.event_handling import OnModifiedEventHandler
+from tests.fixtures import extension_paths, path_for_undefined_extensions
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-# pylint: disable=C0116, W0212, W0621
-
-
-@pytest.fixture()
-def extension_paths(tmp_path: Path) -> dict[str, Path]:
-    return {
-        ".txt": tmp_path / "txt",
-        ".doc": tmp_path / "doc",
-    }
-
-
-@pytest.fixture()
-def path_for_undefined_extensions(tmp_path: Path) -> Path:
-    return tmp_path / "undefined"
 
 
 def test_on_modified_event_handler_base() -> None:
@@ -141,9 +127,8 @@ def test_on_modified_event_handler_move_file(
 def test_on_modified_event_handler_move_file_undefined_extension(
     tmp_path: Path,
     extension_paths: dict[str, Path],
+    path_for_undefined_extensions: Path,
 ) -> None:
-    path_for_undefined_extensions: Path = tmp_path / "undefined"
-
     file_path: Path = tmp_path / "test_file.idk"
     file_path.touch()
 
@@ -285,8 +270,8 @@ def test_on_modified_event_handler_on_modified_skip_directory(
 def test_on_modified_event_handler_on_modified_undefined_extension(
     tmp_path: Path,
     extension_paths: dict[str, Path],
+    path_for_undefined_extensions: Path,
 ) -> None:
-    path_for_undefined_extensions: Path = tmp_path / "undefined"
     file_path: Path = tmp_path / "test_file.idk"
     file_path.touch()
 

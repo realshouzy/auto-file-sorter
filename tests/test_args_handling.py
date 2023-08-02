@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+# pylint: disable=C0116, W0611, W0621
 from auto_file_sorter.args_handling import (
     _add_to_startup,
     handle_locations_args,
@@ -17,21 +18,8 @@ from auto_file_sorter.args_handling import (
     resolved_path_from_str,
 )
 
-# pylint: disable=C0116, W0621
-
-
-@pytest.fixture()
-def test_config(tmp_path: Path) -> tuple[Path, dict[str, str]]:
-    test_configs_file: Path = tmp_path / "test_configs.json"
-
-    test_configs: dict[str, str] = {
-        ".txt": "/path/to/txt",
-        ".pdf": "/path/to/pdf",
-    }
-
-    test_configs_file.write_text(json.dumps(test_configs))
-
-    return test_configs_file, test_configs
+#  ``valid_json_data`` indirectly used by the test_configs fixture, do not remove!
+from tests.fixtures import test_configs, valid_json_data
 
 
 @pytest.mark.parametrize(
@@ -194,8 +182,10 @@ def test_add_to_startup_non_windows(
     )
 
 
-def test_handle_write_args_new_config(test_config: tuple[Path, dict[str, str]]) -> None:
-    test_configs_file, _ = test_config
+def test_handle_write_args_new_config(
+    test_configs: tuple[Path, dict[str, str]],
+) -> None:
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -221,9 +211,9 @@ def test_handle_write_args_new_config(test_config: tuple[Path, dict[str, str]]) 
 )
 def test_handle_write_args_new_config_no_extension_or_path(
     new_config: list[str],
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -250,9 +240,9 @@ def test_handle_write_args_new_config_no_extension_or_path(
 )
 def test_handle_write_args_new_config_invalid_extension(
     extension: str,
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -266,9 +256,9 @@ def test_handle_write_args_new_config_invalid_extension(
 
 def test_handle_write_args_load_json_file(
     tmp_path: Path,
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     json_file_path = tmp_path / "test_load_configs.json"
     json_data: dict[str, str] = {
@@ -296,9 +286,9 @@ def test_handle_write_args_load_json_file(
 
 def test_handle_write_args_load_json_file_no_json(
     tmp_path: Path,
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     json_file_path = tmp_path / "test_load_configs.txt"
 
@@ -314,9 +304,9 @@ def test_handle_write_args_load_json_file_no_json(
 
 def test_handle_write_args_load_json_file_file_not_found_error(
     tmp_path: Path,
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     json_file_path = tmp_path / "test_load_configs.json"
 
@@ -330,11 +320,11 @@ def test_handle_write_args_load_json_file_file_not_found_error(
     assert exit_code == 1
 
 
-def test_handle_write_args_load_json_file_json_decode_error(
+def test_handle_write_args_load_json_file_decode_error(
     tmp_path: Path,
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     json_file_path = tmp_path / "test_load_configs.json"
     json_file_path.write_text("invalid json data")
@@ -350,9 +340,9 @@ def test_handle_write_args_load_json_file_json_decode_error(
 
 
 def test_handle_write_args_remove_configs(
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -394,10 +384,10 @@ def test_handle_write_args_remove_configs(
 def test_handle_read_args(
     get_configs: list[str] | None,
     expected_out: str,
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -413,10 +403,10 @@ def test_handle_read_args(
 # TODO: Make this actually testable
 @pytest.mark.skip(reason="Test not finished yet")
 def test_handle_track_args_no_auto_start(
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -429,11 +419,11 @@ def test_handle_track_args_no_auto_start(
 
 
 def test_handle_track_args_path_not_found(
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -447,11 +437,11 @@ def test_handle_track_args_path_not_found(
 
 
 def test_handle_track_args_no_configs(
-    test_config: tuple[Path, dict[str, str]],
+    test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    test_configs_file, _ = test_config
+    test_configs_file, _ = test_configs
     test_configs_file.write_text(json.dumps({}))
 
     args: argparse.Namespace = argparse.Namespace(

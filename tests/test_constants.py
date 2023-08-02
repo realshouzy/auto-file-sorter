@@ -22,6 +22,7 @@ from auto_file_sorter.constants import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
 # pylint: disable=C0116, W0212
 
@@ -65,6 +66,18 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
 )
 def test_locations(location_check: Callable[[], bool]) -> None:
     assert location_check()
+
+
+@pytest.mark.parametrize(
+    "location",
+    (
+        pytest.param(PROGRAM_LOCATION, id="PROGRAM_LOCATION"),
+        pytest.param(DEFAULT_CONFIGS_LOCATION, id="CONFIGS_LOCATIO"),
+        pytest.param(DEFAULT_LOG_LOCATION, id="DEFAULT_LOG_LOCATION"),
+    ),
+)
+def test_locations_are_absolute(location: Path) -> None:
+    assert location.is_absolute()
 
 
 @pytest.mark.parametrize(
