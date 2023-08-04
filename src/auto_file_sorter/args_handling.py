@@ -81,14 +81,13 @@ def _add_to_startup(
     args_handling_logger.debug("Startup folder location: '%s'", startup_folder)
     path_to_vbs: Path = startup_folder / "auto-file-sorter.vbs"
 
-    args_handling_logger.debug("Opening vbs file: '%s'", path_to_vbs)
+    args_handling_logger.debug("Writing to vsb file: '%s'", path_to_vbs)
     try:
-        with path_to_vbs.open(mode="w", encoding="utf-8") as vbs_file:
-            args_handling_logger.debug("Writing to vsb file: '%s'", vbs_file)
-            vbs_file.write(
-                'Set objShell = WScript.CreateObject("WScript.Shell")\n'
-                f'objShell.Run "{cmd}", 0, True\n',
-            )
+        path_to_vbs.write_text(
+            'Set objShell = WScript.CreateObject("WScript.Shell")'
+            f'\nobjShell.Run "{cmd}", 0, True\n',
+            encoding="utf-8",
+        )
     except PermissionError:
         args_handling_logger.critical(
             "Permission denied to open and read from '%s'",
@@ -181,14 +180,11 @@ def handle_write_args(args: argparse.Namespace) -> int:
             )
             return EXIT_FAILURE
 
-        args_handling_logger.debug("Opening '%s'", args.json_file)
+        args_handling_logger.debug("Reading from '%s'", args.json_file)
         try:
-            with args.json_file.open(mode="r", encoding="utf-8") as json_file:
-                args_handling_logger.debug(
-                    "Reading from '%s'",
-                    args.json_file,
-                )
-                new_configs_from_json: dict[str, str] = json.load(json_file)
+            new_configs_from_json: dict[str, str] = json.loads(
+                args.json_file.read_text(encoding="utf-8"),
+            )
         except FileNotFoundError:
             args_handling_logger.critical(
                 "Unable to find '%s'",

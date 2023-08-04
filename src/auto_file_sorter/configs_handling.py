@@ -22,10 +22,8 @@ configs_handling_logger: logging.Logger = logging.getLogger(__name__)
 def read_from_configs(*, configs: Path = DEFAULT_CONFIGS_LOCATION) -> dict[str, str]:
     """Warp ``open`` for easy reading from ``configs.json``."""
     try:
-        configs_handling_logger.debug("Opening %s", configs)
-        with configs.open(mode="r", encoding="utf-8") as json_file:
-            configs_handling_logger.debug("Loading %s", json_file)
-            configs_dict: dict[str, str] = json.load(json_file)
+        configs_handling_logger.debug("Reading from '%s'", configs)
+        configs_dict: dict[str, str] = json.loads(configs.read_text(encoding="utf-8"))
     except FileNotFoundError as no_file_err:
         configs_handling_logger.critical(
             "Unable to find 'configs.json', falling back to an empty configuration",
@@ -69,10 +67,8 @@ def write_to_configs(
 ) -> None:
     """Warp ``open`` for easy writing to ``configs.json``."""
     try:
-        configs_handling_logger.debug("Opening '%s'", configs)
-        with configs.open(mode="w", encoding="utf-8") as json_file:
-            configs_handling_logger.debug("Dumping: %s", new_configs)
-            json.dump(new_configs, json_file, indent=4)
+        configs_handling_logger.debug("Writing to '%s'", configs)
+        configs.write_text(json.dumps(new_configs, indent=4), encoding="utf-8")
     except TypeError as type_err:
         configs_handling_logger.critical(
             "Given JSON file is not correctly configured: %s",

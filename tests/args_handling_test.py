@@ -196,8 +196,9 @@ def test_handle_write_args_new_config(
     exit_code: int = handle_write_args(args)
     assert exit_code == 0
 
-    with test_configs_file.open() as json_file:
-        updated_configs: dict[str, str] = json.load(json_file)
+    updated_configs: dict[str, str] = json.loads(
+        test_configs_file.read_text(encoding="utf-8"),
+    )
 
     assert updated_configs[".jpg"] == "/path/to/jpg"
 
@@ -265,8 +266,8 @@ def test_handle_write_args_load_json_file(
         ".docx": "/path/to/docx",
         ".png": "/path/to/png",
     }
-    with json_file_path.open("w") as json_file:
-        json.dump(json_data, json_file)
+
+    json_file_path.write_text(json.dumps(json_data), encoding="utf-8")
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
@@ -277,8 +278,9 @@ def test_handle_write_args_load_json_file(
     exit_code: int = handle_write_args(args)
     assert exit_code == 0
 
-    with test_configs_file.open() as json_file:
-        updated_configs: dict[str, str] = json.load(json_file)
+    updated_configs: dict[str, str] = json.loads(
+        test_configs_file.read_text(encoding="utf-8"),
+    )
 
     assert updated_configs[".docx"] == "/path/to/docx"
     assert updated_configs[".png"] == "/path/to/png"
@@ -353,8 +355,9 @@ def test_handle_write_args_remove_configs(
     exit_code: int = handle_write_args(args)
     assert exit_code == 0
 
-    with test_configs_file.open() as json_file:
-        updated_configs: dict[str, str] = json.load(json_file)
+    updated_configs: dict[str, str] = json.loads(
+        test_configs_file.read_text(encoding="utf-8"),
+    )
 
     assert ".txt" not in updated_configs
     assert ".pdf" not in updated_configs

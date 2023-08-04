@@ -10,6 +10,7 @@ import pytest
 from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
 from tests.fixtures import (
     empty_test_configs,
+    info_caplog,
     invalid_json_data,
     restricted_test_configs,
     test_configs,
@@ -28,9 +29,7 @@ def test_read_from_configs(test_configs: tuple[Path, dict[str, str]]) -> None:
     assert result == test_configs_data
 
 
-def test_read_from_configs_no_file(
-    tmp_path: Path,
-) -> None:
+def test_read_from_configs_no_file(tmp_path: Path) -> None:
     test_configs_file: Path = tmp_path / "nonexistent_configs.json"
 
     assert not test_configs_file.exists()
@@ -44,9 +43,7 @@ def test_read_from_configs_no_file(
     assert configs == {}
 
 
-def test_read_from_configs_permission_error1(
-    restricted_test_configs: Path,
-) -> None:
+def test_read_from_configs_permission_error1(restricted_test_configs: Path) -> None:
     with pytest.raises(SystemExit):
         read_from_configs(configs=restricted_test_configs)
 
@@ -83,8 +80,7 @@ def test_write_to_configs_nonexistent_configs(
 
     assert test_configs.exists()
 
-    with test_configs.open(mode="r", encoding="utf-8") as json_file:
-        result: dict[str, str] = json.load(json_file)
+    result: dict[str, str] = json.loads(test_configs.read_text(encoding="utf-8"))
     assert result == valid_json_data
 
 
