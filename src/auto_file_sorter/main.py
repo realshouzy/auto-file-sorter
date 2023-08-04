@@ -145,7 +145,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--json",
         dest="json_file",
         type=resolved_path_from_str,
-        nargs="+",
         metavar="PATH",
         help="Load new configs from a json file into 'configs.json'",
     )
