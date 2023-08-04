@@ -57,15 +57,49 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
 
 
 @pytest.mark.parametrize(
-    "location_check",
+    "location",
     (
-        pytest.param(PROGRAM_LOCATION.is_dir, id="PROGRAM_LOCATION"),
-        pytest.param(DEFAULT_CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATION"),
-        pytest.param(DEFAULT_LOG_LOCATION.is_file, id="DEFAULT_LOG_LOCATION"),
+        pytest.param(PROGRAM_LOCATION, id="PROGRAM_LOCATION"),
+        pytest.param(DEFAULT_CONFIGS_LOCATION, id="CONFIGS_LOCATION"),
+        pytest.param(DEFAULT_LOG_LOCATION, id="DEFAULT_LOG_LOCATION"),
     ),
 )
-def test_locations(location_check: Callable[[], bool]) -> None:
-    assert location_check()
+def test_location_is_absolute(location: Path) -> None:
+    assert location.is_absolute()
+
+
+@pytest.mark.parametrize(
+    "default_file",
+    (
+        pytest.param(DEFAULT_CONFIGS_LOCATION, id="CONFIGS_LOCATION"),
+        pytest.param(DEFAULT_LOG_LOCATION, id="DEFAULT_LOG_LOCATION"),
+    ),
+)
+def test_default_file_under_program_location(default_file: Path) -> None:
+    assert default_file.relative_to(PROGRAM_LOCATION)
+
+
+def test_default_files_common_parent_is_program() -> None:
+    assert (
+        DEFAULT_CONFIGS_LOCATION.parent
+        == DEFAULT_LOG_LOCATION.parent
+        == PROGRAM_LOCATION
+    )
+
+
+@pytest.mark.parametrize(
+    ("default_file", "file_name"),
+    (
+        pytest.param(DEFAULT_CONFIGS_LOCATION, "configs.json", id="CONFIGS_LOCATION"),
+        pytest.param(
+            DEFAULT_LOG_LOCATION,
+            "auto-file-sorter.log",
+            id="DEFAULT_LOG_LOCATION",
+        ),
+    ),
+)
+def test_default_file_name(default_file: Path, file_name: str) -> None:
+    assert default_file.name == file_name
 
 
 @pytest.mark.parametrize(
