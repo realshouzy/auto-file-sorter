@@ -1,7 +1,4 @@
-"""Module defining custom ``pytest`` fixtures.
-
-This module needs to be in a sperate directory inorder to match with ``name-tests-test``.
-"""
+"""Module defining custom ``pytest`` fixtures."""
 from __future__ import annotations
 
 __all__: list[str] = [
