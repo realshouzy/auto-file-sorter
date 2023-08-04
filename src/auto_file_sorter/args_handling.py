@@ -211,7 +211,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             return EXIT_FAILURE
         args_handling_logger.debug("Read from '%s'", args.json_file)
 
-        configs |= new_configs_from_json
+        configs.update(new_configs_from_json)
         args_handling_logger.log(
             CONFIG_LOG_LEVEL,
             "Loaded '%s' into configs",
