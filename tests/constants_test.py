@@ -52,7 +52,10 @@ if TYPE_CHECKING:
         ),
     ),
 )
-def test_constants(constant: int | str, expected_value: int | str) -> None:
+def test_value_of_constant(
+    constant: int | str | dict[int, int],
+    expected_value: int | str | dict[int, int],
+) -> None:
     assert constant == expected_value
 
 
@@ -125,7 +128,7 @@ def test_locations_are_absolute(location: Path) -> None:
         pytest.param(".Jp2"),
     ),
 )
-def test_file_valid_extension_pattern(extension: str) -> None:
+def test_file_extension_pattern_valid_extension(extension: str) -> None:
     assert FILE_EXTENSION_PATTERN.fullmatch(extension) is not None
 
 
@@ -142,5 +145,5 @@ def test_file_valid_extension_pattern(extension: str) -> None:
         pytest.param(""),
     ),
 )
-def test_file_invalid_extension_pattern(extension: str) -> None:
+def test_file_extension_pattern_invalid_extension(extension: str) -> None:
     assert FILE_EXTENSION_PATTERN.fullmatch(extension) is None
