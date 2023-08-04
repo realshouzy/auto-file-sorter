@@ -60,7 +60,7 @@ def test_constants(constant: int | str, expected_value: int | str) -> None:
     "location_check",
     (
         pytest.param(PROGRAM_LOCATION.is_dir, id="PROGRAM_LOCATION"),
-        pytest.param(DEFAULT_CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATIO"),
+        pytest.param(DEFAULT_CONFIGS_LOCATION.is_file, id="CONFIGS_LOCATION"),
         pytest.param(DEFAULT_LOG_LOCATION.is_file, id="DEFAULT_LOG_LOCATION"),
     ),
 )
