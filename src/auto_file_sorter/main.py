@@ -67,7 +67,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         dest="log_location",
         default=DEFAULT_LOG_LOCATION,
         type=resolved_path_from_str,
-        metavar="LOCATION",
+        metavar="PATH",
         help="Specify custom location for the log file (default: location of the program)",
     )
     parser.add_argument(
@@ -75,7 +75,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         dest="configs_location",
         default=DEFAULT_CONFIGS_LOCATION,
         type=resolved_path_from_str,
-        metavar="LOCATION",
+        metavar="PATH",
         help="Specify custom location for the configs file (default: location of the program)",
     )
 
