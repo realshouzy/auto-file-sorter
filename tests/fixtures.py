@@ -7,7 +7,6 @@ __all__: list[str] = [
     "invalid_json_data",
     "test_configs",
     "empty_test_configs",
-    "restricted_test_configs",
     "invalid_test_configs",
     "extension_paths",
     "path_for_undefined_extensions",
@@ -43,19 +42,6 @@ def test_configs(
     test_configs_file.write_text(json.dumps(valid_json_data), encoding="utf-8")
 
     return test_configs_file, valid_json_data
-
-
-@pytest.fixture()
-def restricted_test_configs(
-    tmp_path: Path,
-) -> Path:
-    """Return a restricted temporary configs ``JSON`` file together with its content."""
-    test_configs_file: Path = tmp_path / "test_configs.json"
-
-    test_configs_file.touch()
-    test_configs_file.chmod(0)
-
-    return test_configs_file
 
 
 @pytest.fixture()
