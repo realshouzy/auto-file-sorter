@@ -20,10 +20,16 @@ configs_handling_logger: logging.Logger = logging.getLogger(__name__)
 
 
 def read_from_configs(*, configs: Path = DEFAULT_CONFIGS_LOCATION) -> dict[str, str]:
-    """Warp ``open`` for easy reading from ``configs.json``."""
+    """Read from the given configs JSON file (with error handling)."""
+    configs_handling_logger.debug("Reading from '%s'", configs)
     try:
-        configs_handling_logger.debug("Reading from '%s'", configs)
         configs_dict: dict[str, str] = json.loads(configs.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as json_decode_err:
+        configs_handling_logger.critical(
+            "Given JSON file is not correctly formatted: %s",
+            configs,
+        )
+        raise SystemExit(EXIT_FAILURE) from json_decode_err
     except FileNotFoundError as no_file_err:
         configs_handling_logger.critical(
             "Unable to find 'configs.json', falling back to an empty configuration",
@@ -43,12 +49,6 @@ def read_from_configs(*, configs: Path = DEFAULT_CONFIGS_LOCATION) -> dict[str, 
             configs,
         )
         raise SystemExit(EXIT_FAILURE) from os_err
-    except json.JSONDecodeError as json_decode_err:
-        configs_handling_logger.critical(
-            "Given JSON file is not correctly formatted: %s",
-            configs,
-        )
-        raise SystemExit(EXIT_FAILURE) from json_decode_err
     except Exception as err:
         configs_handling_logger.exception("Unexpected %s", err.__class__.__name__)
         raise SystemExit(EXIT_FAILURE) from err
@@ -65,13 +65,13 @@ def write_to_configs(
     *,
     configs: Path = DEFAULT_CONFIGS_LOCATION,
 ) -> None:
-    """Warp ``open`` for easy writing to ``configs.json``."""
+    """Write to the given configs JSON file (with error handling)."""
+    configs_handling_logger.debug("Writing to '%s'", configs)
     try:
-        configs_handling_logger.debug("Writing to '%s'", configs)
         configs.write_text(json.dumps(new_configs, indent=4), encoding="utf-8")
     except TypeError as type_err:
         configs_handling_logger.critical(
-            "Given JSON file is not correctly configured: %s",
+            "Given configs can not be serialized into a JSON formatted: %s",
             configs,
         )
         raise SystemExit(EXIT_FAILURE) from type_err
