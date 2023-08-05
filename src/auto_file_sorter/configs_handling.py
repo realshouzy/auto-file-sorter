@@ -32,7 +32,8 @@ def read_from_configs(*, configs: Path = DEFAULT_CONFIGS_LOCATION) -> dict[str, 
         raise SystemExit(EXIT_FAILURE) from json_decode_err
     except FileNotFoundError as no_file_err:
         configs_handling_logger.critical(
-            "Unable to find 'configs.json', falling back to an empty configuration",
+            "Unable to find '%s', falling back to an empty configuration",
+            configs,
         )
         configs_dict = {}
         write_to_configs(configs_dict, configs=configs)
