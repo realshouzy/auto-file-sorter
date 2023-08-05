@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture()
 def info_caplog(caplog: pytest.LogCaptureFixture) -> pytest.LogCaptureFixture:
-    """Return a ``pytest`` ``caplog`` fixture with the logging level set to INFO / 10."""
+    """Return a ``pytest.caplog`` fixture with the logging level set to ``INFO`` / 10."""
     caplog.set_level(logging.INFO)
     return caplog
 
