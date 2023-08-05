@@ -26,7 +26,7 @@ def read_from_configs(*, configs: Path = DEFAULT_CONFIGS_LOCATION) -> dict[str, 
         configs_dict: dict[str, str] = json.loads(configs.read_text(encoding="utf-8"))
     except json.JSONDecodeError as json_decode_err:
         configs_handling_logger.critical(
-            "Given JSON file is not correctly formatted: %s",
+            "Given JSON file is not correctly formatted: '%s'",
             configs,
         )
         raise SystemExit(EXIT_FAILURE) from json_decode_err
@@ -72,7 +72,7 @@ def write_to_configs(
         configs.write_text(json.dumps(new_configs, indent=4), encoding="utf-8")
     except TypeError as type_err:
         configs_handling_logger.critical(
-            "Given configs can not be serialized into a JSON formatted: %s",
+            "Given configs can not be serialized into a JSON formatted: '%s'",
             configs,
         )
         raise SystemExit(EXIT_FAILURE) from type_err
@@ -99,6 +99,7 @@ def write_to_configs(
         raise SystemExit(EXIT_FAILURE) from err
     configs_handling_logger.log(
         CONFIG_LOG_LEVEL,
-        "Added new extension configuration: %s",
+        "Added new extension configuration %s to '%s'",
         new_configs,
+        configs,
     )
