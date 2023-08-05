@@ -72,8 +72,8 @@ def write_to_configs(
         configs.write_text(json.dumps(new_configs, indent=4), encoding="utf-8")
     except TypeError as type_err:
         configs_handling_logger.critical(
-            "Given configs can not be serialized into a JSON formatted: '%s'",
-            configs,
+            "Given configs can not be serialized into a JSON formatted: %s",
+            new_configs,
         )
         raise SystemExit(EXIT_FAILURE) from type_err
     except PermissionError as perm_err:
