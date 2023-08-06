@@ -202,7 +202,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             return EXIT_FAILURE
         except json.JSONDecodeError:
             args_handling_logger.critical(
-                "Given JSON file is not correctly formatted: %s",
+                "Given JSON file is not correctly formatted: '%s'",
                 args.json_file,
             )
             return EXIT_FAILURE
