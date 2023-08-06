@@ -88,29 +88,26 @@ def _add_to_startup(
             f'\nobjShell.Run "{cmd}", 0, True\n',
             encoding="utf-8",
         )
+        args_handling_logger.info(
+            "Added '%s' with '%s' to startup",
+            path_to_vbs,
+            cmd,
+        )
     except PermissionError:
         args_handling_logger.critical(
             "Permission denied to open and read from '%s'",
             path_to_vbs,
         )
-        return
     except FileNotFoundError:
         args_handling_logger.critical(
             "Unable to find '%s'",
             path_to_vbs,
         )
-        return
     except OSError:
         args_handling_logger.critical(
             "I/O-related error occurred while opening and reading from '%s'",
             path_to_vbs,
         )
-        return
-    args_handling_logger.info(
-        "Added '%s' with '%s' to startup",
-        path_to_vbs,
-        cmd,
-    )
 
 
 def resolved_path_from_str(path_as_str: str) -> Path:
@@ -162,7 +159,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
         configs[new_extension] = new_path
         args_handling_logger.log(
             CONFIG_LOG_LEVEL,
-            "Updated '%s': '%s' from %s",
+            "Updated '%s': '%s' from '%s'",
             new_extension,
             new_path,
             args.configs_location,
