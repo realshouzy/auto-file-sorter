@@ -78,7 +78,7 @@ def test_location_is_absolute(location: Path) -> None:
         pytest.param(DEFAULT_LOG_LOCATION, id="DEFAULT_LOG_LOCATION"),
     ),
 )
-def test_default_file_under_program_location(default_file: Path) -> None:
+def test_default_file_is_under_program_location(default_file: Path) -> None:
     assert default_file.relative_to(PROGRAM_LOCATION)
 
 
@@ -103,18 +103,6 @@ def test_default_files_common_parent_is_program() -> None:
 )
 def test_default_file_name(default_file: Path, file_name: str) -> None:
     assert default_file.name == file_name
-
-
-@pytest.mark.parametrize(
-    "location",
-    (
-        pytest.param(PROGRAM_LOCATION, id="PROGRAM_LOCATION"),
-        pytest.param(DEFAULT_CONFIGS_LOCATION, id="CONFIGS_LOCATIO"),
-        pytest.param(DEFAULT_LOG_LOCATION, id="DEFAULT_LOG_LOCATION"),
-    ),
-)
-def test_locations_are_absolute(location: Path) -> None:
-    assert location.is_absolute()
 
 
 @pytest.mark.parametrize(
