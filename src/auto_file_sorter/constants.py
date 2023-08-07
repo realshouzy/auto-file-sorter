@@ -40,7 +40,10 @@ VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
 }
 MAX_VERBOSITY_LEVEL: Final[Literal[3]] = 3
 
-FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^\.[a-zA-Z0-9]+$")
+FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(
+    r"^\.[a-zA-Z0-9]+$",
+    re.IGNORECASE,
+)
 
 EXIT_SUCCESS: Final[Literal[0]] = 0
 EXIT_FAILURE: Final[Literal[1]] = 1
