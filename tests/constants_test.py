@@ -21,7 +21,6 @@ from auto_file_sorter.constants import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from pathlib import Path
 
 # pylint: disable=C0116, W0212
