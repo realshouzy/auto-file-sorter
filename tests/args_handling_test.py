@@ -19,9 +19,13 @@ from auto_file_sorter.args_handling import (
 )
 
 #  ``valid_json_data`` indirectly used by the test_configs fixture, do not remove!
-from tests.fixtures import test_configs, valid_json_data
+from tests.fixtures import info_caplog, test_configs, valid_json_data
 
 
+@pytest.mark.skipif(
+    platform.system() != "Windows",
+    reason="Test behavior on Windows-systems",
+)
 @pytest.mark.parametrize(
     ("path_as_str", "expected_path"),
     (
@@ -37,16 +41,39 @@ from tests.fixtures import test_configs, valid_json_data
         ),
     ),
 )
-def test_resolved_path_from_str(path_as_str: str, expected_path: Path) -> None:
+def test_resolved_path_from_str_windows(path_as_str: str, expected_path: Path) -> None:
+    assert resolved_path_from_str(path_as_str) == expected_path
+
+
+@pytest.mark.skipif(
+    platform.system() != "Linux" or platform.system() != "Darwin",
+    reason="Test behavior on Posix systems",
+)
+@pytest.mark.parametrize(
+    ("path_as_str", "expected_path"),
+    (
+        pytest.param(
+            "/path/to/some/file.txt",
+            Path("/path/to/some/file.txt"),
+            id="regular_str",
+        ),
+        pytest.param(
+            "  /path/to/some/file.txt  ",
+            Path("/path/to/some/file.txt"),
+            id="trailing_whitespaces_str",
+        ),
+    ),
+)
+def test_resolved_path_from_str_posix(path_as_str: str, expected_path: Path) -> None:
     assert resolved_path_from_str(path_as_str) == expected_path
 
 
 @pytest.mark.skipif(
     platform.system() != "Windows",
-    reason="Test behavior on windows-systems",
+    reason="Test behavior on Windows-systems",
 )
 @pytest.mark.parametrize(
-    ("argv", "clean_argv"),
+    ("argv", "cmd"),
     (
         pytest.param(
             ["track", "--autostart", "path/to/some/dir"],
@@ -103,26 +130,33 @@ def test_resolved_path_from_str(path_as_str: str, expected_path: Path) -> None:
 )
 def test_add_to_startup_windows(
     argv: list[str],
-    clean_argv: str,
+    cmd: str,
     tmp_path: Path,
-    caplog: pytest.LogCaptureFixture,
+    info_caplog: pytest.LogCaptureFixture,
 ) -> None:
     path_to_vbs: Path = tmp_path / "auto-file-sorter.vbs"
     vbs_file_contents: str = (
         'Set objShell = WScript.CreateObject("WScript.Shell")\n'
-        f'objShell.Run "{clean_argv}", 0, True\n'
+        f'objShell.Run "{cmd}", 0, True\n'
     )
 
     _add_to_startup(argv=argv, startup_folder=tmp_path)
 
     assert path_to_vbs.exists()
-    assert path_to_vbs.read_text() == vbs_file_contents
-    assert not caplog.text
+    assert path_to_vbs.read_text(encoding="utf-8") == vbs_file_contents
+
+    assert info_caplog.record_tuples == [
+        (
+            "auto_file_sorter.args_handling",
+            20,
+            f"Added '{path_to_vbs}' with '{cmd}' to startup",
+        ),
+    ]
 
 
 @pytest.mark.skipif(
     platform.system() == "Windows",
-    reason="Test behavior on non-windows systems",
+    reason="Test behavior on non Windows systems",
 )
 @pytest.mark.parametrize(
     ("argv"),
@@ -176,14 +210,18 @@ def test_add_to_startup_non_windows(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     _add_to_startup(argv=argv)
-    assert (
-        "Adding 'auto-file-sorter' to startup is only supported on Windows."
-        in caplog.text
-    )
+    assert caplog.record_tuples == [
+        (
+            "auto_file_sorter",
+            30,
+            "Adding 'auto-file-sorter' to startup is only supported on Windows.",
+        ),
+    ]
 
 
 def test_handle_write_args_new_config(
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -202,6 +240,12 @@ def test_handle_write_args_new_config(
 
     assert updated_configs[".jpg"] == "/path/to/jpg"
 
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        f"Updated '.jpg': '/path/to/jpg' from '{test_configs_file}'",
+    ) in caplog.record_tuples
+
 
 @pytest.mark.parametrize(
     "new_config",
@@ -213,6 +257,7 @@ def test_handle_write_args_new_config(
 def test_handle_write_args_new_config_no_extension_or_path(
     new_config: list[str],
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -225,23 +270,30 @@ def test_handle_write_args_new_config_no_extension_or_path(
     exit_code: int = handle_write_args(args)
     assert exit_code == 1
 
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        f"Either an empty extension '{new_config[0].lower().replace(' ', '')}' "
+        f"or an empty path '{new_config[1].strip()}' was specified to add, which is invalid",
+    ) in caplog.record_tuples
+
 
 @pytest.mark.parametrize(
     "extension",
     (
-        pytest.param("TXT"),
-        pytest.param("zip"),
+        pytest.param(" TXT"),
+        pytest.param("zip "),
         pytest.param("_7z_"),
         pytest.param("-123"),
         pytest.param(".PnG!"),
         pytest.param(".Jp2@"),
         pytest.param("/doc"),
-        pytest.param(""),
     ),
 )
 def test_handle_write_args_new_config_invalid_extension(
     extension: str,
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -254,10 +306,17 @@ def test_handle_write_args_new_config_invalid_extension(
     exit_code: int = handle_write_args(args)
     assert exit_code == 1
 
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        f"Given extension '{extension.lower().replace(' ', '')}' is invalid",
+    ) in caplog.record_tuples
+
 
 def test_handle_write_args_load_json_file(
     tmp_path: Path,
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -285,10 +344,17 @@ def test_handle_write_args_load_json_file(
     assert updated_configs[".docx"] == "/path/to/docx"
     assert updated_configs[".png"] == "/path/to/png"
 
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        f"Loaded '{json_file_path}' into configs",
+    ) in caplog.record_tuples
+
 
 def test_handle_write_args_load_json_file_no_json(
     tmp_path: Path,
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -303,10 +369,17 @@ def test_handle_write_args_load_json_file_no_json(
     exit_code: int = handle_write_args(args)
     assert exit_code == 1
 
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        "Configs can only be read from json files",
+    ) in caplog.record_tuples
+
 
 def test_handle_write_args_load_json_file_file_not_found_error(
     tmp_path: Path,
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -321,10 +394,17 @@ def test_handle_write_args_load_json_file_file_not_found_error(
     exit_code: int = handle_write_args(args)
     assert exit_code == 1
 
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        f"Unable to find '{json_file_path}'",
+    ) in caplog.record_tuples
+
 
 def test_handle_write_args_load_json_file_decode_error(
     tmp_path: Path,
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -340,9 +420,16 @@ def test_handle_write_args_load_json_file_decode_error(
     exit_code: int = handle_write_args(args)
     assert exit_code == 1
 
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        f"Given JSON file is not correctly formatted: '{json_file_path}'",
+    ) in caplog.record_tuples
+
 
 def test_handle_write_args_remove_configs(
     test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -350,7 +437,7 @@ def test_handle_write_args_remove_configs(
         configs_location=test_configs_file,
         new_config=None,
         json_file=None,
-        configs_to_be_removed=[".txt", ".pdf", ".png"],
+        configs_to_be_removed=[".txt", ".pdf"],
     )
     exit_code: int = handle_write_args(args)
     assert exit_code == 0
@@ -361,46 +448,133 @@ def test_handle_write_args_remove_configs(
 
     assert ".txt" not in updated_configs
     assert ".pdf" not in updated_configs
-    assert ".png" not in updated_configs
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Removed '.txt'",
+    ) in caplog.record_tuples
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Removed '.pdf'",
+    ) in caplog.record_tuples
 
 
-@pytest.mark.parametrize(
-    ("get_configs", "expected_out"),
-    (
-        pytest.param(
-            None,
-            ".txt: C:\\path\\to\\txt\n.pdf: C:\\path\\to\\pdf\n",
-            id="all_configs",
-        ),
-        pytest.param(
-            [".pdf"],
-            ".pdf: C:\\path\\to\\pdf\n",
-            id="selected_configs",
-        ),
-        pytest.param(
-            [".png"],
-            "",
-            id="selected_configs_not_in_config",
-        ),
-    ),
-)
-def test_handle_read_args(
-    get_configs: list[str] | None,
-    expected_out: str,
+def test_handle_write_args_remove_configs_invalid_extenion(
     test_configs: tuple[Path, dict[str, str]],
-    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
-        get_configs=get_configs,
+        new_config=None,
+        json_file=None,
+        configs_to_be_removed=[".txt", "_ABC_"],
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 0
+
+    updated_configs: dict[str, str] = json.loads(
+        test_configs_file.read_text(encoding="utf-8"),
+    )
+
+    assert ".pdf" in updated_configs
+    assert ".txt" not in updated_configs
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Removed '.txt'",
+    ) in caplog.record_tuples
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        "Skipping invalid extension: '_abc_'",
+    ) in caplog.record_tuples
+
+
+def test_handle_write_args_remove_configs_with_extension_not_in_configs(
+    test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        new_config=None,
+        json_file=None,
+        configs_to_be_removed=[".txt", ".png"],
+    )
+    exit_code: int = handle_write_args(args)
+    assert exit_code == 0
+
+    updated_configs: dict[str, str] = json.loads(
+        test_configs_file.read_text(encoding="utf-8"),
+    )
+
+    assert ".pdf" in updated_configs
+    assert ".txt" not in updated_configs
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Removed '.txt'",
+    ) in caplog.record_tuples
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        "Ignoring '.png', because it is not in the configs",
+    ) in caplog.record_tuples
+
+
+def test_handle_read_args_all_configs(
+    test_configs: tuple[Path, dict[str, str]],
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=None,
     )
     exit_code: int = handle_read_args(args)
     assert exit_code == 0
 
-    out, _ = capsys.readouterr()
-    assert out == expected_out
+    assert (
+        capsys.readouterr().out == ".txt: C:\\path\\to\\txt\n.pdf: C:\\path\\to\\pdf\n"
+    )
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Printed all the configs",
+    ) in caplog.record_tuples
+
+
+def test_handle_read_args_selected_configs(
+    test_configs: tuple[Path, dict[str, str]],
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=[".pdf"],
+    )
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 0
+
+    assert capsys.readouterr().out == ".pdf: C:\\path\\to\\pdf\n"
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Printed the selected configs",
+    ) in caplog.record_tuples
 
 
 # TODO: Make this actually testable
@@ -421,10 +595,10 @@ def test_handle_track_args_no_auto_start(
     assert exit_code == 0
 
 
-def test_handle_track_args_path_not_found(
+def test_handle_track_args_all_paths_not_found(
     test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
-    caplog: pytest.LogCaptureFixture,
+    info_caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -436,7 +610,42 @@ def test_handle_track_args_path_not_found(
     )
     exit_code: int = handle_track_args(args)
     assert exit_code == 1
-    assert f"All given paths are invalid: {tmp_path / 'test'}" in caplog.text
+
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        f"Skipping '{tmp_path / 'test'}', because it does not exist",
+    ) in info_caplog.record_tuples
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        f"All given paths are invalid: {tmp_path / 'test'}",
+    ) in info_caplog.record_tuples
+
+
+# TODO: Make this actually testable
+@pytest.mark.skip(reason="Test not finished yet")
+def test_handle_track_args_some_paths_not_found(
+    test_configs: tuple[Path, dict[str, str]],
+    tmp_path: Path,
+    info_caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        tracked_paths=[tmp_path, tmp_path / "test"],
+        path_for_undefined_extensions=None,
+        enable_autostart=False,
+    )
+    exit_code: int = handle_track_args(args)
+    assert exit_code == 0
+
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        f"Skipping '{tmp_path / 'test'}', because it does not exist",
+    ) in info_caplog.record_tuples
 
 
 def test_handle_track_args_no_configs(
@@ -455,7 +664,12 @@ def test_handle_track_args_no_configs(
     )
     exit_code: int = handle_track_args(args)
     assert exit_code == 1
-    assert f"No paths for extensions defined in '{test_configs_file}'" in caplog.text
+
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        f"No paths for extensions defined in '{test_configs_file}'",
+    ) in caplog.record_tuples
 
 
 def test_handle_locations_args_get_log_location(
@@ -472,9 +686,7 @@ def test_handle_locations_args_get_log_location(
 
     exit_code: int = handle_locations_args(args)
 
-    out, _ = capsys.readouterr()
-
-    assert out == f"{test_log_file}\n"
+    assert capsys.readouterr().out == f"{test_log_file}\n"
 
     assert exit_code == 0
 
@@ -493,9 +705,7 @@ def test_handle_locations_args_get_configs_location(
 
     exit_code: int = handle_locations_args(args)
 
-    out, _ = capsys.readouterr()
-
-    assert out == f"{test_configs_file}\n"
+    assert capsys.readouterr().out == f"{test_configs_file}\n"
 
     assert exit_code == 0
 
@@ -516,8 +726,6 @@ def test_handle_locations_args_both(
 
     exit_code: int = handle_locations_args(args)
 
-    out, _ = capsys.readouterr()
-
-    assert out == f"{test_log_file}\n{test_configs_file}\n"
+    assert capsys.readouterr().out == f"{test_log_file}\n{test_configs_file}\n"
 
     assert exit_code == 0

@@ -1,6 +1,7 @@
 """Module testing ``auto_file_sorter.event_handling.py``."""
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -8,10 +9,12 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 
 # pylint: disable=C0116, W0212, W0611, W0621
 from auto_file_sorter.event_handling import OnModifiedEventHandler
-from tests.fixtures import extension_paths, path_for_undefined_extensions
+from tests.fixtures import extension_paths, info_caplog, path_for_undefined_extensions
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    import pytest
 
 
 def test_on_modified_event_handler_base() -> None:
@@ -106,11 +109,14 @@ def test_on_modified_event_handler_increment_file_name(tmp_path: Path) -> None:
 def test_on_modified_event_handler_move_file(
     tmp_path: Path,
     extension_paths: dict[str, Path],
+    info_caplog: pytest.LogCaptureFixture,
 ) -> None:
     file_path: Path = tmp_path / "test_file.txt"
     file_path.touch()
 
-    destination_path: Path = extension_paths[".txt"]
+    destination_path: Path = (
+        extension_paths[".txt"] / f"{datetime.now():%Y/%b}" / "test_file.txt"
+    )
 
     event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
         tmp_path,
@@ -121,16 +127,33 @@ def test_on_modified_event_handler_move_file(
     event_handler._move_file(file_path)
 
     assert destination_path.exists()
-    assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+    assert info_caplog.record_tuples == [
+        (
+            "auto_file_sorter.event_handling",
+            20,
+            f"Initialized {event_handler}",
+        ),
+        (
+            "auto_file_sorter.event_handling",
+            60,
+            f"Moved '{file_path}' to '{destination_path}'",
+        ),
+    ]
 
 
 def test_on_modified_event_handler_move_file_undefined_extension(
     tmp_path: Path,
     extension_paths: dict[str, Path],
     path_for_undefined_extensions: Path,
+    info_caplog: pytest.LogCaptureFixture,
 ) -> None:
     file_path: Path = tmp_path / "test_file.idk"
     file_path.touch()
+
+    destination_path: Path = (
+        path_for_undefined_extensions / f"{datetime.now():%Y/%b}" / "test_file.idk"
+    )
 
     event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
         tmp_path,
@@ -141,21 +164,31 @@ def test_on_modified_event_handler_move_file_undefined_extension(
     event_handler._move_file(file_path)
 
     assert path_for_undefined_extensions.exists()
-    assert (
-        path_for_undefined_extensions / f"{datetime.now():%Y/%b}" / "test_file.idk"
-    ).exists()
+    assert destination_path.exists()
+
+    assert info_caplog.record_tuples == [
+        (
+            "auto_file_sorter.event_handling",
+            20,
+            f"Initialized {event_handler}",
+        ),
+        (
+            "auto_file_sorter.event_handling",
+            60,
+            f"Moved '{file_path}' to '{destination_path}'",
+        ),
+    ]
 
 
-def test_on_modified_event_handler_move_file_permission_error_no_exit(
+def test_on_modified_event_handler_move_file_os_error_no_exit(
     tmp_path: Path,
     extension_paths: dict[str, Path],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     file_path: Path = tmp_path / "test_file.txt"
-    file_path.touch()
 
     destination_path: Path = extension_paths[".txt"]
     destination_path.touch()
-    destination_path.chmod(0000)
 
     event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
         tmp_path,
@@ -163,15 +196,20 @@ def test_on_modified_event_handler_move_file_permission_error_no_exit(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path)
+    with caplog.at_level(50):
+        event_handler._move_file(file_path)
 
     assert destination_path.exists()
     assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+    assert re.search(r"Error in process \d+ while moving file", caplog.text)
+    assert f"'{file_path}':" in caplog.text
 
 
 def test_on_modified_event_handler_move_file_file_not_found_error_no_exit(
     tmp_path: Path,
     extension_paths: dict[str, Path],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     file_path: Path = tmp_path / "test_file.txt"
     destination_path: Path = extension_paths[".txt"]
@@ -182,20 +220,25 @@ def test_on_modified_event_handler_move_file_file_not_found_error_no_exit(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path)
+    with caplog.at_level(50):
+        event_handler._move_file(file_path)
 
     assert destination_path.exists()
     assert not (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+
+    assert re.search(r"File not found in process \d+", caplog.text)
+    assert f"while moving '{file_path}'" in caplog.text
 
 
 def test_on_modified_event_handler_move_file_increment(
     tmp_path: Path,
     extension_paths: dict[str, Path],
+    info_caplog: pytest.LogCaptureFixture,
 ) -> None:
-    file_path2: Path = tmp_path / "test_file.txt"
-    file_path2.touch()
+    file_path1: Path = tmp_path / "test_file.txt"
+    file_path1.touch()
 
-    destination_path: Path = extension_paths[".txt"]
+    destination_path: Path = extension_paths[".txt"] / f"{datetime.now():%Y/%b}"
 
     event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
         tmp_path,
@@ -203,17 +246,41 @@ def test_on_modified_event_handler_move_file_increment(
         path_for_undefined_extensions=None,
     )
 
-    event_handler._move_file(file_path2)
+    event_handler._move_file(file_path1)
 
-    assert destination_path.exists()
-    assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file.txt").exists()
+    file1_destination_path: Path = destination_path / "test_file.txt"
+    assert file1_destination_path.exists()
+
+    assert info_caplog.record_tuples == [
+        (
+            "auto_file_sorter.event_handling",
+            20,
+            f"Initialized {event_handler}",
+        ),
+        (
+            "auto_file_sorter.event_handling",
+            60,
+            f"Moved '{file_path1}' to '{file1_destination_path}'",
+        ),
+    ]
+
+    info_caplog.clear()
 
     file_path2: Path = tmp_path / "test_file.txt"
     file_path2.touch()
 
     event_handler._move_file(file_path2)
 
-    assert (destination_path / f"{datetime.now():%Y/%b}" / "test_file (2).txt").exists()
+    file2_destination_path: Path = destination_path / "test_file (2).txt"
+    assert file2_destination_path.exists()
+
+    assert info_caplog.record_tuples == [
+        (
+            "auto_file_sorter.event_handling",
+            60,
+            f"Moved '{file_path2}' to '{file2_destination_path}'",
+        ),
+    ]
 
 
 def test_on_modified_event_handler_on_modified_override() -> None:
