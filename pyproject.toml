@@ -23,7 +23,6 @@ requires-python = ">=3.8"
 dynamic = ["version", "readme", "dependencies"]
 
 [project.urls]
-Homepage = "https://github.com/realshouzy/auto-file-sorter"
 Repository = "https://github.com/realshouzy/auto-file-sorter"
 Documentation = "https://github.com/realshouzy/auto-file-sorter/blob/main/README.md#documentation"
 Changelog = "https://github.com/realshouzy/auto-file-sorter/commits/"
