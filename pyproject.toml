@@ -33,8 +33,8 @@ dev = ["mypy", "ruff", "pylint", "black", "isort", "bandit", "pytest"]
 [project.scripts]
 auto-file-sorter = "auto_file_sorter.main:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools]
+packages = ["auto_file_sorter"]
 
 [tool.setuptools.dynamic]
 version = { attr = "auto_file_sorter.__version__" }
