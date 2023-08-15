@@ -142,3 +142,7 @@ disable = ["R0911", "R0912", "R0915", "W0718", "W0511"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["*_test.py"]
