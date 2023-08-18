@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "auto-file-sorter"
 description = "A file sorting automation"
 keywords = ["automation", "file", "sorter", "auto", "watchdog"]
-license = {text = "MIT"}
-authors = [{name = "realshouzy"}]
-maintainers = [{name = "realshouzy"}]
+license = { text = "MIT" }
+authors = [{ name = "realshouzy" }]
+maintainers = [{ name = "realshouzy" }]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -23,24 +23,27 @@ requires-python = ">=3.8"
 dynamic = ["version", "readme", "dependencies"]
 
 [project.urls]
-Homepage = "https://github.com/realshouzy/auto-file-sorter"
 Repository = "https://github.com/realshouzy/auto-file-sorter"
 Documentation = "https://github.com/realshouzy/auto-file-sorter/blob/main/README.md#documentation"
 Changelog = "https://github.com/realshouzy/auto-file-sorter/commits/"
 
 [project.optional-dependencies]
-dev = ["mypy", "ruff", "pylint", "black", "isort"]
+dev = ["mypy", "ruff", "pylint", "black", "isort", "bandit", "pytest"]
 
 [project.scripts]
 auto-file-sorter = "auto_file_sorter.main:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools]
+packages = ["auto_file_sorter"]
+license-files = ["LICENSE"]
+
+[tool.setuptools.package-data]
+auto_file_sorter = ["py.typed"]
 
 [tool.setuptools.dynamic]
-version = {attr = "auto_file_sorter.__version__"}
-readme = {file = ["README.md"]}
-dependencies = {file = "requirements.txt"}
+version = { attr = "auto_file_sorter.__version__" }
+readme = { file = ["README.md"] }
+dependencies = { file = "requirements.txt" }
 
 [tool.black]
 target-version = ["py311", "py310", "py39", "py38"]
@@ -66,7 +69,15 @@ no_implicit_reexport = true
 no_implicit_optional = true
 warn_unused_ignores = true
 no_namespace_packages = true
+
+[[tool.mypy.overrides]]
+module = "auto_file_sorter.event_handling"
 disable_error_code = ["no-redef"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_decorators = false
+disable_error_code = ["unused-ignore", "no-redef"]
 
 [tool.ruff]
 select = ["ALL"]
@@ -85,6 +96,9 @@ ignore = [
     "T201",
     "D205",
     "DTZ005",
+    "TD002",
+    "TD003",
+    "FIX002",
 ]
 fixable = ["ALL"]
 unfixable = []
@@ -92,6 +106,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 show-fixes = true
 target-version = "py311"
 line-length = 88
+
+[tool.ruff.isort]
+known-first-party = ["auto_file_sorter"]
+required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.extend-per-file-ignores]
 "*.pyi" = [
@@ -105,17 +123,26 @@ line-length = 88
     "FBT002",
     "PLR0913",
 ]
-
-[tool.ruff.isort]
-required-imports = ["from __future__ import annotations"]
+"./tests/*_test.py" = [
+    "D103",
+    "S101",
+    "PT007",
+    "SLF001",
+    "N802",
+    "ARG001",
+    "F811",
+    "F401",
+]
 
 [tool.ruff.pydocstyle]
 convention = "pep257"
 
 [tool.pylint]
-disable = [
-    "R0911",
-    "R0912",
-    "R0915",
-    "W0718",
-]
+disable = ["R0911", "R0912", "R0915", "W0718", "W0511"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["*_test.py"]

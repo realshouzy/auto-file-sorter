@@ -12,6 +12,8 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: check-ast
       - id: debug-statements
+      - id: name-tests-test
+        exclude: ^tests/fixtures\.py$
       - id: check-yaml
       - id: fix-encoding-pragma
         args: [--remove]
@@ -38,6 +40,11 @@ repos:
     rev: v1.5.0
     hooks:
       - id: mypy
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
   - repo: local
     hooks:
       - id: pylint

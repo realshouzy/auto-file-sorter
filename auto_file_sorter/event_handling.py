@@ -95,7 +95,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             shutil.move(file_path, final_destination_path)
             event_handling_logger.log(
                 MOVE_LOG_LEVEL,
-                "Moved %s to %s",
+                "Moved '%s' to '%s'",
                 file_path,
                 final_destination_path,
             )
@@ -109,16 +109,17 @@ class OnModifiedEventHandler(FileSystemEventHandler):
         except FileNotFoundError as file_not_found_err:
             pid: int = os.getpid()
             event_handling_logger.critical(
-                "File not found in process %s while moving %s: %s",
+                "File not found in process %s while moving '%s': '%s'",
                 pid,
                 file_path,
                 file_not_found_err,
             )
-        except (OSError, shutil.Error) as os_err:
+        except (shutil.Error, OSError) as os_err:
             pid: int = os.getpid()
             event_handling_logger.critical(
-                "Error in process %s while moving file: %s",
+                "Error in process %s while moving file '%s': '%s'",
                 pid,
+                file_path,
                 os_err,
             )
         except Exception as err:

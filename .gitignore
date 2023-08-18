@@ -164,4 +164,4 @@ temp/
 .ruff_cache/
 .vscode/
 venv*/
-src/auto_file_sorter/configs.json
+auto_file_sorter/configs.json

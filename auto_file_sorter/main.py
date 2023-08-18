@@ -6,9 +6,9 @@ __all__: list[str] = ["main"]
 
 import argparse
 import logging
-from typing import TYPE_CHECKING, Final, TextIO
+from typing import TYPE_CHECKING, TextIO
 
-from auto_file_sorter import __status__, __version__
+from auto_file_sorter import __version__
 from auto_file_sorter.args_handling import (
     handle_locations_args,
     handle_read_args,
@@ -24,18 +24,13 @@ from auto_file_sorter.constants import (
     MAX_VERBOSITY_LEVEL,
     MOVE_LOG_LEVEL,
     STREAM_HANDLER_FORMATTER,
+    VERBOSE_OUTPUT_LEVELS,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
 main_logger: logging.Logger = logging.getLogger(__name__)
-
-_VERBOSE_OUTPUT_LEVELS: Final[dict[int, int]] = {
-    1: logging.WARNING,
-    2: logging.INFO,
-    3: logging.DEBUG,
-}
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -49,7 +44,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "-V",
         "--version",
         action="version",
-        version=f"%(prog)s {__version__} {__status__}",
+        version=f"%(prog)s {__version__}",
         help="Show version of auto-file-sorter",
     )
     parser.add_argument(
@@ -72,7 +67,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         dest="log_location",
         default=DEFAULT_LOG_LOCATION,
         type=resolved_path_from_str,
-        metavar="LOCATION",
+        metavar="PATH",
         help="Specify custom location for the log file (default: location of the program)",
     )
     parser.add_argument(
@@ -80,16 +75,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         dest="configs_location",
         default=DEFAULT_CONFIGS_LOCATION,
         type=resolved_path_from_str,
-        metavar="LOCATION",
+        metavar="PATH",
         help="Specify custom location for the configs file (default: location of the program)",
     )
 
-    subparsers: argparse._SubParsersAction[  # noqa: SLF001 # type: ignore
+    subparsers: argparse._SubParsersAction[  # noqa: SLF001
         argparse.ArgumentParser
     ] = parser.add_subparsers(
         title="subcommands",
         description="Track a directory, configure the extension paths"
-        "or get the locations of the log and config file",
+        "or get the locations of the log and configs file",
         required=True,
     )
 
@@ -143,16 +138,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=str,
         nargs="+",
         metavar="CONFIG",
-        help="Remove extension(s) and its/their path from 'configs.json'",
+        help="Remove extension(s) and its/their path from the configs file",
     )
     write_parser.add_argument(
         "-j",
         "--json",
         dest="json_file",
         type=resolved_path_from_str,
-        nargs="+",
         metavar="PATH",
-        help="Load new configs from a json file into 'configs.json'",
+        help="Load new configs from a JSON file into the configs file",
     )
 
     # "read" subcommand
@@ -167,7 +161,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         nargs="*",
         default=[],
         metavar="CONFIGS",
-        help="Get the extensions and their path from 'configs.json' (default: all configs)",
+        help="Get the extensions and their path from the configs file (default: all configs)",
     )
 
     # "locations" subcommand
@@ -188,7 +182,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--config",
         action="store_true",
         dest="get_config_location",
-        help="Get the location of the config file",
+        help="Get the location of the configs file",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
@@ -210,7 +204,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         stream_handler: logging.StreamHandler[TextIO] = logging.StreamHandler()
         stream_handler.setFormatter(STREAM_HANDLER_FORMATTER)
         stream_handler.setLevel(
-            _VERBOSE_OUTPUT_LEVELS.get(args.verbosity_level, MAX_VERBOSITY_LEVEL),
+            VERBOSE_OUTPUT_LEVELS.get(args.verbosity_level, MAX_VERBOSITY_LEVEL),
         )
         handlers.append(stream_handler)
 

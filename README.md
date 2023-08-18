@@ -1,11 +1,12 @@
 # auto-file-sorter
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/realshouzy/auto-file-sorter/main.svg)](https://results.pre-commit.ci/latest/github/realshouzy/auto-file-sorter/main)
-[![Code Size](https://img.shields.io/github/languages/code-size/realshouzy/auto-file-sorter)](https://github.com/realshouzy/auto-file-sorter)
+[![pylint status](https://github.com/realshouzy/auto-file-sorter/actions/workflows/pylint.yml/badge.svg)](https://github.com/realshouzy/auto-file-sorter/actions/workflows/pylint.yml)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11-blue.svg)](https://www.python.org/downloads)
-[![GitHub top language](https://img.shields.io/github/languages/top/realshouzy/auto-file-sorter)](https://www.python.org)
-[![Contributors](https://img.shields.io/github/contributors/realshouzy/auto-file-sorter)](https://github.com/realshouzy/auto-file-sorter/graphs/contributors)
+[![semantic-release](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/realshouzy/YTDownloader/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 **``auto-file-sorter`` is a Python automation tool that tracks a directory and sorts files into their respective folders based on their file extensions.**
 
@@ -20,7 +21,7 @@ pip install git+https://github.com/realshouzy/auto-file-sorter.git
 Alternatively, you can clone the repository and install the required dependencies by executing the following commands in the root of the project:
 
 ```bash
-git clone https://github.com/realshouzy/auto-file-sorter.git
+git clone https://github.com/realshouzy/auto-file-sorter.git && cd auto-file-sorter
 pip install -r requierments.txt
 ```
 
@@ -33,7 +34,7 @@ import concurrent.futures
 import datetime
 import json
 import logging
-import os
+import os.path
 import pathlib
 import platform
 import re
@@ -43,12 +44,17 @@ import time
 import typing
 
 # third party
+import typing_extensions
 # import watchdog
 import watchdog.events
 import watchdog.observers
 
 # only for type annotations; not used at runtime
+import collections.abc
 import watchdog.observers.api
+
+# for testing
+import pytest
 ```
 
 ## Documentation
@@ -90,7 +96,7 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 | -------- | ------- |
 | ``--add`` / ``-a`` | Adds an extension and its corresponding path to the ``configs.json`` file. It takes two arguments: the extension and the path to which files with this extension will be saved. If the extension already exists, the path will be overridden. |
 | ``--remove`` / ``-r`` | Removes one or more extensions and their respective paths from the configuration. |
-| ``--json`` / ``-j`` | Loads one or more ``json`` files that bind extensions to paths and merges them into the ``configs.json`` file. |
+| ``--json`` / ``-j`` | Loads a ``json`` files that binds extensions to paths and merges it into the ``configs.json`` file. |
 
 The json files should be structured similarly to the ``configs.json`` file. An example (with Windows paths) can be found in [``example_configs.json``](/example_configs.json).
 Ultimately you can directly modify the ``configs.json`` file yourself.
@@ -137,11 +143,11 @@ Simply place files into the tracked folder, and the tool will automatically sort
 
 ## Excpetion handling
 
-Most exceptions will be logged in a log file. If an exception should occur, the program will handly gracefuly by exiting with exit code 1, except in cases where an exception is encountered while moving a file. This is due to threading and ensures that everything gets properly garbage collected. This behavior is specifically implemented to address threading concerns and ensure proper garbage collection. In such cases, the respective thread will exit, while the main program continues its execution. Ultimately, the user has the option to stop the program manually. This approach allows for proper cleanup and termination of resources.
+Most exceptions will be logged in a log file. If an exception should occur, the program will handly gracefuly by exiting with exit code 1, except in cases where an exception is encountered while moving a file. This behavior is specifically implemented to address threading concerns and ensure proper garbage collection. In such cases, the respective thread will exit, while the main program continues its execution. Ultimately, the user has the option to stop the program manually. This approach allows for proper cleanup and termination of resources.
 
 ## Regarding the lack of tests
 
-While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I didn't care to invest time in writing tests, as I originally intended it to be a smaller-scale project. Recognizing the significance of testing in continuous integration, I have taken the initiative to write tests. I have created a dedicated [branch](https://github.com/realshouzy/auto-file-sorter/tree/add-tests), where you can find all the essential information.
+While this project currently lacks tests, I acknowledge the importance of testing for ensuring code quality and reliability is. Initially, due to my limited knowledge when starting the project, I didn't prioritize writing tests. As the project evolved, I didn't care to invest time in writing tests, as I originally intended it to be a smaller-scale project. Recognizing the significance of testing in continuous integration, I have taken the initiative to write tests.
 
 ## Contributing
 

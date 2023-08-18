@@ -10,22 +10,22 @@ __all__: list[str] = [
 
 import json
 import logging
-import os
+import os.path
 import platform
 import re
 import sys
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from watchdog.observers import Observer
 
 from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
-    DEFAULT_CONFIGS_LOCATION,
     EXIT_FAILURE,
     EXIT_SUCCESS,
+    FILE_EXTENSION_PATTERN,
 )
 from auto_file_sorter.event_handling import OnModifiedEventHandler
 
@@ -37,10 +37,12 @@ if TYPE_CHECKING:
 
 args_handling_logger: logging.Logger = logging.getLogger(__name__)
 
-_FILE_EXTENSION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^\.[a-zA-Z0-9]+$")
 
-
-def _add_to_startup(argv: Sequence[str] | None = None) -> None:
+def _add_to_startup(
+    *,
+    argv: Sequence[str] | None = None,
+    startup_folder: Path | None = None,
+) -> None:
     """Add the ran command to startup by creating a vbs file in the 'Startup' folder."""
     if platform.system() != "Windows":
         args_handling_logger.warning(
@@ -51,63 +53,61 @@ def _add_to_startup(argv: Sequence[str] | None = None) -> None:
     if not argv:
         argv = sys.argv
 
-    args_handling_logger.debug("sys.argv=%s", sys.argv)
+    if startup_folder is None:
+        startup_folder = Path(os.path.expandvars("%APPDATA%")).joinpath(
+            "Microsoft",
+            "Windows",
+            "Start Menu",
+            "Programs",
+            "Startup",
+        )
+
+    args_handling_logger.debug("argv=%s", argv)
 
     flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
         r"-v+|--verbose|--autostart",
     )
 
-    cleaned_sys_argv: list[str] = [
-        arg for arg in sys.argv if flag_patterns_to_be_removed.fullmatch(arg) is None
+    cleaned_argv: list[str] = [
+        arg for arg in argv if flag_patterns_to_be_removed.fullmatch(arg) is None
     ]
     args_handling_logger.debug(
         "Removed verbosity and autostart flags: '%s'",
-        cleaned_sys_argv,
+        cleaned_argv,
     )
-    cmd: str = " ".join(cleaned_sys_argv)
+    cmd: str = " ".join(cleaned_argv)
     args_handling_logger.debug("Adding '%s' to autostart", cmd)
 
-    startup_folder: Path = Path(os.path.expandvars("%APPDATA%")).joinpath(
-        "Microsoft",
-        "Windows",
-        "Start Menu",
-        "Programs",
-        "Startup",
-    )
     args_handling_logger.debug("Startup folder location: '%s'", startup_folder)
-    path_to_vbs: Path = startup_folder.joinpath("auto-file-sorter.vbs")
+    path_to_vbs: Path = startup_folder / "auto-file-sorter.vbs"
 
-    args_handling_logger.debug("Opening vbs file: '%s'", path_to_vbs)
+    args_handling_logger.debug("Writing to vsb file: '%s'", path_to_vbs)
     try:
-        with path_to_vbs.open(mode="r", encoding="utf-8") as vbs_file:
-            args_handling_logger.debug("Writing to vsb file: '%s'", vbs_file)
-            vbs_file.write(
-                'Set objShell = WScript.CreateObject("WScript.Shell")\n'
-                f'objShell.Run "{cmd}", 0, True\n',
-            )
+        path_to_vbs.write_text(
+            'Set objShell = WScript.CreateObject("WScript.Shell")'
+            f'\nobjShell.Run "{cmd}", 0, True\n',
+            encoding="utf-8",
+        )
+        args_handling_logger.info(
+            "Added '%s' with '%s' to startup",
+            path_to_vbs,
+            cmd,
+        )
     except PermissionError:
         args_handling_logger.critical(
             "Permission denied to open and read from '%s'",
             path_to_vbs,
         )
-        return
     except FileNotFoundError:
         args_handling_logger.critical(
             "Unable to find '%s'",
             path_to_vbs,
         )
-        return
     except OSError:
         args_handling_logger.critical(
             "I/O-related error occurred while opening and reading from '%s'",
             path_to_vbs,
         )
-        return
-    args_handling_logger.info(
-        "Added '%s' with '%s' to startup",
-        path_to_vbs,
-        cmd,
-    )
 
 
 def resolved_path_from_str(path_as_str: str) -> Path:
@@ -147,7 +147,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             )
             return EXIT_FAILURE
 
-        if _FILE_EXTENSION_PATTERN.fullmatch(new_extension) is None:
+        if FILE_EXTENSION_PATTERN.fullmatch(new_extension) is None:
             args_handling_logger.critical(
                 "Given extension '%s' is invalid",
                 new_extension,
@@ -159,10 +159,10 @@ def handle_write_args(args: argparse.Namespace) -> int:
         configs[new_extension] = new_path
         args_handling_logger.log(
             CONFIG_LOG_LEVEL,
-            "Updated '%s': '%s' from %s",
+            "Updated '%s': '%s' from '%s'",
             new_extension,
             new_path,
-            DEFAULT_CONFIGS_LOCATION,
+            args.configs_location,
         )
 
     if args.json_file is not None:
@@ -177,14 +177,11 @@ def handle_write_args(args: argparse.Namespace) -> int:
             )
             return EXIT_FAILURE
 
-        args_handling_logger.debug("Opening '%s'", args.json_file)
+        args_handling_logger.debug("Reading from '%s'", args.json_file)
         try:
-            with args.json_file.open() as json_file:
-                args_handling_logger.debug(
-                    "Reading from '%s'",
-                    args.json_file,
-                )
-                new_configs_from_json: dict[str, str] = json.load(json_file)
+            new_configs_from_json: dict[str, str] = json.loads(
+                args.json_file.read_text(encoding="utf-8"),
+            )
         except FileNotFoundError:
             args_handling_logger.critical(
                 "Unable to find '%s'",
@@ -205,13 +202,13 @@ def handle_write_args(args: argparse.Namespace) -> int:
             return EXIT_FAILURE
         except json.JSONDecodeError:
             args_handling_logger.critical(
-                "Given JSON file is not correctly formatted: %s",
+                "Given JSON file is not correctly formatted: '%s'",
                 args.json_file,
             )
             return EXIT_FAILURE
         args_handling_logger.debug("Read from '%s'", args.json_file)
 
-        configs |= new_configs_from_json
+        configs.update(new_configs_from_json)
         args_handling_logger.log(
             CONFIG_LOG_LEVEL,
             "Loaded '%s' into configs",
@@ -228,7 +225,7 @@ def handle_write_args(args: argparse.Namespace) -> int:
             extension: str = config.replace(" ", "").lower()
             args_handling_logger.debug("Stripped '%s' to '%s'", config, extension)
 
-            if _FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
+            if FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
                 args_handling_logger.warning(
                     "Skipping invalid extension: '%s'",
                     extension,
@@ -272,7 +269,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
         for config in args.get_configs:
             extension: str = config.replace(" ", "").lower()
 
-            if _FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
+            if FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
                 args_handling_logger.warning(
                     "Ignoring invalid extension '%s'",
                     extension,
@@ -292,7 +289,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
                 args_handling_logger.warning(
                     "Unable to get the respetive path from '%s' "
                     "of one of the given extensions '%s'",
-                    DEFAULT_CONFIGS_LOCATION,
+                    args.configs_location,
                     extension,
                 )
                 continue
@@ -316,9 +313,6 @@ def handle_read_args(args: argparse.Namespace) -> int:
 
 def handle_track_args(args: argparse.Namespace) -> int:
     """Handle the ``track`` subcommand."""
-    if args.enable_autostart:
-        _add_to_startup()
-
     tracked_paths: list[Path] = args.tracked_paths
     args_handling_logger.debug("tracked_paths=%s", tracked_paths)
 
@@ -328,7 +322,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
     if not configs:
         args_handling_logger.critical(
             "No paths for extensions defined in '%s'",
-            DEFAULT_CONFIGS_LOCATION,
+            args.configs_location,
         )
         return EXIT_FAILURE
 
@@ -380,9 +374,12 @@ def handle_track_args(args: argparse.Namespace) -> int:
             "All given paths are invalid: %s",
             ", ".join(str(path) for path in tracked_paths),
         )
-        return EXIT_SUCCESS
+        return EXIT_FAILURE
 
     args_handling_logger.debug("observers=%s", observers)
+
+    if args.enable_autostart:
+        _add_to_startup()
 
     try:
         while True:
