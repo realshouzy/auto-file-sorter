@@ -84,7 +84,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     ] = parser.add_subparsers(
         title="subcommands",
         description="Track a directory, configure the extension paths"
-        "or get the locations of the log and config file",
+        "or get the locations of the log and configs file",
         required=True,
     )
 
@@ -138,7 +138,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=str,
         nargs="+",
         metavar="CONFIG",
-        help="Remove extension(s) and its/their path from 'configs.json'",
+        help="Remove extension(s) and its/their path from the configs file",
     )
     write_parser.add_argument(
         "-j",
@@ -146,7 +146,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         dest="json_file",
         type=resolved_path_from_str,
         metavar="PATH",
-        help="Load new configs from a json file into 'configs.json'",
+        help="Load new configs from a JSON file into the configs file",
     )
 
     # "read" subcommand
@@ -161,7 +161,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         nargs="*",
         default=[],
         metavar="CONFIGS",
-        help="Get the extensions and their path from 'configs.json' (default: all configs)",
+        help="Get the extensions and their path from the configs file (default: all configs)",
     )
 
     # "locations" subcommand
@@ -182,7 +182,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--config",
         action="store_true",
         dest="get_config_location",
-        help="Get the location of the config file",
+        help="Get the location of the configs file",
     )
 
     args: argparse.Namespace = parser.parse_args(argv)
