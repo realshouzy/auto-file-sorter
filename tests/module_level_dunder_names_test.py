@@ -1,4 +1,4 @@
-"""Module testing the Module Level Dunder Names in ``auto_file_sorter.__init__.py``."""
+"""Tests for Module Level Dunder Names in ``auto_file_sorter``."""
 from __future__ import annotations
 
 import pytest

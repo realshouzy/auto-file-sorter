@@ -1,4 +1,4 @@
-"""Module testing ``auto-file-sorter.configs_handling.py``."""
+"""Tests for ``auto-file-sorter.configs_handling``."""
 from __future__ import annotations
 
 import json
