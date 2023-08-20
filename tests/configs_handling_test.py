@@ -19,8 +19,6 @@ from tests.fixtures import (
 if TYPE_CHECKING:
     from pathlib import Path
 
-# pylint: disable=C0116, W0621
-
 
 def test_read_from_configs(
     test_configs: tuple[Path, dict[str, str]],

@@ -18,7 +18,7 @@ from auto_file_sorter.args_handling import (
     resolved_path_from_str,
 )
 
-#  ``valid_json_data`` indirectly used by the test_configs fixture, do not remove!
+#  valid_json_data is indirectly used by test_configs, do not remove!
 from tests.fixtures import info_caplog, test_configs, valid_json_data
 
 
