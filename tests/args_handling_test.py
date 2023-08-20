@@ -681,7 +681,7 @@ def test_handle_locations_args_get_log_location(
     args: argparse.Namespace = argparse.Namespace(
         log_location=test_log_file,
         get_log_location=True,
-        get_config_location=False,
+        get_configs_location=False,
     )
 
     exit_code: int = handle_locations_args(args)
@@ -700,7 +700,7 @@ def test_handle_locations_args_get_configs_location(
     args: argparse.Namespace = argparse.Namespace(
         configs_location=test_configs_file,
         get_log_location=False,
-        get_config_location=True,
+        get_configs_location=True,
     )
 
     exit_code: int = handle_locations_args(args)
@@ -721,7 +721,7 @@ def test_handle_locations_args_both(
         log_location=test_log_file,
         configs_location=test_configs_file,
         get_log_location=True,
-        get_config_location=True,
+        get_configs_location=True,
     )
 
     exit_code: int = handle_locations_args(args)

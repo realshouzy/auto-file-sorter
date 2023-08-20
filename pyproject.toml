@@ -132,6 +132,7 @@ required-imports = ["from __future__ import annotations"]
     "ARG001",
     "F811",
     "F401",
+    "FBT001",
 ]
 
 [tool.ruff.pydocstyle]

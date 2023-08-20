@@ -10,6 +10,7 @@ __all__: list[str] = [
     "invalid_test_configs",
     "extension_paths",
     "path_for_undefined_extensions",
+    "test_log_as_str",
 ]
 
 import json
@@ -42,6 +43,12 @@ def test_configs(
     test_configs_file.write_text(json.dumps(valid_json_data), encoding="utf-8")
 
     return test_configs_file, valid_json_data
+
+
+@pytest.fixture()
+def test_configs_as_str(test_configs: tuple[Path, dict[str, str]]) -> str:
+    """Return a temporary configs ``JSON`` file as a string."""
+    return str(test_configs[0])
 
 
 @pytest.fixture()
@@ -95,3 +102,9 @@ def extension_paths(tmp_path: Path) -> dict[str, Path]:
 def path_for_undefined_extensions(tmp_path: Path) -> Path:
     """Return a temporary path which will be the path for undefined extensions."""
     return tmp_path / "undefined"
+
+
+@pytest.fixture()
+def test_log_as_str(tmp_path: Path) -> str:
+    """Return a temporary log file as a string."""
+    return str(tmp_path / "auto-file-sorter.log")

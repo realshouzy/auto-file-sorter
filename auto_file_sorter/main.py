@@ -33,12 +33,11 @@ if TYPE_CHECKING:
 main_logger: logging.Logger = logging.getLogger(__name__)
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    """Run the program."""
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    """Parse arguments from ``argv``."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         prog="auto-file-sorter",
         description="Automatically sorts files in a directory based on their extension.",
-        allow_abbrev=False,
     )
     parser.add_argument(
         "-V",
@@ -181,11 +180,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         "-c",
         "--config",
         action="store_true",
-        dest="get_config_location",
+        dest="get_configs_location",
         help="Get the location of the configs file",
     )
 
-    args: argparse.Namespace = parser.parse_args(argv)
+    return parser.parse_args(argv)
+
+
+def main() -> int:
+    """Run the program."""
+    args: argparse.Namespace = _parse_args()
 
     # Define custom "MOVE" and "CONFIG" logging level >= logging.CRITICAL (50)
     # so it can be handeled by the stream handler if verbose logging is enabled
