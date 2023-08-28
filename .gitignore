@@ -123,7 +123,7 @@ celerybeat.pid
 .env
 .venv
 env/
-venv/
+venv*/
 ENV/
 env.bak/
 venv.bak/
@@ -163,5 +163,4 @@ temp/
 *.log
 .ruff_cache/
 .vscode/
-venv*/
 auto_file_sorter/configs.json
