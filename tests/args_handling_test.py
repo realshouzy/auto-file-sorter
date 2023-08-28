@@ -156,7 +156,7 @@ def test_add_to_startup_windows(
 
 @pytest.mark.skipif(
     platform.system() == "Windows",
-    reason="Test behavior on non Windows systems",
+    reason="Test behavior on Non-Windows systems",
 )
 @pytest.mark.parametrize(
     ("argv"),
@@ -212,7 +212,7 @@ def test_add_to_startup_non_windows(
     _add_to_startup(argv=argv)
     assert caplog.record_tuples == [
         (
-            "auto_file_sorter",
+            "auto_file_sorter.args_handling",
             30,
             "Adding 'auto-file-sorter' to startup is only supported on Windows.",
         ),
@@ -529,7 +529,11 @@ def test_handle_write_args_remove_configs_with_extension_not_in_configs(
     ) in caplog.record_tuples
 
 
-def test_handle_read_args_all_configs(
+@pytest.mark.skipif(
+    platform.system() != "Windows",
+    reason="Test behavior on Windows-systems",
+)
+def test_handle_read_args_all_configs_windows(
     test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
@@ -554,7 +558,38 @@ def test_handle_read_args_all_configs(
     ) in caplog.record_tuples
 
 
-def test_handle_read_args_selected_configs(
+@pytest.mark.skipif(
+    platform.system() != "Linux" or platform.system() != "Darwin",
+    reason="Test behavior on Posix systems",
+)
+def test_handle_read_args_all_configs_posix(
+    test_configs: tuple[Path, dict[str, str]],
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=None,
+    )
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 0
+
+    assert capsys.readouterr().out == ".txt: /path/to/txt\n.pdf: /path/to/pdf\n"
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Printed all the configs",
+    ) in caplog.record_tuples
+
+
+@pytest.mark.skipif(
+    platform.system() != "Windows",
+    reason="Test behavior on Windows-systems",
+)
+def test_handle_read_args_selected_configs_windows(
     test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
@@ -569,6 +604,33 @@ def test_handle_read_args_selected_configs(
     assert exit_code == 0
 
     assert capsys.readouterr().out == ".pdf: C:\\path\\to\\pdf\n"
+
+    assert (
+        "auto_file_sorter.args_handling",
+        70,
+        "Printed the selected configs",
+    ) in caplog.record_tuples
+
+
+@pytest.mark.skipif(
+    platform.system() != "Linux" or platform.system() != "Darwin",
+    reason="Test behavior on Posix systems",
+)
+def test_handle_read_args_selected_configs_posix(
+    test_configs: tuple[Path, dict[str, str]],
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=[".pdf"],
+    )
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 0
+
+    assert capsys.readouterr().out == ".pdf: /path/to/pdf\n"
 
     assert (
         "auto_file_sorter.args_handling",
