@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-# pylint: disable=C0116, W0611, W0621
+# pylint: disable=C0116, W0611
 from auto_file_sorter import __version__
 from auto_file_sorter.args_handling import resolved_path_from_str
 from auto_file_sorter.main import _parse_args

@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-# pylint: disable=C0116, W0611, W0621
+# pylint: disable=C0116, W0611
 from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
+
+#  valid_json_data is indirectly used by test_configs, do not remove!
 from tests.fixtures import (
     empty_test_configs,
     invalid_json_data,

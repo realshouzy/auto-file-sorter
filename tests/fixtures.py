@@ -22,8 +22,6 @@ import pytest
 if TYPE_CHECKING:
     from pathlib import Path
 
-# pylint: disable=W0621
-
 
 @pytest.fixture()
 def info_caplog(caplog: pytest.LogCaptureFixture) -> pytest.LogCaptureFixture:

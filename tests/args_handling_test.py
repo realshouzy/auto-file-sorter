@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-# pylint: disable=C0116, W0611, W0621
+# pylint: disable=C0116, W0611
 from auto_file_sorter.args_handling import (
     _add_to_startup,
     handle_locations_args,

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 
-# pylint: disable=C0116, W0212, W0611, W0621
+# pylint: disable=C0116, W0212
 from auto_file_sorter.event_handling import OnModifiedEventHandler
 from tests.fixtures import extension_paths, info_caplog, path_for_undefined_extensions
 

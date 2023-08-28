@@ -28,7 +28,17 @@ Documentation = "https://github.com/realshouzy/auto-file-sorter/blob/main/README
 Changelog = "https://github.com/realshouzy/auto-file-sorter/commits/"
 
 [project.optional-dependencies]
-dev = ["mypy", "ruff", "pylint", "black", "isort", "bandit", "pytest", "coverage"]
+dev = [
+    "mypy",
+    "ruff",
+    "pylint",
+    "black",
+    "isort",
+    "bandit",
+    "pytest",
+    "coverage",
+    "pylint-pytest",
+]
 
 [project.scripts]
 auto-file-sorter = "auto_file_sorter.main:main"
@@ -140,6 +150,7 @@ convention = "pep257"
 
 [tool.pylint]
 disable = ["R0911", "R0912", "R0915", "W0718", "W0511"]
+load-plugins = "pylint_pytest"
 
 [tool.bandit]
 exclude_dirs = ["tests"]
