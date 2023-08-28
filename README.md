@@ -2,6 +2,7 @@
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/realshouzy/auto-file-sorter/main.svg)](https://results.pre-commit.ci/latest/github/realshouzy/auto-file-sorter/main)
 [![pylint status](https://github.com/realshouzy/auto-file-sorter/actions/workflows/pylint.yaml/badge.svg)](https://github.com/realshouzy/auto-file-sorter/actions/workflows/pylint.yaml)
+[![tests status](https://github.com/realshouzy/auto-file-sorter/actions/workflows/tests.yaml/badge.svg)](https://github.com/realshouzy/auto-file-sorter/actions/workflows/tests.yaml)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11-blue.svg)](https://www.python.org/downloads)
 [![semantic-release](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/realshouzy/YTDownloader/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
