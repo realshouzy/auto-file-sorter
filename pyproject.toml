@@ -28,7 +28,7 @@ Documentation = "https://github.com/realshouzy/auto-file-sorter/blob/main/README
 Changelog = "https://github.com/realshouzy/auto-file-sorter/commits/"
 
 [project.optional-dependencies]
-dev = ["mypy", "ruff", "pylint", "black", "isort", "bandit", "pytest"]
+dev = ["mypy", "ruff", "pylint", "black", "isort", "bandit", "pytest", "coverage"]
 
 [project.scripts]
 auto-file-sorter = "auto_file_sorter.main:main"
