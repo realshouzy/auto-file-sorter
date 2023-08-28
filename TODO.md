@@ -20,6 +20,6 @@
 - [x] Adjust ``-A`` / ``--autostart`` so no window opens
 - [x] Update README
 - [x] Add support for ``pre-commit``
-- [ ] Write tests using ``pytest``
-- [ ] Integrate ``coverage``
-- [ ] Integrate ``tox``
+- [x] Write tests using ``pytest``
+- [x] Integrate ``coverage``
+- [x] Integrate ``tox``
