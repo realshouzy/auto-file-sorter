@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
 
 

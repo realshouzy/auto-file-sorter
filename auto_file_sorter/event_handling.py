@@ -15,7 +15,7 @@ from watchdog.events import FileSystemEventHandler
 
 from auto_file_sorter.constants import MOVE_LOG_LEVEL
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
 
     from watchdog.events import DirModifiedEvent, FileModifiedEvent

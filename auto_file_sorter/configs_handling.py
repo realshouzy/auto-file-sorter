@@ -13,7 +13,7 @@ from auto_file_sorter.constants import (
     EXIT_FAILURE,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
 
 configs_handling_logger: logging.Logger = logging.getLogger(__name__)

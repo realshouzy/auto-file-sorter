@@ -27,7 +27,7 @@ from auto_file_sorter.constants import (
     VERBOSE_OUTPUT_LEVELS,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
 
 main_logger: logging.Logger = logging.getLogger(__name__)

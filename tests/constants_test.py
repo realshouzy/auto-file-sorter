@@ -20,7 +20,7 @@ from auto_file_sorter.constants import (
     VERBOSE_OUTPUT_LEVELS,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
 
 # pylint: disable=C0116, W0212

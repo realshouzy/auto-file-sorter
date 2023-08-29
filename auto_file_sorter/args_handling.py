@@ -29,7 +29,7 @@ from auto_file_sorter.constants import (
 )
 from auto_file_sorter.event_handling import OnModifiedEventHandler
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     import argparse
     from collections.abc import Sequence
 
