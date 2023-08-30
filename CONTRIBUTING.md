@@ -8,7 +8,7 @@ If you have any feature suggestions or encounter any bugs, please create an [iss
 
 ## TODO
 
-Check out the [TODO](/TODO.md) file for a list of pending tasks and future improvements. The current focus is on addressing the lack of tests. For more information, please refer to [here](/README.md#regarding-the-lack-of-tests).
+Check out the [TODO](/TODO.md) file for a list of pending tasks and future improvements.
 
 </br>
 
