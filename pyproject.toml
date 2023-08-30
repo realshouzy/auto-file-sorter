@@ -159,3 +159,12 @@ exclude_dirs = ["tests"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["*_test.py"]
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "except PermissionError( as perm_err)?:",
+    "except (OSError|\\(shutil.Error, OSError\\))( as os_err)?:",
+    "except Exception as err:",
+]
