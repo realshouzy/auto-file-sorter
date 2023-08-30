@@ -18,7 +18,7 @@ from tests.fixtures import (
     valid_json_data,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pathlib import Path
 
 

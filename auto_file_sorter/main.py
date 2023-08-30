@@ -27,7 +27,7 @@ from auto_file_sorter.constants import (
     VERBOSE_OUTPUT_LEVELS,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Sequence
 
 main_logger: logging.Logger = logging.getLogger(__name__)
@@ -187,7 +187,7 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main() -> int:
+def main() -> int:  # pragma: no cover
     """Run the program."""
     args: argparse.Namespace = _parse_args()
 

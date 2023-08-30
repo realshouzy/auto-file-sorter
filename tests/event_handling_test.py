@@ -11,7 +11,7 @@ from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEvent
 from auto_file_sorter.event_handling import OnModifiedEventHandler
 from tests.fixtures import extension_paths, info_caplog, path_for_undefined_extensions
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pathlib import Path
 
     import pytest
