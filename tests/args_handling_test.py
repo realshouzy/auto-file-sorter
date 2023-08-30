@@ -46,7 +46,7 @@ def test_resolved_path_from_str_windows(path_as_str: str, expected_path: Path) -
 
 
 @pytest.mark.skipif(
-    platform.system() != "Linux" or platform.system() != "Darwin",
+    platform.system() != "Linux" and platform.system() != "Darwin",
     reason="Test behavior on Posix systems",
 )
 @pytest.mark.parametrize(
@@ -559,7 +559,7 @@ def test_handle_read_args_all_configs_windows(
 
 
 @pytest.mark.skipif(
-    platform.system() != "Linux" or platform.system() != "Darwin",
+    platform.system() != "Linux" and platform.system() != "Darwin",
     reason="Test behavior on Posix systems",
 )
 def test_handle_read_args_all_configs_posix(
@@ -613,7 +613,7 @@ def test_handle_read_args_selected_configs_windows(
 
 
 @pytest.mark.skipif(
-    platform.system() != "Linux" or platform.system() != "Darwin",
+    platform.system() != "Linux" and platform.system() != "Darwin",
     reason="Test behavior on Posix systems",
 )
 def test_handle_read_args_selected_configs_posix(
