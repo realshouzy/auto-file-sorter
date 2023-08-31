@@ -48,67 +48,65 @@ def _add_to_startup(
         args_handling_logger.warning(
             "Adding 'auto-file-sorter' to startup is only supported on Windows.",
         )
-        return
+    else:  # pragma: win32 cover
+        if not argv:  # pragma: no cover
+            argv = sys.argv
 
-    if not argv:  # pragma: no cover
-        argv = sys.argv
+        if startup_folder is None:  # pragma: no cover
+            startup_folder = Path(os.path.expandvars("%APPDATA%")).joinpath(
+                "Microsoft",
+                "Windows",
+                "Start Menu",
+                "Programs",
+                "Startup",
+            )
 
-    if startup_folder is None:  # pragma: no cover
-        startup_folder = Path(os.path.expandvars("%APPDATA%")).joinpath(
-            "Microsoft",
-            "Windows",
-            "Start Menu",
-            "Programs",
-            "Startup",
+        args_handling_logger.debug("argv=%s", argv)
+
+        flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
+            r"-v+|--verbose|--autostart",
         )
 
-    # pragma: win32 cover
-    args_handling_logger.debug("argv=%s", argv)
+        cleaned_argv: list[str] = [
+            arg for arg in argv if flag_patterns_to_be_removed.fullmatch(arg) is None
+        ]
+        args_handling_logger.debug(
+            "Removed verbosity and autostart flags: '%s'",
+            cleaned_argv,
+        )
+        cmd: str = " ".join(cleaned_argv)
+        args_handling_logger.debug("Adding '%s' to autostart", cmd)
 
-    flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
-        r"-v+|--verbose|--autostart",
-    )
+        args_handling_logger.debug("Startup folder location: '%s'", startup_folder)
+        path_to_vbs: Path = startup_folder / "auto-file-sorter.vbs"
 
-    cleaned_argv: list[str] = [
-        arg for arg in argv if flag_patterns_to_be_removed.fullmatch(arg) is None
-    ]
-    args_handling_logger.debug(
-        "Removed verbosity and autostart flags: '%s'",
-        cleaned_argv,
-    )
-    cmd: str = " ".join(cleaned_argv)
-    args_handling_logger.debug("Adding '%s' to autostart", cmd)
-
-    args_handling_logger.debug("Startup folder location: '%s'", startup_folder)
-    path_to_vbs: Path = startup_folder / "auto-file-sorter.vbs"
-
-    args_handling_logger.debug("Writing to vsb file: '%s'", path_to_vbs)
-    try:
-        path_to_vbs.write_text(
-            'Set objShell = WScript.CreateObject("WScript.Shell")'
-            f'\nobjShell.Run "{cmd}", 0, True\n',
-            encoding="utf-8",
-        )
-        args_handling_logger.info(
-            "Added '%s' with '%s' to startup",
-            path_to_vbs,
-            cmd,
-        )
-    except PermissionError:
-        args_handling_logger.critical(
-            "Permission denied to open and read from '%s'",
-            path_to_vbs,
-        )
-    except FileNotFoundError:  # pragma: no cover
-        args_handling_logger.critical(
-            "Unable to find '%s'",
-            path_to_vbs,
-        )
-    except OSError:
-        args_handling_logger.critical(
-            "I/O-related error occurred while opening and reading from '%s'",
-            path_to_vbs,
-        )
+        args_handling_logger.debug("Writing to vsb file: '%s'", path_to_vbs)
+        try:
+            path_to_vbs.write_text(
+                'Set objShell = WScript.CreateObject("WScript.Shell")'
+                f'\nobjShell.Run "{cmd}", 0, True\n',
+                encoding="utf-8",
+            )
+            args_handling_logger.info(
+                "Added '%s' with '%s' to startup",
+                path_to_vbs,
+                cmd,
+            )
+        except PermissionError:
+            args_handling_logger.critical(
+                "Permission denied to open and read from '%s'",
+                path_to_vbs,
+            )
+        except FileNotFoundError:  # pragma: no cover
+            args_handling_logger.critical(
+                "Unable to find '%s'",
+                path_to_vbs,
+            )
+        except OSError:
+            args_handling_logger.critical(
+                "I/O-related error occurred while opening and reading from '%s'",
+                path_to_vbs,
+            )
 
 
 def resolved_path_from_str(path_as_str: str) -> Path:
