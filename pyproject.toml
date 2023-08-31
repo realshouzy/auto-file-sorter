@@ -39,6 +39,7 @@ dev = [
     "pytest",
     "coverage",
     "pylint-pytest",
+    "covdefaults",
 ]
 
 [project.scripts]
@@ -160,11 +161,13 @@ exclude_dirs = ["tests"]
 testpaths = ["tests"]
 python_files = ["*_test.py"]
 
+[tool.coverage.run]
+plugins = ["covdefaults"]
+
 [tool.coverage.report]
 exclude_also = [
-    "if TYPE_CHECKING:",
-    "if __name__ == .__main__.:",
     "except PermissionError( as perm_err)?:",
     "except (OSError|\\(shutil.Error, OSError\\))( as os_err)?:",
     "except Exception as err:",
 ]
+fail_under = 90
