@@ -62,6 +62,7 @@ def _add_to_startup(
             "Startup",
         )
 
+    # pragma: win32 cover
     args_handling_logger.debug("argv=%s", argv)
 
     flag_patterns_to_be_removed: re.Pattern[str] = re.compile(
