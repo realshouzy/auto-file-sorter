@@ -645,6 +645,56 @@ def test_handle_read_args_selected_configs_posix(
     ) in caplog.record_tuples
 
 
+def test_handle_read_args_selected_configs_invalid_extensions(
+    test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=["abc"],
+    )
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 1
+
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        "Ignoring invalid extension 'abc'",
+    ) in caplog.record_tuples
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        "No valid extensions selected",
+    ) in caplog.record_tuples
+
+
+def test_handle_read_args_selected_extension_not_in_configs(
+    test_configs: tuple[Path, dict[str, str]],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    test_configs_file, _ = test_configs
+
+    args: argparse.Namespace = argparse.Namespace(
+        configs_location=test_configs_file,
+        get_configs=[".odt"],
+    )
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 1
+
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        "Ignoring '.odt', because it is not in the configs",
+    ) in caplog.record_tuples
+    assert (
+        "auto_file_sorter.args_handling",
+        50,
+        "No valid extensions selected",
+    ) in caplog.record_tuples
+
+
 # TODO: Make this actually testable
 @pytest.mark.skip(reason="Test not finished yet")
 def test_handle_track_args_no_auto_start(

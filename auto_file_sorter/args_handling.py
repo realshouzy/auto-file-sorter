@@ -284,7 +284,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
 
             try:
                 selected_configs[extension] = resolved_path_from_str(configs[extension])
-            except KeyError:
+            except KeyError:  # pragma: no cover
                 args_handling_logger.warning(
                     "Unable to get the respetive path from '%s' "
                     "of one of the given extensions '%s'",
@@ -292,6 +292,14 @@ def handle_read_args(args: argparse.Namespace) -> int:
                     extension,
                 )
                 continue
+
+        if not selected_configs:
+            args_handling_logger.critical("No valid extensions selected")
+            args_handling_logger.debug(
+                "repr(selected_configs)=%s",
+                repr(selected_configs),
+            )
+            return EXIT_FAILURE
 
         args_handling_logger.debug("Printing from %s", selected_configs)
         for extension, path in selected_configs.items():
