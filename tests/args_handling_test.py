@@ -41,7 +41,10 @@ from tests.fixtures import info_caplog, test_configs, valid_json_data
         ),
     ),
 )
-def test_resolved_path_from_str_windows(path_as_str: str, expected_path: Path) -> None:
+def test_resolved_path_from_str_windows(
+    path_as_str: str,
+    expected_path: Path,
+) -> None:  # pragma: win32 cover
     assert resolved_path_from_str(path_as_str) == expected_path
 
 
@@ -64,7 +67,10 @@ def test_resolved_path_from_str_windows(path_as_str: str, expected_path: Path) -
         ),
     ),
 )
-def test_resolved_path_from_str_posix(path_as_str: str, expected_path: Path) -> None:
+def test_resolved_path_from_str_posix(
+    path_as_str: str,
+    expected_path: Path,
+) -> None:  # pragma: posix cover
     assert resolved_path_from_str(path_as_str) == expected_path
 
 
@@ -133,7 +139,7 @@ def test_add_to_startup_windows(
     cmd: str,
     tmp_path: Path,
     info_caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: win32 cover
     path_to_vbs: Path = tmp_path / "auto-file-sorter.vbs"
     vbs_file_contents: str = (
         'Set objShell = WScript.CreateObject("WScript.Shell")\n'
@@ -208,7 +214,7 @@ def test_add_to_startup_windows(
 def test_add_to_startup_non_windows(
     argv: list[str],
     caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: win32 no cover
     _add_to_startup(argv=argv)
     assert caplog.record_tuples == [
         (
@@ -537,7 +543,7 @@ def test_handle_read_args_all_configs_windows(
     test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: win32 cover
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
@@ -566,7 +572,7 @@ def test_handle_read_args_all_configs_posix(
     test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: posix cover
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
@@ -593,7 +599,7 @@ def test_handle_read_args_selected_configs_windows(
     test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: win32 cover
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
@@ -620,7 +626,7 @@ def test_handle_read_args_selected_configs_posix(
     test_configs: tuple[Path, dict[str, str]],
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: posix cover
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(

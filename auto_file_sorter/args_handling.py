@@ -44,16 +44,16 @@ def _add_to_startup(
     startup_folder: Path | None = None,
 ) -> None:
     """Add the ran command to startup by creating a vbs file in the 'Startup' folder."""
-    if platform.system() != "Windows":
+    if platform.system() != "Windows":  # pragma: win32 no cover
         args_handling_logger.warning(
             "Adding 'auto-file-sorter' to startup is only supported on Windows.",
         )
         return
 
-    if not argv:
+    if not argv:  # pragma: no cover
         argv = sys.argv
 
-    if startup_folder is None:
+    if startup_folder is None:  # pragma: no cover
         startup_folder = Path(os.path.expandvars("%APPDATA%")).joinpath(
             "Microsoft",
             "Windows",
@@ -98,7 +98,7 @@ def _add_to_startup(
             "Permission denied to open and read from '%s'",
             path_to_vbs,
         )
-    except FileNotFoundError:
+    except FileNotFoundError:  # pragma: no cover
         args_handling_logger.critical(
             "Unable to find '%s'",
             path_to_vbs,
