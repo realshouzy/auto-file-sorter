@@ -169,8 +169,8 @@ plugins = ["covdefaults"]
 
 [tool.coverage.report]
 exclude_also = [
-    "except PermissionError( as perm_err)?:",
-    "except (OSError|\\(shutil.Error, OSError\\))( as os_err)?:",
-    "except Exception as err:",
+    'except PermissionError( as perm_err)?:',
+    'except (OSError|(shutil.Error, OSError))( as os_err)?:',
+    'except Exception as err:',
 ]
 fail_under = 90
