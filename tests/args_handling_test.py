@@ -700,7 +700,7 @@ def test_handle_read_args_selected_extension_not_in_configs(
 def test_handle_track_args_no_auto_start(
     test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
-) -> None:
+) -> None:  # pragma: no cover
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
@@ -747,7 +747,7 @@ def test_handle_track_args_some_paths_not_found(
     test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
     info_caplog: pytest.LogCaptureFixture,
-) -> None:
+) -> None:  # pragma: no cover
     test_configs_file, _ = test_configs
 
     args: argparse.Namespace = argparse.Namespace(
