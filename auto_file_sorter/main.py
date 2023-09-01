@@ -187,10 +187,8 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main() -> int:  # pragma: no cover
-    """Run the program."""
-    args: argparse.Namespace = _parse_args()
-
+def _setup_logging(args: argparse.Namespace) -> None:
+    """Set up logging based on the provided arguments."""
     # Define custom "MOVE" and "CONFIG" logging level >= logging.CRITICAL (50)
     # so it can be handeled by the stream handler if verbose logging is enabled
     logging.addLevelName(MOVE_LOG_LEVEL, "MOVE")
@@ -231,18 +229,39 @@ def main() -> int:  # pragma: no cover
             "To get the full output add the '-d' flag to enable debugging",
         )
 
-    if not args.configs_location.is_file():
-        args.configs_location = DEFAULT_CONFIGS_LOCATION
-        main_logger.warning(
-            "Given configs location is not a file. Using default location: '%s'",
-            DEFAULT_CONFIGS_LOCATION,
-        )
-
     main_logger.info(
         "Started logging at '%s' with level %s",
         args.log_location,
         log_level,
     )
+
+
+def _check_specified_locations(args: argparse.Namespace) -> None:
+    """Check the log and configs locations are their respective files types."""
+    if args.log_location.suffix.lower() != ".log":
+        args.log_location = DEFAULT_LOG_LOCATION
+        main_logger.warning(
+            "Given logging location is not a '.log' file. "
+            "Using default location: '%s'",
+            DEFAULT_LOG_LOCATION,
+        )
+
+    if args.configs_location.suffix.lower() != ".json":
+        args.configs_location = DEFAULT_CONFIGS_LOCATION
+        main_logger.warning(
+            "Given configs location is not a '.json' file. "
+            "Using default location: '%s'",
+            DEFAULT_CONFIGS_LOCATION,
+        )
+
+
+def main() -> int:  # pragma: no cover
+    """Run the program."""
+    args: argparse.Namespace = _parse_args()
+
+    _setup_logging(args)
+
+    _check_specified_locations(args)
 
     main_logger.debug("args=%s", repr(args))
 
