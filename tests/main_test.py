@@ -255,9 +255,11 @@ def test_check_specified_locations_valid_file_types(
 def test_check_specified_locations_invalid_log_file_type(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    log_location: Path = resolved_path_from_str("test.txt")
+    configs_location: Path = resolved_path_from_str("configs.json")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=resolved_path_from_str("test.txt"),
-        configs_location=resolved_path_from_str("configs.json"),
+        log_location=log_location,
+        configs_location=configs_location,
     )
     _check_specified_locations(args)
 
@@ -265,7 +267,7 @@ def test_check_specified_locations_invalid_log_file_type(
         (
             "auto_file_sorter.main",
             30,
-            "Given logging location is not a '.log' file. "
+            f"Given logging location '{log_location}' is not a '.log' file. "
             f"Using default location: '{DEFAULT_LOG_LOCATION}'",
         ),
     ]
@@ -274,9 +276,11 @@ def test_check_specified_locations_invalid_log_file_type(
 def test_check_specified_locations_invalid_configs_file_type(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    log_location: Path = resolved_path_from_str("test.log")
+    configs_location: Path = resolved_path_from_str("configs.yaml")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=resolved_path_from_str("test.log"),
-        configs_location=resolved_path_from_str("configs.yaml"),
+        log_location=log_location,
+        configs_location=configs_location,
     )
     _check_specified_locations(args)
 
@@ -284,7 +288,7 @@ def test_check_specified_locations_invalid_configs_file_type(
         (
             "auto_file_sorter.main",
             30,
-            "Given configs location is not a '.json' file. "
+            f"Given configs location '{configs_location}' is not a '.json' file. "
             f"Using default location: '{DEFAULT_CONFIGS_LOCATION}'",
         ),
     ]
@@ -293,9 +297,11 @@ def test_check_specified_locations_invalid_configs_file_type(
 def test_check_specified_locations_both_invalid_file_types(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    log_location: Path = resolved_path_from_str("test.txt")
+    configs_location: Path = resolved_path_from_str("configs.yaml")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=resolved_path_from_str("test"),
-        configs_location=resolved_path_from_str("configs"),
+        log_location=log_location,
+        configs_location=configs_location,
     )
     _check_specified_locations(args)
 
@@ -303,13 +309,13 @@ def test_check_specified_locations_both_invalid_file_types(
         (
             "auto_file_sorter.main",
             30,
-            "Given logging location is not a '.log' file. "
+            f"Given logging location '{log_location}' is not a '.log' file. "
             f"Using default location: '{DEFAULT_LOG_LOCATION}'",
         ),
         (
             "auto_file_sorter.main",
             30,
-            "Given configs location is not a '.json' file. "
+            f"Given configs location '{configs_location}' is not a '.json' file. "
             f"Using default location: '{DEFAULT_CONFIGS_LOCATION}'",
         ),
     ]
