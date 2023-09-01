@@ -135,6 +135,7 @@ def test_setup_logging_custom_log_level() -> None:  # pragma: >=3.11 cover
     )
     _setup_logging(args)
 
+    # pylint: disable=E1101
     assert logging.getLevelNamesMapping().get("MOVE") == MOVE_LOG_LEVEL
     assert logging.getLevelNamesMapping().get("CONFIG") == CONFIG_LOG_LEVEL
 
