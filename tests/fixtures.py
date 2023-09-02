@@ -11,6 +11,7 @@ __all__: list[str] = [
     "extension_paths",
     "path_for_undefined_extensions",
     "test_log_as_str",
+    "test_log",
 ]
 
 import json
@@ -70,6 +71,12 @@ def invalid_test_configs(
     test_configs_file.write_text(invalid_json_data, encoding="utf-8")
 
     return test_configs_file, invalid_json_data
+
+
+@pytest.fixture()
+def test_log(tmp_path: Path) -> Path:
+    """Return a temporary log file."""
+    return tmp_path / "test.log"
 
 
 @pytest.fixture()

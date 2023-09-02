@@ -28,6 +28,7 @@ from tests.fixtures import (
     info_caplog,
     test_configs,
     test_configs_as_str,
+    test_log,
     test_log_as_str,
     valid_json_data,
 )
@@ -127,9 +128,9 @@ def test_parse_args_locations(
     sys.version_info < (3, 11),
     reason="logging.getLevelNamesMapping() added in Python 3.11",
 )
-def test_setup_logging_custom_log_level() -> None:  # pragma: >=3.11 cover
+def test_setup_logging_custom_log_level(test_log: Path) -> None:  # pragma: >=3.11 cover
     args: argparse.Namespace = argparse.Namespace(
-        log_location=resolved_path_from_str("test.log"),
+        log_location=test_log,
         verbosity_level=0,
         debugging=False,
     )
@@ -143,11 +144,11 @@ def test_setup_logging_custom_log_level() -> None:  # pragma: >=3.11 cover
 @pytest.mark.parametrize(("log_location"), [0, 1, 2])
 def test_setup_logging_no_warnings_no_debugging(
     log_location: int,
+    test_log: Path,
     info_caplog: pytest.LogCaptureFixture,
 ) -> None:
-    test_log_location: Path = resolved_path_from_str("test.log")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=test_log_location,
+        log_location=test_log,
         verbosity_level=log_location,
         debugging=False,
     )
@@ -157,7 +158,7 @@ def test_setup_logging_no_warnings_no_debugging(
         (
             "auto_file_sorter.main",
             20,
-            f"Started logging at '{test_log_location}' with level 20",
+            f"Started logging at '{test_log}' with level 20",
         ),
     ]
 
@@ -165,11 +166,11 @@ def test_setup_logging_no_warnings_no_debugging(
 @pytest.mark.parametrize(("log_location"), [0, 1, 2])
 def test_setup_logging_no_warnings_debugging(
     log_location: int,
+    test_log: Path,
     info_caplog: pytest.LogCaptureFixture,
 ) -> None:
-    test_log_location: Path = resolved_path_from_str("test.log")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=test_log_location,
+        log_location=test_log,
         verbosity_level=log_location,
         debugging=True,
     )
@@ -179,17 +180,17 @@ def test_setup_logging_no_warnings_debugging(
         (
             "auto_file_sorter.main",
             20,
-            f"Started logging at '{test_log_location}' with level 10",
+            f"Started logging at '{test_log}' with level 10",
         ),
     ]
 
 
 def test_setup_logging_verbosity_debugging(
+    test_log: Path,
     info_caplog: pytest.LogCaptureFixture,
 ) -> None:
-    test_log_location: Path = resolved_path_from_str("test.log")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=test_log_location,
+        log_location=test_log,
         verbosity_level=4,
         debugging=True,
     )
@@ -204,17 +205,17 @@ def test_setup_logging_verbosity_debugging(
         (
             "auto_file_sorter.main",
             20,
-            f"Started logging at '{test_log_location}' with level 10",
+            f"Started logging at '{test_log}' with level 10",
         ),
     ]
 
 
 def test_setup_logging_verbosity_no_debugging(
+    test_log: Path,
     info_caplog: pytest.LogCaptureFixture,
 ) -> None:
-    test_log_location: Path = resolved_path_from_str("test.log")
     args: argparse.Namespace = argparse.Namespace(
-        log_location=test_log_location,
+        log_location=test_log,
         verbosity_level=4,
         debugging=False,
     )
@@ -235,7 +236,7 @@ def test_setup_logging_verbosity_no_debugging(
         (
             "auto_file_sorter.main",
             20,
-            f"Started logging at '{test_log_location}' with level 20",
+            f"Started logging at '{test_log}' with level 20",
         ),
     ]
 
