@@ -81,6 +81,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
             destination_path,
             file_path,
         )
+        pid: int
         try:
             dated_destination_path: Path = self._add_date_to_path(destination_path)
             event_handling_logger.debug("Added date to %s", dated_destination_path)
@@ -100,14 +101,14 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                 final_destination_path,
             )
         except PermissionError as perm_err:
-            pid: int = os.getpid()
+            pid = os.getpid()
             event_handling_logger.critical(
                 "Permission denied in process %s, please check your OS or antivirus: %s",
                 pid,
                 perm_err,
             )
         except FileNotFoundError as file_not_found_err:
-            pid: int = os.getpid()
+            pid = os.getpid()
             event_handling_logger.critical(
                 "File not found in process %s while moving '%s': '%s'",
                 pid,
@@ -115,7 +116,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                 file_not_found_err,
             )
         except (shutil.Error, OSError) as os_err:
-            pid: int = os.getpid()
+            pid = os.getpid()
             event_handling_logger.critical(
                 "Error in process %s while moving file '%s': '%s'",
                 pid,
@@ -123,7 +124,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                 os_err,
             )
         except Exception as err:
-            pid: int = os.getpid()
+            pid = os.getpid()
             event_handling_logger.exception(
                 "Unexpected %s in process %s",
                 err.__class__.__name__,
