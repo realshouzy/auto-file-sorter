@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "auto-file-sorter"
 description = "A file sorting automation"
+readme = "README.md"
 keywords = ["automation", "file", "sorter", "auto", "watchdog"]
 license = { text = "MIT" }
 authors = [{ name = "realshouzy" }]
@@ -21,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 requires-python = ">=3.8"
-dynamic = ["version", "readme", "dependencies"]
+dynamic = ["version", "dependencies"]
 
 [project.urls]
 Repository = "https://github.com/realshouzy/auto-file-sorter"
@@ -58,7 +59,6 @@ auto_file_sorter = ["py.typed"]
 
 [tool.setuptools.dynamic]
 version = { attr = "auto_file_sorter.__version__" }
-readme = { file = ["README.md"] }
 dependencies = { file = "requirements.txt" }
 
 [tool.black]
