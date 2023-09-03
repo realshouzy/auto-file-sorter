@@ -27,6 +27,7 @@ dynamic = ["version", "readme", "dependencies"]
 Repository = "https://github.com/realshouzy/auto-file-sorter"
 Documentation = "https://github.com/realshouzy/auto-file-sorter/blob/main/README.md#documentation"
 Changelog = "https://github.com/realshouzy/auto-file-sorter/commits/"
+Issues = "https://github.com/realshouzy/auto-file-sorter/issues"
 
 [project.optional-dependencies]
 # keep in sync with requirements-dev.txt
