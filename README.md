@@ -18,14 +18,13 @@
 Make sure you have Python 3.8 or later installed. You can install the package using ``pip``:
 
 ```bash
-pip install git+https://github.com/realshouzy/auto-file-sorter.git
+pip install auto-file-sorter
 ```
 
-Alternatively, you can clone the repository and install the required dependencies by executing the following commands in the root of the project:
+Alternatively, you can install the package from GitHub to get the latest changes:
 
 ```bash
-git clone https://github.com/realshouzy/auto-file-sorter.git && cd auto-file-sorter
-pip install .
+pip install git+https://github.com/realshouzy/auto-file-sorter.git
 ```
 
 The project uses the following packages and libraries:
