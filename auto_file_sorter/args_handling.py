@@ -318,28 +318,25 @@ def handle_read_args(args: argparse.Namespace) -> int:
     return EXIT_SUCCESS
 
 
-def handle_track_args(args: argparse.Namespace) -> int:
-    """Handle the ``track`` subcommand."""
-    tracked_paths: list[Path] = args.tracked_paths
-    args_handling_logger.debug("tracked_paths=%s", tracked_paths)
-
-    args_handling_logger.debug("Reading from configs")
-    configs: dict[str, str] = read_from_configs(configs=args.configs_location)
-
-    if not configs:
-        args_handling_logger.critical(
-            "No paths for extensions defined in '%s'",
-            args.configs_location,
-        )
-        return EXIT_FAILURE
-
-    args_handling_logger.debug("Resolving extension paths")
+def _get_extension_paths_from_configs(
+    configs: dict[str, str],
+) -> dict[str, Path]:
+    """Get the extension and their respective path from the configs."""
+    args_handling_logger.debug("Resolving extension paths from %s", configs)
     extension_paths: dict[str, Path] = {
         extension: resolved_path_from_str(path_as_str)
         for extension, path_as_str in configs.items()
     }
     args_handling_logger.info("Got extension paths")
+    return extension_paths
 
+
+def _create_observers(
+    tracked_paths: list[Path],
+    extension_paths: dict[str, Path],
+    path_for_undefined_extensions: Path,
+) -> list[BaseObserver]:
+    """Create the observers and return them in a list."""
     observers: list[BaseObserver] = []
     for path in tracked_paths:
         if not path.exists():
@@ -363,30 +360,25 @@ def handle_track_args(args: argparse.Namespace) -> int:
         event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
             path,
             extension_paths,
-            args.path_for_undefined_extensions,
+            path_for_undefined_extensions,
         )
 
         args_handling_logger.debug("Creating observer")
         observer: BaseObserver = Observer()
+        observer.name = str(path)
         args_handling_logger.debug("Scheduling observer: %s", observer)
         observer.schedule(event_handler, path, recursive=True)
+        observers.append(observer)
+        args_handling_logger.debug("Appended '%s' to %s", observer, observers)
+    return observers
+
+
+def _run_observers(observers: list[BaseObserver]) -> int:  # pragma: no cover
+    """Start and run the given observers."""
+    for observer in observers:
         args_handling_logger.debug("Starting observer: %s", observer)
         observer.start()
         args_handling_logger.info("Started observer: '%s'", observer.name)
-        observers.append(observer)
-        args_handling_logger.debug("Appended '%s' to %s", observer, observers)
-
-    if not observers:
-        args_handling_logger.critical(
-            "All given paths are invalid: %s",
-            ", ".join(str(path) for path in tracked_paths),
-        )
-        return EXIT_FAILURE
-
-    args_handling_logger.debug("observers=%s", observers)
-
-    if args.enable_autostart:
-        _add_to_startup()
 
     try:
         while True:
@@ -401,6 +393,45 @@ def handle_track_args(args: argparse.Namespace) -> int:
             observer.join()
             args_handling_logger.debug("Joined observer: %s", observer)
     return EXIT_SUCCESS
+
+
+def handle_track_args(args: argparse.Namespace) -> int:
+    """Handle the ``track`` subcommand."""
+    args_handling_logger.debug("args.tracked_paths=%s", args.tracked_paths)
+
+    args_handling_logger.debug("Reading from configs")
+    configs: dict[str, str] = read_from_configs(configs=args.configs_location)
+
+    if not configs:
+        args_handling_logger.critical(
+            "No paths for extensions defined in '%s'",
+            args.configs_location,
+        )
+        return EXIT_FAILURE
+
+    extension_paths: dict[str, Path] = _get_extension_paths_from_configs(configs)
+
+    observers: list[BaseObserver] = _create_observers(
+        args.tracked_paths,
+        extension_paths,
+        args.path_for_undefined_extensions,
+    )
+
+    exit_code: int
+    if not observers:
+        args_handling_logger.critical(
+            "All given paths are invalid: %s",
+            ", ".join(str(path) for path in args.tracked_paths),
+        )
+        exit_code = EXIT_FAILURE
+    else:  # pragma: no cover
+        args_handling_logger.debug("observers=%s", observers)
+
+        if args.enable_autostart:
+            _add_to_startup()
+
+        exit_code = _run_observers(observers)
+    return exit_code
 
 
 def handle_locations_args(args: argparse.Namespace) -> int:

@@ -5,12 +5,15 @@ import argparse
 import json
 import platform
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 # pylint: disable=C0116, W0611
 from auto_file_sorter.args_handling import (
     _add_to_startup,
+    _create_observers,
+    _get_extension_paths_from_configs,
     handle_locations_args,
     handle_read_args,
     handle_track_args,
@@ -19,7 +22,15 @@ from auto_file_sorter.args_handling import (
 )
 
 #  valid_json_data is indirectly used by test_configs, do not remove!
-from tests.fixtures import info_caplog, test_configs, valid_json_data
+from tests.fixtures import (
+    info_caplog,
+    path_for_undefined_extensions,
+    test_configs,
+    valid_json_data,
+)
+
+if TYPE_CHECKING:
+    from watchdog.observers.api import BaseObserver
 
 
 @pytest.mark.skipif(
@@ -695,28 +706,108 @@ def test_handle_read_args_selected_extension_not_in_configs(
     ) in caplog.record_tuples
 
 
-# TODO: Make this actually testable
-@pytest.mark.skip(reason="Test not finished yet")
-def test_handle_track_args_no_auto_start(
+def test_get_extension_paths_from_configs(
     test_configs: tuple[Path, dict[str, str]],
-    tmp_path: Path,
-) -> None:  # pragma: no cover
-    test_configs_file, _ = test_configs
-
-    args: argparse.Namespace = argparse.Namespace(
-        configs_location=test_configs_file,
-        tracked_paths=[tmp_path],
-        path_for_undefined_extensions=None,
-        enable_autostart=False,
+    info_caplog: pytest.LogCaptureFixture,
+) -> None:
+    _, test_configs_data = test_configs
+    expected_extension_paths: dict[str, Path] = {
+        extension: resolved_path_from_str(path_as_str)
+        for extension, path_as_str in test_configs_data.items()
+    }
+    assert (
+        _get_extension_paths_from_configs(test_configs_data) == expected_extension_paths
     )
-    exit_code: int = handle_track_args(args)
-    assert exit_code == 0
+    assert info_caplog.record_tuples == [
+        (
+            "auto_file_sorter.args_handling",
+            20,
+            "Got extension paths",
+        ),
+    ]
+
+
+def test_create_observers(
+    test_configs: tuple[Path, dict[str, str]],
+    path_for_undefined_extensions: Path,
+    tmp_path: Path,
+) -> None:
+    _, test_configs_data = test_configs
+    extension_paths: dict[str, Path] = {
+        extension: resolved_path_from_str(path_as_str)
+        for extension, path_as_str in test_configs_data.items()
+    }
+
+    observers: list[BaseObserver] = _create_observers(
+        [tmp_path],
+        extension_paths,
+        path_for_undefined_extensions,
+    )
+
+    assert len(observers) == 1
+    assert observers[0].name == str(tmp_path)
+    assert observers[0].daemon
+    assert not observers[0].is_alive()
+
+
+def test_create_observers_paths_dont_exists_exit(
+    test_configs: tuple[Path, dict[str, str]],
+    path_for_undefined_extensions: Path,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: Path,
+) -> None:
+    _, test_configs_data = test_configs
+    extension_paths: dict[str, Path] = {
+        extension: resolved_path_from_str(path_as_str)
+        for extension, path_as_str in test_configs_data.items()
+    }
+
+    observers: list[BaseObserver] = _create_observers(
+        [tmp_path / "test"],
+        extension_paths,
+        path_for_undefined_extensions,
+    )
+
+    assert not observers
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        f"Skipping '{tmp_path / 'test'}', because it does not exist",
+    ) in caplog.record_tuples
+
+
+def test_create_observers_path_is_file_exit(
+    test_configs: tuple[Path, dict[str, str]],
+    path_for_undefined_extensions: Path,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: Path,
+) -> None:
+    invalid_tracked_path: Path = tmp_path / "test.txt"
+    invalid_tracked_path.touch()
+    _, test_configs_data = test_configs
+    extension_paths: dict[str, Path] = {
+        extension: resolved_path_from_str(path_as_str)
+        for extension, path_as_str in test_configs_data.items()
+    }
+
+    observers: list[BaseObserver] = _create_observers(
+        [invalid_tracked_path],
+        extension_paths,
+        path_for_undefined_extensions,
+    )
+
+    assert not observers
+    assert (
+        "auto_file_sorter.args_handling",
+        30,
+        f"Skipping '{invalid_tracked_path}', expected a directory, not a file",
+    ) in caplog.record_tuples
 
 
 def test_handle_track_args_all_paths_not_found(
     test_configs: tuple[Path, dict[str, str]],
     tmp_path: Path,
-    info_caplog: pytest.LogCaptureFixture,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     test_configs_file, _ = test_configs
 
@@ -731,39 +822,9 @@ def test_handle_track_args_all_paths_not_found(
 
     assert (
         "auto_file_sorter.args_handling",
-        30,
-        f"Skipping '{tmp_path / 'test'}', because it does not exist",
-    ) in info_caplog.record_tuples
-    assert (
-        "auto_file_sorter.args_handling",
         50,
         f"All given paths are invalid: {tmp_path / 'test'}",
-    ) in info_caplog.record_tuples
-
-
-# TODO: Make this actually testable
-@pytest.mark.skip(reason="Test not finished yet")
-def test_handle_track_args_some_paths_not_found(
-    test_configs: tuple[Path, dict[str, str]],
-    tmp_path: Path,
-    info_caplog: pytest.LogCaptureFixture,
-) -> None:  # pragma: no cover
-    test_configs_file, _ = test_configs
-
-    args: argparse.Namespace = argparse.Namespace(
-        configs_location=test_configs_file,
-        tracked_paths=[tmp_path, tmp_path / "test"],
-        path_for_undefined_extensions=None,
-        enable_autostart=False,
-    )
-    exit_code: int = handle_track_args(args)
-    assert exit_code == 0
-
-    assert (
-        "auto_file_sorter.args_handling",
-        30,
-        f"Skipping '{tmp_path / 'test'}', because it does not exist",
-    ) in info_caplog.record_tuples
+    ) in caplog.record_tuples
 
 
 def test_handle_track_args_no_configs(
@@ -842,6 +903,11 @@ def test_handle_locations_args_both(
         get_configs_location=True,
     )
 
+    exit_code: int = handle_locations_args(args)
+
+    assert capsys.readouterr().out == f"{test_log_file}\n{test_configs_file}\n"
+
+    assert exit_code == 0
     exit_code: int = handle_locations_args(args)
 
     assert capsys.readouterr().out == f"{test_log_file}\n{test_configs_file}\n"
