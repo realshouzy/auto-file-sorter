@@ -23,6 +23,34 @@ if TYPE_CHECKING:
 event_handling_logger: logging.Logger = logging.getLogger(__name__)
 
 
+def _add_date_to_path(path: Path) -> Path:
+    """Add current year/month to destination path.
+
+    If the path doesn't already exist, it is created.
+    """
+    dated_path: Path = path / f"{datetime.now():%Y/%b}"
+    dated_path.mkdir(parents=True, exist_ok=True)
+    return dated_path
+
+
+def _increment_file_name(destination: Path, source: Path) -> Path:
+    """Increment the file name if another file of the same name already exists
+    in the destination folder, until the filename is unique.
+
+    This prevents overwriting other files.
+    """
+    new_path: Path = destination / source.name
+    if not new_path.exists():
+        return new_path
+
+    increment: int = 1
+    while new_path.exists():
+        increment += 1
+        new_path = destination / f"{source.stem} ({increment}){source.suffix}"
+
+    return new_path
+
+
 class OnModifiedEventHandler(FileSystemEventHandler):
     """Handler for file-modified system events."""
 
@@ -83,9 +111,9 @@ class OnModifiedEventHandler(FileSystemEventHandler):
         )
         pid: int
         try:
-            dated_destination_path: Path = self._add_date_to_path(destination_path)
+            dated_destination_path: Path = _add_date_to_path(destination_path)
             event_handling_logger.debug("Added date to %s", dated_destination_path)
-            final_destination_path: Path = self._increment_file_name(
+            final_destination_path: Path = _increment_file_name(
                 dated_destination_path,
                 file_path,
             )
@@ -130,31 +158,3 @@ class OnModifiedEventHandler(FileSystemEventHandler):
                 err.__class__.__name__,
                 pid,
             )
-
-    @staticmethod
-    def _add_date_to_path(path: Path) -> Path:
-        """Add current year/month to destination path.
-
-        If the path doesn't already exist, it is created.
-        """
-        dated_path: Path = path / f"{datetime.now():%Y/%b}"
-        dated_path.mkdir(parents=True, exist_ok=True)
-        return dated_path
-
-    @staticmethod
-    def _increment_file_name(destination: Path, source: Path) -> Path:
-        """Increment the file name if another file of the same name already exists
-        in the destination folder, until the filename is unique.
-
-        This prevents overwriting other files.
-        """
-        new_path: Path = destination / source.name
-        if not new_path.exists():
-            return new_path
-
-        increment: int = 1
-        while new_path.exists():
-            increment += 1
-            new_path = destination / f"{source.stem} ({increment}){source.suffix}"
-
-        return new_path

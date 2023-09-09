@@ -8,7 +8,11 @@ from typing import TYPE_CHECKING
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 
 # pylint: disable=C0116, W0212
-from auto_file_sorter.event_handling import OnModifiedEventHandler
+from auto_file_sorter.event_handling import (
+    OnModifiedEventHandler,
+    _add_date_to_path,
+    _increment_file_name,
+)
 from tests.fixtures import extension_paths, info_caplog, path_for_undefined_extensions
 
 if TYPE_CHECKING:
@@ -82,23 +86,19 @@ def test_on_modified_event_handler_repr_no_path_for_undefined_extensions(
 
 
 def test_on_modified_event_handler_add_date_to_path(tmp_path: Path) -> None:
-    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(tmp_path, {}, None)
-
-    dated_path: Path = event_handler._add_date_to_path(tmp_path)
+    dated_path: Path = _add_date_to_path(tmp_path)
 
     assert dated_path.exists()
     assert dated_path == tmp_path / f"{datetime.now():%Y/%b}"
 
 
 def test_on_modified_event_handler_increment_file_name(tmp_path: Path) -> None:
-    event_handler: OnModifiedEventHandler = OnModifiedEventHandler(tmp_path, {}, None)
-
     file1: Path = tmp_path / "file.txt"
     file2: Path = tmp_path / "file (1).txt"
     file1.touch()
     file2.touch()
 
-    incremented_path: Path = event_handler._increment_file_name(
+    incremented_path: Path = _increment_file_name(
         tmp_path,
         file1,
     )
