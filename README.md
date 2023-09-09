@@ -74,7 +74,7 @@ Consult ``auto-file-sorter --help`` / ``auto-file-sorter -h`` for the full set o
 
 | Argument and flags | Use |
 | -------- | ------- |
-| ``--version`` / ``-V`` | Outputs the installed version and status, either ``production`` or ``development``. |
+| ``--version`` / ``-V`` | Outputs the installed version of ``auto-file-sorter``. |
 | ``--debug`` / ``-d``   | Sets the logging level to 10 (debugging), enabling more informative debugging logs. |
 | ``--verbose`` / ``-v`` | Enables verbose outputs. It can be used up to three levels, with each level printing more logs to the stream. The first level prints all logs up to the logging level WARNING, the second level prints all logs up to INFO, and the third level prints all logs up to DEBUG (this requires the debugging flag). |
 | ``--log-location``     | Specifies the path to a log file. By default, the log file will be located with the source code. |
@@ -122,9 +122,10 @@ To avoid the overhead of creating a StreamHandler and prevent overwriting the ``
 
 An example of this transformation:
 
-| Before | After |
-| -------- | ------- |
-| ``auto-file-sorter -d -vvv track C:\path\to\be\tracked`` | ``C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked`` |
+```diff
+- auto-file-sorter -d -vvv track C:\path\to\be\tracked
++ C:\path\to\auto-file-sorter.exe -d track C:\path\to\be\tracked
+```
 
 This will then be run by the ``.vbs`` file on startup:
 
@@ -147,15 +148,15 @@ Simply place files into the tracked folder, and the tool will automatically sort
 
 ## Excpetion handling
 
-Most exceptions will be logged in a log file. If an exception should occur, the program will handly gracefuly by exiting with exit code 1, except in cases where an exception is encountered while moving a file. This behavior is specifically implemented to address threading concerns and ensure proper garbage collection. In such cases, the respective thread will exit, while the main program continues its execution. Ultimately, the user has the option to stop the program manually. This approach allows for proper cleanup and termination of resources.
+Most exceptions will be logged in a log file. If an exception should occur, the program will handle it gracefuly by exiting with exit code 1, except in cases where an exception is encountered while moving a file. This behavior is specifically implemented to address threading concerns and ensure proper garbage collection. In such cases, the respective thread will exit, while the main program continues its execution. Ultimately, the user has the option to stop the program manually. This approach allows for proper cleanup and termination of resources.
 
 ## Contributing
 
-If you are interested in contributing to this project, please refer [here](/CONTRIBUTING.md) for more information.
+If you are interested in contributing to this project, please refer [here](https://github.com/realshouzy/auto-file-sorter/blob/main/CONTRIBUTING.md) for more information.
 
 ## License
 
-[MIT](/LICENSE)
+``auto-file-sorter`` is available under the [MIT license](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
 
 ## Credit
 
