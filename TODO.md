@@ -23,3 +23,5 @@
 - [x] Write tests using ``pytest``
 - [x] Integrate ``coverage``
 - [x] Integrate ``tox``
+- [ ] Refactor and restructure ``handle_write_args`` and ``handle_read_args`` into muliple respective funtions
+- [ ] Reimplement the termination of the program
