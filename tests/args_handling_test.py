@@ -590,8 +590,9 @@ def test_handle_read_args_all_configs_posix(
         configs_location=test_configs_file,
         get_configs=None,
     )
-    exit_code: int = handle_read_args(args)
-    assert exit_code == 0
+
+    with pytest.raises(SystemExit):
+        handle_read_args(args)
 
     assert capsys.readouterr().out == ".txt: /path/to/txt\n.pdf: /path/to/pdf\n"
 
@@ -666,8 +667,9 @@ def test_handle_read_args_selected_configs_invalid_extensions(
         configs_location=test_configs_file,
         get_configs=["abc"],
     )
-    exit_code: int = handle_read_args(args)
-    assert exit_code == 1
+
+    with pytest.raises(SystemExit):
+        handle_read_args(args)
 
     assert (
         "auto_file_sorter.args_handling",
@@ -691,8 +693,9 @@ def test_handle_read_args_selected_extension_not_in_configs(
         configs_location=test_configs_file,
         get_configs=[".odt"],
     )
-    exit_code: int = handle_read_args(args)
-    assert exit_code == 1
+
+    with pytest.raises(SystemExit):
+        handle_read_args(args)
 
     assert (
         "auto_file_sorter.args_handling",
