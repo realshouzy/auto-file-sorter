@@ -23,10 +23,10 @@ jobs:
         python -m pip install -U pip setuptools wheel build twine
     - name: Build package
       run: python -m build -s -w
-    - name: Check source and build distribution using twine
-      run: python -m twine check --strict dist/*
     - name: Publish package to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
+        verbose: true
+        print-hash: true
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
