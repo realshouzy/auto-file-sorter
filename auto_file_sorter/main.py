@@ -14,7 +14,6 @@ from auto_file_sorter.args_handling import (
     handle_read_args,
     handle_track_args,
     handle_write_args,
-    resolved_path_from_str,
 )
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
@@ -26,6 +25,7 @@ from auto_file_sorter.constants import (
     STREAM_HANDLER_FORMATTER,
     VERBOSE_OUTPUT_LEVELS,
 )
+from auto_file_sorter.utils import resolved_path_from_str
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
