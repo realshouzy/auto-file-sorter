@@ -539,9 +539,8 @@ def test_handle_read_args_all_configs_posix(
         configs_location=test_configs_file,
         get_configs=None,
     )
-
-    with pytest.raises(SystemExit):
-        handle_read_args(args)
+    exit_code: int = handle_read_args(args)
+    assert exit_code == 0
 
     assert capsys.readouterr().out == ".txt: /path/to/txt\n.pdf: /path/to/pdf\n"
 
