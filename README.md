@@ -17,7 +17,7 @@
 
 ## Installation
 
-Make sure you have Python 3.8 or later installed. You can install the package using ``pip``:
+Make sure you have Python 3.9 or later installed. You can install the package using ``pip``:
 
 ```bash
 pip install auto-file-sorter
