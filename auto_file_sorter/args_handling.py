@@ -8,7 +8,6 @@ __all__: list[str] = [
     "handle_locations_args",
 ]
 
-import json
 import logging
 import os.path
 import platform
@@ -20,14 +19,18 @@ from typing import TYPE_CHECKING
 
 from watchdog.observers import Observer
 
-from auto_file_sorter.configs_handling import read_from_configs, write_to_configs
-from auto_file_sorter.constants import (
-    CONFIG_LOG_LEVEL,
-    EXIT_FAILURE,
-    EXIT_SUCCESS,
-    FILE_EXTENSION_PATTERN,
+from auto_file_sorter.configs_handling import (
+    add_new_config_to_configs,
+    get_extension_paths_from_configs,
+    get_selected_configs,
+    load_json_file_into_configs,
+    read_from_configs,
+    remove_configs,
+    write_to_configs,
 )
+from auto_file_sorter.constants import CONFIG_LOG_LEVEL, EXIT_FAILURE, EXIT_SUCCESS
 from auto_file_sorter.event_handling import OnModifiedEventHandler
+from auto_file_sorter.utils import resolved_path_from_str
 
 if TYPE_CHECKING:
     import argparse
@@ -109,148 +112,6 @@ def _add_to_startup(
             )
 
 
-def resolved_path_from_str(path_as_str: str) -> Path:
-    """Return the absolute path given a string of a path."""
-    return Path(path_as_str.strip()).resolve()
-
-
-def _add_new_config_to_configs(new_config: list[str], configs: dict[str, str]) -> int:
-    """Add new config to the configs JSON file."""
-    args_handling_logger.debug("new_config=%s", repr(new_config))
-
-    new_extension, new_path = (
-        new_config[0].lower().replace(" ", ""),
-        new_config[1].strip(),
-    )
-    args_handling_logger.debug(
-        "Normalized '%s' to '%s'",
-        new_config[0],
-        new_extension,
-    )
-    args_handling_logger.debug(
-        "Normalized '%s' to '%s'",
-        new_config[1],
-        new_path,
-    )
-
-    if not new_extension or not new_path:
-        args_handling_logger.critical(
-            "Either an empty extension '%s' or an empty path '%s' was specified to add, "
-            "which is invalid",
-            new_extension,
-            new_path,
-        )
-        return EXIT_FAILURE
-
-    if FILE_EXTENSION_PATTERN.fullmatch(new_extension) is None:
-        args_handling_logger.critical(
-            "Given extension '%s' is invalid",
-            new_extension,
-        )
-        return EXIT_FAILURE
-
-    args_handling_logger.debug("Got '%s': '%s'", new_extension, new_path)
-
-    configs[new_extension] = new_path
-    args_handling_logger.log(
-        CONFIG_LOG_LEVEL,
-        "Updated '%s': '%s'",
-        new_extension,
-        new_path,
-    )
-    return EXIT_SUCCESS
-
-
-def _load_json_file(json_file: Path, configs: dict[str, str]) -> int:
-    """Load JSON file into configs."""
-    args_handling_logger.debug(
-        "json_file='%s'",
-        repr(json_file),
-    )
-
-    if json_file.suffix.lower() != ".json":
-        args_handling_logger.critical(
-            "Configs can only be read from json files",
-        )
-        return EXIT_FAILURE
-
-    args_handling_logger.debug("Reading from '%s'", json_file)
-    try:
-        new_configs_from_json: dict[str, str] = json.loads(
-            json_file.read_text(encoding="utf-8"),
-        )
-    except FileNotFoundError:
-        args_handling_logger.critical(
-            "Unable to find '%s'",
-            json_file,
-        )
-        return EXIT_FAILURE
-    except PermissionError:
-        args_handling_logger.critical(
-            "Permission denied to open and read from '%s'",
-            json_file,
-        )
-        return EXIT_FAILURE
-    except OSError:
-        args_handling_logger.critical(
-            "Operating system-related error occurred while opening and reading from '%s'",
-            json_file,
-        )
-        return EXIT_FAILURE
-    except json.JSONDecodeError:
-        args_handling_logger.critical(
-            "Given JSON file is not correctly formatted: '%s'",
-            json_file,
-        )
-        return EXIT_FAILURE
-    args_handling_logger.debug("Read from '%s'", json_file)
-
-    configs.update(new_configs_from_json)
-    args_handling_logger.log(
-        CONFIG_LOG_LEVEL,
-        "Loaded '%s' into configs",
-        json_file,
-    )
-    return EXIT_SUCCESS
-
-
-def _remove_configs(configs_to_be_removed: list[str], configs: dict[str, str]) -> int:
-    """Remove configs from the configs."""
-    args_handling_logger.debug(
-        "configs_to_be_removed=%s",
-        repr(configs_to_be_removed),
-    )
-
-    for config in configs_to_be_removed:
-        extension: str = config.replace(" ", "").lower()
-        args_handling_logger.debug("Stripped '%s' to '%s'", config, extension)
-
-        if FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
-            args_handling_logger.warning(
-                "Skipping invalid extension: '%s'",
-                extension,
-            )
-            continue
-
-        args_handling_logger.debug("Normalized '%s' to '%s'", config, extension)
-
-        args_handling_logger.debug("Removing '%s'", extension)
-        try:
-            del configs[extension]
-        except KeyError:
-            args_handling_logger.warning(
-                "Ignoring '%s', because it is not in the configs",
-                extension,
-            )
-            continue
-        args_handling_logger.log(
-            CONFIG_LOG_LEVEL,
-            "Removed '%s'",
-            extension,
-        )
-    return EXIT_SUCCESS
-
-
 def handle_write_args(args: argparse.Namespace) -> int:
     """Handle the ``write`` subcommand."""
     exit_code: int = EXIT_SUCCESS
@@ -259,60 +120,16 @@ def handle_write_args(args: argparse.Namespace) -> int:
     configs: dict[str, str] = read_from_configs(configs=args.configs_location)
 
     if args.new_config is not None:
-        exit_code |= _add_new_config_to_configs(args.new_config, configs)
+        exit_code |= add_new_config_to_configs(args.new_config, configs)
 
     if args.json_file is not None:
-        exit_code |= _load_json_file(args.json_file, configs)
+        exit_code |= load_json_file_into_configs(args.json_file, configs)
 
     if args.configs_to_be_removed is not None:
-        exit_code |= _remove_configs(args.configs_to_be_removed, configs)
+        exit_code |= remove_configs(args.configs_to_be_removed, configs)
 
     write_to_configs(configs, configs=args.configs_location)
     return exit_code
-
-
-def _get_selected_configs(
-    get_configs: list[str],
-    configs: dict[str, str],
-) -> dict[str, Path]:
-    """Get the selected configs from the configs and store them in a ``dict``."""
-    selected_configs: dict[str, Path] = {}
-
-    for config in get_configs:
-        extension: str = config.replace(" ", "").lower()
-
-        if FILE_EXTENSION_PATTERN.fullmatch(extension) is None:
-            args_handling_logger.warning(
-                "Ignoring invalid extension '%s'",
-                extension,
-            )
-            continue
-
-        if extension not in configs:
-            args_handling_logger.warning(
-                "Ignoring '%s', because it is not in the configs",
-                extension,
-            )
-            continue
-
-        try:
-            selected_configs[extension] = resolved_path_from_str(configs[extension])
-        except KeyError:  # pragma: no cover
-            args_handling_logger.warning(
-                "Unable to get the respetive path "
-                "of one of the given extensions '%s'",
-                extension,
-            )
-            continue
-
-    if not selected_configs:
-        args_handling_logger.critical("No valid extensions selected")
-        args_handling_logger.debug(
-            "repr(selected_configs)=%s",
-            repr(selected_configs),
-        )
-        raise SystemExit(EXIT_FAILURE)
-    return selected_configs
 
 
 def handle_read_args(args: argparse.Namespace) -> int:
@@ -327,7 +144,7 @@ def handle_read_args(args: argparse.Namespace) -> int:
             "Getting selected configs and storing them in dict",
         )
 
-        selected_configs: dict[str, Path] = _get_selected_configs(
+        selected_configs: dict[str, Path] = get_selected_configs(
             args.get_configs,
             configs,
         )
@@ -347,19 +164,6 @@ def handle_read_args(args: argparse.Namespace) -> int:
             "Printed all the configs",
         )
     return EXIT_SUCCESS
-
-
-def _get_extension_paths_from_configs(
-    configs: dict[str, str],
-) -> dict[str, Path]:
-    """Get the extension and their respective path from the configs."""
-    args_handling_logger.debug("Resolving extension paths from %s", configs)
-    extension_paths: dict[str, Path] = {
-        extension: resolved_path_from_str(path_as_str)
-        for extension, path_as_str in configs.items()
-    }
-    args_handling_logger.info("Got extension paths")
-    return extension_paths
 
 
 def _create_observers(
@@ -440,7 +244,7 @@ def handle_track_args(args: argparse.Namespace) -> int:
         )
         return EXIT_FAILURE
 
-    extension_paths: dict[str, Path] = _get_extension_paths_from_configs(configs)
+    extension_paths: dict[str, Path] = get_extension_paths_from_configs(configs)
 
     observers: list[BaseObserver] = _create_observers(
         args.tracked_paths,

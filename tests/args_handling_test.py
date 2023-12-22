@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 import platform
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -13,13 +12,13 @@ import pytest
 from auto_file_sorter.args_handling import (
     _add_to_startup,
     _create_observers,
-    _get_extension_paths_from_configs,
     handle_locations_args,
     handle_read_args,
     handle_track_args,
     handle_write_args,
-    resolved_path_from_str,
 )
+from auto_file_sorter.configs_handling import get_extension_paths_from_configs
+from auto_file_sorter.utils import resolved_path_from_str
 
 #  valid_json_data is indirectly used by test_configs, do not remove!
 from tests.fixtures import (
@@ -30,59 +29,9 @@ from tests.fixtures import (
 )
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from watchdog.observers.api import BaseObserver
-
-
-@pytest.mark.skipif(
-    platform.system() != "Windows",
-    reason="Test behavior on Windows-systems",
-)
-@pytest.mark.parametrize(
-    ("path_as_str", "expected_path"),
-    (
-        pytest.param(
-            "/path/to/some/file.txt",
-            Path("C:/path/to/some/file.txt"),
-            id="regular_str",
-        ),
-        pytest.param(
-            "  /path/to/some/file.txt  ",
-            Path("C:/path/to/some/file.txt"),
-            id="trailing_whitespaces_str",
-        ),
-    ),
-)
-def test_resolved_path_from_str_windows(
-    path_as_str: str,
-    expected_path: Path,
-) -> None:  # pragma: win32 cover
-    assert resolved_path_from_str(path_as_str) == expected_path
-
-
-@pytest.mark.skipif(
-    platform.system() != "Linux" and platform.system() != "Darwin",
-    reason="Test behavior on Posix systems",
-)
-@pytest.mark.parametrize(
-    ("path_as_str", "expected_path"),
-    (
-        pytest.param(
-            "/path/to/some/file.txt",
-            Path("/path/to/some/file.txt"),
-            id="regular_str",
-        ),
-        pytest.param(
-            "  /path/to/some/file.txt  ",
-            Path("/path/to/some/file.txt"),
-            id="trailing_whitespaces_str",
-        ),
-    ),
-)
-def test_resolved_path_from_str_posix(
-    path_as_str: str,
-    expected_path: Path,
-) -> None:  # pragma: posix cover
-    assert resolved_path_from_str(path_as_str) == expected_path
 
 
 @pytest.mark.skipif(
@@ -258,9 +207,9 @@ def test_handle_write_args_new_config(
     assert updated_configs[".jpg"] == "/path/to/jpg"
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         70,
-        f"Updated '.jpg': '/path/to/jpg' from '{test_configs_file}'",
+        "Updated '.jpg': '/path/to/jpg'",
     ) in caplog.record_tuples
 
 
@@ -288,7 +237,7 @@ def test_handle_write_args_new_config_no_extension_or_path(
     assert exit_code == 1
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         f"Either an empty extension '{new_config[0].lower().replace(' ', '')}' "
         f"or an empty path '{new_config[1].strip()}' was specified to add, which is invalid",
@@ -324,7 +273,7 @@ def test_handle_write_args_new_config_invalid_extension(
     assert exit_code == 1
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         f"Given extension '{extension.lower().replace(' ', '')}' is invalid",
     ) in caplog.record_tuples
@@ -362,7 +311,7 @@ def test_handle_write_args_load_json_file(
     assert updated_configs[".png"] == "/path/to/png"
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         70,
         f"Loaded '{json_file_path}' into configs",
     ) in caplog.record_tuples
@@ -387,7 +336,7 @@ def test_handle_write_args_load_json_file_no_json(
     assert exit_code == 1
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         "Configs can only be read from json files",
     ) in caplog.record_tuples
@@ -412,7 +361,7 @@ def test_handle_write_args_load_json_file_file_not_found_error(
     assert exit_code == 1
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         f"Unable to find '{json_file_path}'",
     ) in caplog.record_tuples
@@ -438,7 +387,7 @@ def test_handle_write_args_load_json_file_decode_error(
     assert exit_code == 1
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         f"Given JSON file is not correctly formatted: '{json_file_path}'",
     ) in caplog.record_tuples
@@ -467,12 +416,12 @@ def test_handle_write_args_remove_configs(
     assert ".pdf" not in updated_configs
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         70,
         "Removed '.txt'",
     ) in caplog.record_tuples
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         70,
         "Removed '.pdf'",
     ) in caplog.record_tuples
@@ -501,12 +450,12 @@ def test_handle_write_args_remove_configs_invalid_extenion(
     assert ".txt" not in updated_configs
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         70,
         "Removed '.txt'",
     ) in caplog.record_tuples
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         30,
         "Skipping invalid extension: '_abc_'",
     ) in caplog.record_tuples
@@ -535,12 +484,12 @@ def test_handle_write_args_remove_configs_with_extension_not_in_configs(
     assert ".txt" not in updated_configs
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         70,
         "Removed '.txt'",
     ) in caplog.record_tuples
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         30,
         "Ignoring '.png', because it is not in the configs",
     ) in caplog.record_tuples
@@ -672,12 +621,12 @@ def test_handle_read_args_selected_configs_invalid_extensions(
         handle_read_args(args)
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         30,
         "Ignoring invalid extension 'abc'",
     ) in caplog.record_tuples
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         "No valid extensions selected",
     ) in caplog.record_tuples
@@ -698,12 +647,12 @@ def test_handle_read_args_selected_extension_not_in_configs(
         handle_read_args(args)
 
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         30,
         "Ignoring '.odt', because it is not in the configs",
     ) in caplog.record_tuples
     assert (
-        "auto_file_sorter.args_handling",
+        "auto_file_sorter.configs_handling",
         50,
         "No valid extensions selected",
     ) in caplog.record_tuples
@@ -719,11 +668,11 @@ def test_get_extension_paths_from_configs(
         for extension, path_as_str in test_configs_data.items()
     }
     assert (
-        _get_extension_paths_from_configs(test_configs_data) == expected_extension_paths
+        get_extension_paths_from_configs(test_configs_data) == expected_extension_paths
     )
     assert info_caplog.record_tuples == [
         (
-            "auto_file_sorter.args_handling",
+            "auto_file_sorter.configs_handling",
             20,
             "Got extension paths",
         ),

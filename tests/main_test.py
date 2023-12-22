@@ -10,7 +10,6 @@ import pytest
 
 # pylint: disable=C0116, W0611
 from auto_file_sorter import __version__
-from auto_file_sorter.args_handling import resolved_path_from_str
 from auto_file_sorter.constants import (
     CONFIG_LOG_LEVEL,
     DEFAULT_CONFIGS_LOCATION,
@@ -22,6 +21,7 @@ from auto_file_sorter.main import (
     _parse_args,
     _setup_logging,
 )
+from auto_file_sorter.utils import resolved_path_from_str
 
 # valid_json_data and test_configs are indirectly used by test_configs_as_str, do not remove!
 from tests.fixtures import (
