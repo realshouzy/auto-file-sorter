@@ -6,14 +6,19 @@ __all__: list[str] = ["OnModifiedEventHandler"]
 import logging
 import os
 import shutil
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from typing_extensions import override
 from watchdog.events import FileSystemEventHandler
 
 from auto_file_sorter.constants import MOVE_LOG_LEVEL
+
+if sys.version_info >= (3, 12):  # pragma: >=3.12 cover
+    from typing import override
+else:  # pragma: <3.12 cover
+    from typing_extensions import override
 
 if TYPE_CHECKING:
     from pathlib import Path

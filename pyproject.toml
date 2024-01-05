@@ -110,6 +110,7 @@ ignore = [
     "TD002",
     "TD003",
     "FIX002",
+    "UP036",
 ]
 fixable = ["ALL"]
 unfixable = []
