@@ -9,8 +9,7 @@ import pytest
 
 from auto_file_sorter.utils import resolved_path_from_str
 
-if platform.system() == "Windows":
-    DRIVE: Final[str] = Path().resolve().drive
+DRIVE: Final[str] = Path().resolve().drive
 
 # pylint: disable=C0116
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import platform
+from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -29,14 +30,9 @@ from tests.fixtures import (
 )
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from watchdog.observers.api import BaseObserver
 
-if platform.system() == "Windows":
-    from pathlib import Path  # actually import Path when on Windows
-
-    DRIVE: Final[str] = Path().resolve().drive
+DRIVE: Final[str] = Path().resolve().drive
 
 
 @pytest.mark.skipif(
