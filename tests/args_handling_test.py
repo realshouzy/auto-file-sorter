@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import platform
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import pytest
 
@@ -32,6 +32,11 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from watchdog.observers.api import BaseObserver
+
+if platform.system() == "Windows":
+    from pathlib import Path  # actually import Path when on Windows
+
+    DRIVE: Final[str] = Path().resolve().drive
 
 
 @pytest.mark.skipif(
@@ -514,7 +519,8 @@ def test_handle_read_args_all_configs_windows(
     assert exit_code == 0
 
     assert (
-        capsys.readouterr().out == ".txt: C:\\path\\to\\txt\n.pdf: C:\\path\\to\\pdf\n"
+        capsys.readouterr().out
+        == f".txt: {DRIVE}\\path\\to\\txt\n.pdf: {DRIVE}\\path\\to\\pdf\n"
     )
 
     assert (
@@ -569,7 +575,7 @@ def test_handle_read_args_selected_configs_windows(
     exit_code: int = handle_read_args(args)
     assert exit_code == 0
 
-    assert capsys.readouterr().out == ".pdf: C:\\path\\to\\pdf\n"
+    assert capsys.readouterr().out == f".pdf: {DRIVE}\\path\\to\\pdf\n"
 
     assert (
         "auto_file_sorter.args_handling",

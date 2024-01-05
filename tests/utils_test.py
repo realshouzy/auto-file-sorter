@@ -3,10 +3,14 @@ from __future__ import annotations
 
 import platform
 from pathlib import Path
+from typing import Final
 
 import pytest
 
 from auto_file_sorter.utils import resolved_path_from_str
+
+if platform.system() == "Windows":
+    DRIVE: Final[str] = Path().resolve().drive
 
 # pylint: disable=C0116
 
@@ -20,12 +24,12 @@ from auto_file_sorter.utils import resolved_path_from_str
     (
         pytest.param(
             "/path/to/some/file.txt",
-            Path("C:/path/to/some/file.txt"),
+            Path(f"{DRIVE}/path/to/some/file.txt"),
             id="regular_str",
         ),
         pytest.param(
             "  /path/to/some/file.txt  ",
-            Path("C:/path/to/some/file.txt"),
+            Path(f"{DRIVE}/path/to/some/file.txt"),
             id="trailing_whitespaces_str",
         ),
     ),
