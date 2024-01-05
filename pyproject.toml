@@ -170,4 +170,4 @@ exclude_also = [
     'except (OSError|(shutil.Error, OSError))( as os_err)?:',
     'except Exception as err:',
 ]
-fail_under = 99
+fail_under = 100
