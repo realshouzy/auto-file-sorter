@@ -18,7 +18,7 @@ from auto_file_sorter.constants import MOVE_LOG_LEVEL
 if sys.version_info >= (3, 12):  # pragma: >=3.12 cover
     from typing import override
 else:  # pragma: <3.12 cover
-    from typing_extensions import override
+    from typing import override
 
 if TYPE_CHECKING:
     from pathlib import Path
