@@ -1,4 +1,5 @@
 """Module defining and containing global constants."""
+
 from __future__ import annotations
 
 __all__: list[str] = [
@@ -24,9 +25,9 @@ PROGRAM_LOCATION: Final[Path] = Path(__file__).resolve().parent
 DEFAULT_CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION / "configs.json"
 DEFAULT_LOG_LOCATION: Final[Path] = PROGRAM_LOCATION / "auto-file-sorter.log"
 
-LOG_FORMAT: Final[
-    Literal["%(name)s [%(levelname)s] %(asctime)s - %(message)s"]
-] = "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
+LOG_FORMAT: Final[Literal["%(name)s [%(levelname)s] %(asctime)s - %(message)s"]] = (
+    "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
+)
 MOVE_LOG_LEVEL: Final[Literal[60]] = 60
 CONFIG_LOG_LEVEL: Final[Literal[70]] = 70
 STREAM_HANDLER_FORMATTER: Final[logging.Formatter] = logging.Formatter(

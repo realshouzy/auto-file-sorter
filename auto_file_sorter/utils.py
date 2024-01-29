@@ -1,4 +1,5 @@
 """Module containing useful utilities."""
+
 from __future__ import annotations
 
 __all__: list[str] = ["resolved_path_from_str"]
