@@ -78,13 +78,13 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Specify custom location for the configs file (default: location of the program)",
     )
 
-    subparsers: argparse._SubParsersAction[
-        argparse.ArgumentParser
-    ] = parser.add_subparsers(
-        title="subcommands",
-        description="Track a directory, configure the extension paths"
-        "or get the locations of the log and configs file",
-        required=True,
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser] = (
+        parser.add_subparsers(
+            title="subcommands",
+            description="Track a directory, configure the extension paths"
+            "or get the locations of the log and configs file",
+            required=True,
+        )
     )
 
     # "track" subcommand

@@ -1,4 +1,5 @@
 """Module that contains the event handler class to move a file to the correct path."""
+
 from __future__ import annotations
 
 __all__: list[str] = ["OnModifiedEventHandler"]

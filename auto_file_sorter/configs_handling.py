@@ -1,4 +1,5 @@
 """Module responsible for handling the JSON configs."""
+
 from __future__ import annotations
 
 __all__: list[str] = [

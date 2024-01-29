@@ -1,4 +1,5 @@
 """Tests for ``auto-file-sorter.configs_handling``."""
+
 from __future__ import annotations
 
 import json

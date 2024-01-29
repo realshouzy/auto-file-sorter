@@ -1,4 +1,5 @@
 """Tests for ``auto-file-sorter.main``."""
+
 from __future__ import annotations
 
 import argparse

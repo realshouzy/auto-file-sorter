@@ -1,4 +1,5 @@
 """``auto-file-sorter`` package."""
+
 from __future__ import annotations
 
 __version__: Final[str] = "1.0.2"

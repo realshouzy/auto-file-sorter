@@ -1,4 +1,5 @@
 """Tests for ``auto_file_sorter.event_handling``."""
+
 from __future__ import annotations
 
 import re
