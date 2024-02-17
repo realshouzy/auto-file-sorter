@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 def test_on_modified_event_handler_inherits_from_file_system_event_handler() -> None:
-    assert OnModifiedEventHandler.__base__ == FileSystemEventHandler
+    assert issubclass(OnModifiedEventHandler, FileSystemEventHandler)
 
 
 def test_on_modified_event_handler_str(
