@@ -39,7 +39,7 @@ pip install -e .[dev]
 Alternatively, all the these can also be found in and installed via [``requirements-dev.txt``](/requirements-dev.txt); run this:
 
 ```bash
-pip install -r requirements-dev.txt -e .
+pip install -r requirements-dev.txt
 ```
 
 #### Setting up the ``pre-commit`` hooks
