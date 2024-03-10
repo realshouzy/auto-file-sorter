@@ -1,2 +1,2 @@
-typing_extensions>=4.6.0;python_version<"3.12"
+typing_extensions>=4.4.0;python_version<"3.12"
 watchdog>=3.0.0
