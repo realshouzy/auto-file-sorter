@@ -6,7 +6,7 @@
 [![CodeQL](https://github.com/realshouzy/auto-file-sorter/actions/workflows/codeql.yaml/badge.svg)](https://github.com/realshouzy/auto-file-sorter/actions/workflows/codeql.yaml)
 [![PyPI - Version](https://img.shields.io/pypi/v/auto-file-sorter)](https://github.com/realshouzy/auto-file-sorter/releases/latest)
 [![Python versions](https://img.shields.io/pypi/pyversions/auto-file-sorter.svg)](https://pypi.org/project/auto-file-sorter/)
-[![semantic-release](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/realshouzy/YTDownloader/releases)
+[![semantic-release](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/realshouzy/auto-file-sorter/releases)
 [![PyPI - Format](https://img.shields.io/pypi/format/auto-file-sorter)](https://pypi.org/project/auto-file-sorter/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/realshouzy/auto-file-sorter/blob/main/LICENSE)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
