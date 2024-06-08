@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__all__: list[str] = ["OnModifiedEventHandler"]
+__all__: list[str] = ["OnCreatedEventHandler"]
 
 import logging
 import os
@@ -24,7 +24,7 @@ else:  # pragma: <3.12 cover
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from watchdog.events import DirModifiedEvent, FileModifiedEvent
+    from watchdog.events import DirCreatedEvent, FileCreatedEvent
 
 event_handling_logger: logging.Logger = logging.getLogger(__name__)
 
@@ -57,8 +57,8 @@ def _increment_file_name(destination: Path, source: Path) -> Path:
     return new_path
 
 
-class OnModifiedEventHandler(FileSystemEventHandler):
-    """Handler for file-modified system events."""
+class OnCreatedEventHandler(FileSystemEventHandler):
+    """`FileSystemEventHandler` overriding `on_created`."""
 
     def __init__(
         self,
@@ -82,9 +82,9 @@ class OnModifiedEventHandler(FileSystemEventHandler):
         )
 
     @override
-    def on_modified(
+    def on_created(
         self,
-        event: DirModifiedEvent | FileModifiedEvent,
+        event: DirCreatedEvent | FileCreatedEvent,
     ) -> None:
         event_handling_logger.debug("event=%s", repr(event))
         with ThreadPoolExecutor() as executor:
