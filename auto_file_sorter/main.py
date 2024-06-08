@@ -238,7 +238,7 @@ def _setup_logging(args: argparse.Namespace) -> None:
 
 def _check_specified_locations(args: argparse.Namespace) -> None:
     """Check the log and configs locations are their respective files types."""
-    if args.log_location.suffix.lower() != ".log":
+    if args.log_location.suffix.casefold() != ".log":
         main_logger.warning(
             "Given logging location '%s' is not a '.log' file. "
             "Using default location: '%s'",
@@ -247,7 +247,7 @@ def _check_specified_locations(args: argparse.Namespace) -> None:
         )
         args.log_location = DEFAULT_LOG_LOCATION
 
-    if args.configs_location.suffix.lower() != ".json":
+    if args.configs_location.suffix.casefold() != ".json":
         main_logger.warning(
             "Given configs location '%s' is not a '.json' file. "
             "Using default location: '%s'",

@@ -98,7 +98,7 @@ class OnModifiedEventHandler(FileSystemEventHandler):
     def _move_file(self, file_path: Path) -> None:
         """Move the file to its destination path."""
         destination_path: Path | None = self.extension_paths.get(
-            file_path.suffix.lower(),
+            file_path.suffix.casefold(),
             self.path_for_undefined_extensions,
         )
 

@@ -215,7 +215,7 @@ def load_json_file_into_configs(json_file: Path, configs: dict[str, str]) -> int
         repr(json_file),
     )
 
-    if json_file.suffix.lower() != ".json":
+    if json_file.suffix.casefold() != ".json":
         configs_handling_logger.critical(
             "Configs can only be read from json files",
         )
