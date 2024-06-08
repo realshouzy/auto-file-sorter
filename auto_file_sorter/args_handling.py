@@ -30,7 +30,7 @@ from auto_file_sorter.configs_handling import (
     write_to_configs,
 )
 from auto_file_sorter.constants import CONFIG_LOG_LEVEL, EXIT_FAILURE, EXIT_SUCCESS
-from auto_file_sorter.event_handling import OnModifiedEventHandler
+from auto_file_sorter.event_handling import OnCreatedEventHandler
 from auto_file_sorter.utils import resolved_path_from_str
 
 if TYPE_CHECKING:
@@ -193,7 +193,7 @@ def _create_observers(
             "Creating FileModifiedEventHandler instance tracking '%s'",
             path,
         )
-        event_handler: OnModifiedEventHandler = OnModifiedEventHandler(
+        event_handler: OnCreatedEventHandler = OnCreatedEventHandler(
             path,
             extension_paths,
             path_for_undefined_extensions,
