@@ -55,9 +55,6 @@ auto-file-sorter = "auto_file_sorter.main:main"
 packages = ["auto_file_sorter"]
 license-files = ["LICENSE"]
 
-[tool.setuptools.package-data]
-auto_file_sorter = ["py.typed"]
-
 [tool.setuptools.dynamic]
 version = { attr = "auto_file_sorter.__version__" }
 dependencies = { file = "requirements.txt" }
