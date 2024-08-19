@@ -25,14 +25,14 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-@pytest.fixture()
+@pytest.fixture
 def info_caplog(caplog: pytest.LogCaptureFixture) -> pytest.LogCaptureFixture:
     """Return a ``pytest.caplog`` fixture with the logging level set to ``INFO`` / 10."""
     caplog.set_level(logging.INFO)
     return caplog
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_configs(
     tmp_path: Path,
     valid_json_data: dict[str, str],
@@ -45,13 +45,13 @@ def test_configs(
     return test_configs_file, valid_json_data
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_configs_as_str(test_configs: tuple[Path, dict[str, str]]) -> str:
     """Return a temporary configs ``JSON`` file as a string."""
     return str(test_configs[0])
 
 
-@pytest.fixture()
+@pytest.fixture
 def empty_test_configs(tmp_path: Path) -> Path:
     """Return an empty temporary configs ``JSON`` file."""
     test_configs_file: Path = tmp_path / "test_configs.json"
@@ -61,7 +61,7 @@ def empty_test_configs(tmp_path: Path) -> Path:
     return test_configs_file
 
 
-@pytest.fixture()
+@pytest.fixture
 def invalid_test_configs(
     tmp_path: Path,
     invalid_json_data: str,
@@ -74,13 +74,13 @@ def invalid_test_configs(
     return test_configs_file, invalid_json_data
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_log(tmp_path: Path) -> Path:
     """Return a temporary log file."""
     return tmp_path / "test.log"
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_json_data() -> dict[str, str]:
     """Return valid ``JSON`` data."""
     return {
@@ -89,13 +89,13 @@ def valid_json_data() -> dict[str, str]:
     }
 
 
-@pytest.fixture()
+@pytest.fixture
 def invalid_json_data() -> str:
     """Return invalid ``JSON``."""
     return "invalid json data"
 
 
-@pytest.fixture()
+@pytest.fixture
 def extension_paths(tmp_path: Path) -> dict[str, Path]:
     """Return a a ``dict`` that binds file extensions to a temporary path."""
     return {
@@ -104,13 +104,13 @@ def extension_paths(tmp_path: Path) -> dict[str, Path]:
     }
 
 
-@pytest.fixture()
+@pytest.fixture
 def path_for_undefined_extensions(tmp_path: Path) -> Path:
     """Return a temporary path which will be the path for undefined extensions."""
     return tmp_path / "undefined"
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_log_as_str(tmp_path: Path) -> str:
     """Return a temporary log file as a string."""
     return str(tmp_path / "auto-file-sorter.log")
