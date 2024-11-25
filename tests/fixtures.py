@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 __all__: list[str] = [
-    "info_caplog",
-    "valid_json_data",
-    "invalid_json_data",
-    "test_configs",
     "empty_test_configs",
-    "invalid_test_configs",
     "extension_paths",
+    "info_caplog",
+    "invalid_json_data",
+    "invalid_test_configs",
     "path_for_undefined_extensions",
-    "test_log_as_str",
+    "test_configs",
     "test_log",
+    "test_log_as_str",
+    "valid_json_data",
 ]
 
 import json
