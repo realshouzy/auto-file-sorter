@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 __all__: list[str] = [
-    "handle_write_args",
+    "handle_locations_args",
     "handle_read_args",
     "handle_track_args",
-    "handle_locations_args",
+    "handle_write_args",
 ]
 
 import logging

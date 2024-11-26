@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 __all__: list[str] = [
-    "read_from_configs",
-    "write_to_configs",
-    "get_selected_configs",
     "add_new_config_to_configs",
-    "load_json_file_into_configs",
-    "remove_configs",
     "get_extension_paths_from_configs",
+    "get_selected_configs",
+    "load_json_file_into_configs",
+    "read_from_configs",
+    "remove_configs",
+    "write_to_configs",
 ]
 
 import json
