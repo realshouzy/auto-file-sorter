@@ -25,9 +25,7 @@ PROGRAM_LOCATION: Final[Path] = Path(__file__).resolve().parent
 DEFAULT_CONFIGS_LOCATION: Final[Path] = PROGRAM_LOCATION / "configs.json"
 DEFAULT_LOG_LOCATION: Final[Path] = PROGRAM_LOCATION / "auto-file-sorter.log"
 
-LOG_FORMAT: Final = (
-    "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
-)
+LOG_FORMAT: Final = "%(name)s [%(levelname)s] %(asctime)s - %(message)s"
 MOVE_LOG_LEVEL: Final = 60
 CONFIG_LOG_LEVEL: Final = 70
 STREAM_HANDLER_FORMATTER: Final[logging.Formatter] = logging.Formatter(
