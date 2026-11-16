@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Main module."""
+
 from __future__ import annotations
 
 __all__: list[str] = ["main"]
